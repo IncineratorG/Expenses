@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Costs</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_single_costs_field">singleCostsField</string>
+    <string name="TextViews">Day Month Year</string>
+    <string name="strings">Costs</string>
+    <string name="costs">Costs</string>
+    <string name="dayAndMonth">Day Month</string>
+    <string name="year">Year</string>
+</resources>
