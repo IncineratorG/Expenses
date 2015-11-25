@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,15 +36,13 @@ public class MainActivity extends AppCompatActivity {
     int todayMonth;
     int todayYear;
     int todayDay;
-    //int chosenYear;
-    //int chosenMonth;
-    int chosenDay;
 
     boolean notCurrentDate;
 
     TextView currentDateTextView;
-    //TextView currentYearTextView;
     TextView currentCostsTextView;
+
+    PopupMenu costsPopupMenu;
 
     String currentOverallCosts;
     String currentFoodCosts;
@@ -100,6 +99,10 @@ public class MainActivity extends AppCompatActivity {
         // Устанавливаем расходы за выбранный период
         SetCurrentCosts();
 
+        // Создаём всплывающее меню для отображения
+        // последних десяти введённых значений
+        GenerateCostsPopupMenu();
+
         // Формируем данные для ListView
         String[] costsArray = CreateCostsArray();
 
@@ -108,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(listAdapter);
 
-        // Если выбрана текущай дата - можно добавлять данные
+        // Если выбрана текущая дата - можно добавлять данныеё
         // о затратах за текущий период
         if (!notCurrentDate) {
 
@@ -120,8 +123,9 @@ public class MainActivity extends AppCompatActivity {
 
                             String textLine = String.valueOf(parent.getItemAtPosition(position));
                             String costsTypeText = textLine.substring(0, textLine.indexOf("$"));
-                            inputDataIntent.putExtra("costTypeText", costsTypeText);
                             String costTypeEnum = textLine.substring(textLine.indexOf("#") + 1);
+
+                            inputDataIntent.putExtra("costTypeText", costsTypeText);
                             inputDataIntent.putExtra("costTypeEnum", costTypeEnum);
                             inputDataIntent.putExtra("currentMonth", currentMonth);
                             inputDataIntent.putExtra("currentYear", currentYear);
@@ -214,12 +218,6 @@ public class MainActivity extends AppCompatActivity {
         currentCostsTextView.setText(currentOverallCosts);
     }
 
-    // Переход к экрану выбора периода
-    public void onDateClick(View view) {
-        Intent chosePeriodsIntent = new Intent(this, Periods.class);
-        startActivity(chosePeriodsIntent);
-    }
-
     public String[] CreateCostsArray() {
         String[] costsArray = new String[8];
         costsArray[0] = "Еда$" + currentFoodCosts + "#FOOD";
@@ -234,8 +232,30 @@ public class MainActivity extends AppCompatActivity {
         return costsArray;
     }
 
+    public void GenerateCostsPopupMenu() {
+        String[] lastEnteredValues = db.getLastEnteredValues();
+        System.out.println(lastEnteredValues.length);
+        for (String s : lastEnteredValues) {
+            System.out.println(s);
+        }
+        costsPopupMenu = new PopupMenu(this, currentCostsTextView);
+
+        for (int i = 0; i < lastEnteredValues.length; ++i) {
+            costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastEnteredValues[i]);
+        }
+    }
 
 
+    // Переход к экрану выбора периода
+    public void onDateClick(View view) {
+        Intent chosePeriodsIntent = new Intent(this, Periods.class);
+        startActivity(chosePeriodsIntent);
+    }
+
+    // Просмотр последних десяти введённых значений
+    public void onCostsClick(View view) {
+        costsPopupMenu.show();
+    }
 
 
 

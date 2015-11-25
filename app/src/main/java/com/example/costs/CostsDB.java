@@ -89,7 +89,9 @@ public class CostsDB extends SQLiteOpenHelper {
     // Также производится добавление в таблицу последних внесённых записей ("TABLE_LAST_ENTERED_VALUES")
     // и в таблицу "TABLE_PERIOD"
     public void addCosts(int month, int year, CostType costType, String costsValue) {
-        addLastValues(costType, costsValue);
+        if (!costsValue.equals("0.00")) {
+            addLastValues(costType, costsValue);
+        }
         addPeriod(month, year);
 
         SQLiteDatabase db = getWritableDatabase();
