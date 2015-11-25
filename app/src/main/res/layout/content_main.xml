@@ -33,22 +33,9 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/dayAndMonth"
-        android:id="@+id/currentDayAndMonth"
+        android:id="@+id/currentDate"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/currentYear"
-        android:layout_toStartOf="@+id/currentYear"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/year"
-        android:id="@+id/currentYear"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/currentCosts"
-        android:layout_toEndOf="@+id/currentCosts"
-        android:layout_marginRight="50dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="onDateClick" />
 
 </RelativeLayout>

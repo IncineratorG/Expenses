@@ -24,7 +24,7 @@ class CostsAdapter extends ArrayAdapter<String> {
 
         String textLine = getItem(position);
         String costType = textLine.substring(0, textLine.indexOf("$"));
-        String costValue = textLine.substring(textLine.indexOf("$") + 1, textLine.indexOf("#"));
+        String costValue = textLine.substring(textLine.indexOf("$") + 1, textLine.indexOf("#")) + " руб.";
 
         TextView costTypeText = (TextView) singleCostsRow.findViewById(R.id.costType);
         TextView costValueText = (TextView) singleCostsRow.findViewById(R.id.costValue);

@@ -19,6 +19,7 @@ public class CostsDB extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "costs.db";
     private static final String TABLE_COSTS = "costs";
     private static final String TABLE_LAST_ENTERED_VALUES = "lastenteredvalues";
+    private static final String TABLE_PERIOD = "period";
     private static final String COLUMN_ID = "_id";
     private static final String COLUMN_MONTH = "month";
     private static final String COLUMN_YEAR = "year";
@@ -28,6 +29,7 @@ public class CostsDB extends SQLiteOpenHelper {
     private static final String COLUMN_DATE = "date";
     private static final String COLUMN_DATE_IN_MILLISECONDS = "milliseconds";
     private static final String COLUMN_NOTE = "note";
+    private static final String COLUMN_PERIOD = "period";
 
     public enum CostType {
         FOOD, CLOTHES, COMMUNAL_RENT,
@@ -59,9 +61,14 @@ public class CostsDB extends SQLiteOpenHelper {
                 COLUMN_COSTS + " TEXT, " +
                 COLUMN_NOTE + " TEXT " +
                 ");";
+        String createTablePeriod = "CREATE TABLE " + TABLE_PERIOD + " ( " +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_PERIOD + " TEXT " +
+                ");";
 
         db.execSQL(createPrimaryTableQuery);
         db.execSQL(createSecondaryTableQuery);
+        db.execSQL(createTablePeriod);
     }
 
     @Override
@@ -80,8 +87,10 @@ public class CostsDB extends SQLiteOpenHelper {
     // Если запись данного типа расходов за соответсвующий месяц и год
     // уже присутствует в базе данных - она заменяется новой ("costsValue")
     // Также производится добавление в таблицу последних внесённых записей ("TABLE_LAST_ENTERED_VALUES")
+    // и в таблицу "TABLE_PERIOD"
     public void addCosts(int month, int year, CostType costType, String costsValue) {
         addLastValues(costType, costsValue);
+        addPeriod(month, year);
 
         SQLiteDatabase db = getWritableDatabase();
 
@@ -187,8 +196,48 @@ public class CostsDB extends SQLiteOpenHelper {
     }
 
 
-    public void getOverallCosts(int month, int year) {
+    // Добавляет запись в таблицу "TABLE_PERIOD", содержащую
+    // строку из месяца и года, для которых имеются записи в
+    // таблице "TABLE_COSTS"
+    public void addPeriod(int month, int year) {
+        String periodString = String.valueOf(month) + " " + String.valueOf(year);
+        List<String> listOfExistingPeriods = getAllPeriods();
 
+        if (!listOfExistingPeriods.contains(periodString)) {
+            SQLiteDatabase db = getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_PERIOD, periodString);
+
+            db.insert(TABLE_PERIOD, null, values);
+        }
+    }
+
+    public List<String> getAllPeriods() {
+        String getPeriodsQuery = "select * from " + TABLE_PERIOD;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<String> listOfPeriods = new ArrayList<>();
+        String period = "";
+
+        try {
+            c = db.rawQuery(getPeriodsQuery, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                if (c.getString(c.getColumnIndex("_id")) != null) {
+                    listOfPeriods.add(c.getString(c.getColumnIndex(COLUMN_PERIOD)));
+                }
+                c.moveToNext();
+            }
+        } catch (Exception e) {}
+        finally {
+            if (c != null)
+                c.close();
+
+            return listOfPeriods;
+        }
     }
 
 

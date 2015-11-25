@@ -118,6 +118,7 @@ public class InputDataActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Intent mainScreenIntent = new Intent(this, MainActivity.class);
+            mainScreenIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(mainScreenIntent);
             return true;
         }

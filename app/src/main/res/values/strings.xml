@@ -5,6 +5,7 @@
     <string name="TextViews">Day Month Year</string>
     <string name="strings">Costs</string>
     <string name="costs">Costs</string>
-    <string name="dayAndMonth">Day Month</string>
+    <string name="dayAndMonth">Day Month Year</string>
     <string name="year">Year</string>
+    <string name="title_activity_periods">periods</string>
 </resources>
