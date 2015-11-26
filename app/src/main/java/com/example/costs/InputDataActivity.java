@@ -7,6 +7,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.math.BigDecimal;
@@ -19,6 +20,8 @@ public class InputDataActivity extends AppCompatActivity {
     EditText inputTextField;
     TextView costsTypeTextView;
     TextView dateTextView;
+
+    PopupMenu costsPopupMenu;
 
     int currentMonth;                                       // Начинается с нуля
     int currentYear;
@@ -34,6 +37,8 @@ public class InputDataActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_data);
+
+        db = new CostsDB(this, null, null, 1);
 
         Bundle bundleData = getIntent().getExtras();
         if (bundleData == null)
@@ -71,8 +76,6 @@ public class InputDataActivity extends AppCompatActivity {
                 break;
         }
 
-        System.out.println(costType);
-
         inputTextField = (EditText) findViewById(R.id.inputTextField);
         inputTextField.setOnEditorActionListener(new EditText.OnEditorActionListener()
         {
@@ -89,13 +92,16 @@ public class InputDataActivity extends AppCompatActivity {
 
         });
         dateTextView = (TextView) findViewById(R.id.date);
-        db = new CostsDB(this, null, null, 1);
 
         String currentDate = monthNames[currentMonth] + " " + currentYear;
         dateTextView.setText(currentDate);
 
         costsTypeTextView = (TextView) findViewById(R.id.costsType);
         costsTypeTextView.setText(bundleData.getString("costTypeText"));
+
+        // Создаём всплывающее меню для отображения
+        // последних десяти введённых значений
+        GenerateCostsPopupMenu();
     }
 
     public void OkButtonOnClick(View View) {
@@ -109,8 +115,24 @@ public class InputDataActivity extends AppCompatActivity {
             bg = bg.add(new BigDecimal(currentCosts)).setScale(2, BigDecimal.ROUND_HALF_UP);
 
             db.addCosts(currentMonth + 1, currentYear, costType, bg.toString());
+            db.addLastValues(costType, inputTextString);
             inputTextField.setText("");
+
+            GenerateCostsPopupMenu();
         }
+    }
+
+    public void GenerateCostsPopupMenu() {
+        String[] lastEnteredValues = db.getLastEnteredValues();
+        costsPopupMenu = new PopupMenu(this, costsTypeTextView);
+
+        for (int i = 0; i < lastEnteredValues.length; ++i) {
+            costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastEnteredValues[i]);
+        }
+    }
+
+    public void onCostTypeClick(View view) {
+        costsPopupMenu.show();
     }
 
 

@@ -10,7 +10,7 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
+        android:inputType="numberDecimal|numberSigned"
         android:ems="10"
         android:id="@+id/inputTextField"
         android:layout_marginRight="50dp"
@@ -48,6 +48,7 @@
         android:text="Еда"
         android:id="@+id/costsType"
         android:layout_below="@+id/date"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="onCostTypeClick" />
 
 </RelativeLayout>

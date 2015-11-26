@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.SQLOutput;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -214,15 +215,16 @@ public class MainActivity extends AppCompatActivity {
         }
         total = total + Double.valueOf(currentOthersCosts);
 
-        currentOverallCosts = String.valueOf(total);
-        currentCostsTextView.setText(currentOverallCosts);
+        DecimalFormat format = new DecimalFormat("0.00");
+        currentOverallCosts = String.valueOf(format.format(total));
+        currentCostsTextView.setText(currentOverallCosts + " руб.");
     }
 
     public String[] CreateCostsArray() {
         String[] costsArray = new String[8];
         costsArray[0] = "Еда$" + currentFoodCosts + "#FOOD";
         costsArray[1] = "Промтовары$" + currentGoodsCosts + "#GOODS";
-        costsArray[2] = "Коммунальные платежи$" + currentCommunalCosts + "#COMMUNAL_RENT";
+        costsArray[2] = "Квартплата$" + currentCommunalCosts + "#COMMUNAL_RENT";
         costsArray[3] = "Одежда$" + currentClothesCosts + "#CLOTHES";
         costsArray[4] = "Услуги$" + currentServicesCosts + "#SERVICES";
         costsArray[5] = "Транспорт$" + currentTransportCosts + "#TRANSPORT";
@@ -234,10 +236,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void GenerateCostsPopupMenu() {
         String[] lastEnteredValues = db.getLastEnteredValues();
-        System.out.println(lastEnteredValues.length);
-        for (String s : lastEnteredValues) {
-            System.out.println(s);
-        }
         costsPopupMenu = new PopupMenu(this, currentCostsTextView);
 
         for (int i = 0; i < lastEnteredValues.length; ++i) {

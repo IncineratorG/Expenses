@@ -86,12 +86,13 @@ public class CostsDB extends SQLiteOpenHelper {
     // в соответсвие с типом расходов ("costType")
     // Если запись данного типа расходов за соответсвующий месяц и год
     // уже присутствует в базе данных - она заменяется новой ("costsValue")
-    // Также производится добавление в таблицу последних внесённых записей ("TABLE_LAST_ENTERED_VALUES")
-    // и в таблицу "TABLE_PERIOD"
+    // Также производится добавление в таблицу "TABLE_PERIOD"
     public void addCosts(int month, int year, CostType costType, String costsValue) {
+        /*
         if (!costsValue.equals("0.00")) {
             addLastValues(costType, costsValue);
         }
+        */
         addPeriod(month, year);
 
         SQLiteDatabase db = getWritableDatabase();
@@ -161,8 +162,9 @@ public class CostsDB extends SQLiteOpenHelper {
 
             while (!c.isAfterLast() && listStrings.size() < 10) {
                 if (c.getString(c.getColumnIndex("_id")) != null) {
-                    string += c.getString(c.getColumnIndex(COLUMN_DATE)) + " ";
-                    string += c.getString(c.getColumnIndex(COLUMN_COSTS)) + " ";
+                    string += c.getString(c.getColumnIndex(COLUMN_DATE)) + ": ";
+                    string += c.getString(c.getColumnIndex(COLUMN_COST_TYPE)) + "  ";
+                    string += c.getString(c.getColumnIndex(COLUMN_COSTS)) + " руб.";
                 }
                 listStrings.add(string);
                 string = "";
@@ -183,8 +185,41 @@ public class CostsDB extends SQLiteOpenHelper {
     // Добавляет записи в таблицу "TABLE_LAST_ENTERED_VALUES"
     public void addLastValues(CostType costType, String costsValue) {
         Calendar c = Calendar.getInstance();
-        String currentDate = String.valueOf(c.getTime());
+
+        String currentDay = String.valueOf(c.get(Calendar.DAY_OF_MONTH));
+        String currentMonth = String.valueOf(c.get(Calendar.MONTH) + 1);
+        String currentYear = String.valueOf(c.get(Calendar.YEAR));
+
+        String currentDate = currentDay + "." + currentMonth + "." + currentYear;
         String currentDateInMilliseconds = String.valueOf(c.getTimeInMillis());
+
+        String costTypeString = "";
+        switch (costType) {
+            case FOOD:
+                costTypeString = "Еда";
+                break;
+            case CLOTHES:
+                costTypeString = "Одежда";
+                break;
+            case GOODS:
+                costTypeString = "Промтовары";
+                break;
+            case COMMUNAL_RENT:
+                costTypeString = "Квартплата";
+                break;
+            case SERVICES:
+                costTypeString = "Услуги";
+                break;
+            case TRANSPORT:
+                costTypeString = "Транспорт";
+                break;
+            case ELECTRONICS:
+                costTypeString = "Техника";
+                break;
+            case OTHERS:
+                costTypeString = "Другое";
+                break;
+        }
 
         SQLiteDatabase db =getWritableDatabase();
 
@@ -192,7 +227,7 @@ public class CostsDB extends SQLiteOpenHelper {
         values.put(COLUMN_DATE, currentDate);
         values.put(COLUMN_DATE_IN_MILLISECONDS, currentDateInMilliseconds);
         values.put(COLUMN_COSTS, costsValue);
-        values.put(COLUMN_COST_TYPE, String.valueOf(costType));
+        values.put(COLUMN_COST_TYPE, costTypeString);
 
         db.insert(TABLE_LAST_ENTERED_VALUES, null, values);
     }
