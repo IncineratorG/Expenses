@@ -264,8 +264,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu);
+
+        menu.add(1, 1, 1, "Добавить событие");
         return true;
     }
 
@@ -276,9 +277,9 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == 1) {
+            Intent addNewEventIntent = new Intent(this, AddNewEvent.class);
+            startActivity(addNewEventIntent);
         }
 
         return super.onOptionsItemSelected(item);

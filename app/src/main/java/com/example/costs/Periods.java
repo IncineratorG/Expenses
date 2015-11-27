@@ -22,6 +22,8 @@ public class Periods extends AppCompatActivity {
 
         db = new CostsDB(this, null, null, 1);
 
+        // Создаём массив из периодов (месяца и года), для которых
+        // имеются записи в базе данных
         List<String> periodsList = db.getAllPeriods();
         String[] periodsArray = new String[periodsList.size()];
         periodsList.toArray(periodsArray);

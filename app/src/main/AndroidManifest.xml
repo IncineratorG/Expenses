@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".InputDataActivity" />
-        <activity android:name=".Periods"></activity>
+        <activity android:name=".Periods" />
+        <activity android:name=".AddNewEvent"></activity>
     </application>
 
 </manifest>

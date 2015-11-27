@@ -15,11 +15,14 @@ import java.util.List;
  */
 public class CostsDB extends SQLiteOpenHelper {
 
+    // Значения месяца для записей в базе данных начинаются с единицы, а не с нуля
+
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "costs.db";
     private static final String TABLE_COSTS = "costs";
     private static final String TABLE_LAST_ENTERED_VALUES = "lastenteredvalues";
     private static final String TABLE_PERIOD = "period";
+    private static final String TABLE_EVENTS = "events";
     private static final String COLUMN_ID = "_id";
     private static final String COLUMN_MONTH = "month";
     private static final String COLUMN_YEAR = "year";
@@ -30,6 +33,9 @@ public class CostsDB extends SQLiteOpenHelper {
     private static final String COLUMN_DATE_IN_MILLISECONDS = "milliseconds";
     private static final String COLUMN_NOTE = "note";
     private static final String COLUMN_PERIOD = "period";
+    private static final String COLUMN_EVENT_DESCRIPTION = "eventdescription";
+    private static final String COLUMN_EVENT_DATE = "eventdate";
+    private static final String COLUMN_EVENT_DATE_IN_MILLISECONDS = "milliseconds";
 
     public enum CostType {
         FOOD, CLOTHES, COMMUNAL_RENT,
@@ -61,14 +67,21 @@ public class CostsDB extends SQLiteOpenHelper {
                 COLUMN_COSTS + " TEXT, " +
                 COLUMN_NOTE + " TEXT " +
                 ");";
-        String createTablePeriod = "CREATE TABLE " + TABLE_PERIOD + " ( " +
+        String createTablePeriod = "CREATE TABLE " + TABLE_PERIOD + " (" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_PERIOD + " TEXT " +
+                ");";
+        String createTableEvents = "CREATE TABLE " + TABLE_EVENTS + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_EVENT_DESCRIPTION + " TEXT, " +
+                COLUMN_EVENT_DATE + " TEXT, " +
+                COLUMN_EVENT_DATE_IN_MILLISECONDS + " INTEGER " +
                 ");";
 
         db.execSQL(createPrimaryTableQuery);
         db.execSQL(createSecondaryTableQuery);
         db.execSQL(createTablePeriod);
+        db.execSQL(createTableEvents);
     }
 
     @Override
@@ -279,62 +292,21 @@ public class CostsDB extends SQLiteOpenHelper {
 
 
 
-
-
-
-
-
-
-
-    /*
-    public void addTest() {
-        int month = 1;
-        int year = 1;
-        CostType costType = CostType.FOOD;
-        String costsValue = "12000";
-
-        SQLiteDatabase db = getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_MONTH, month);
-        values.put(COLUMN_YEAR, year);
-        values.put(COLUMN_COST_TYPE, String.valueOf(costType));
-        values.put(COLUMN_MONTHLYCOSTS, costsValue);
-
-        db.insert(TABLE_COSTS, null, values);
+    public void addNewEvent(String eventDescription, String eventDate) {
+        
     }
 
-    public String getTest() {
-        int month = 1;
-        int year = 1;
-        CostType costType = CostType.FOOD;
-        String s = String.valueOf(costType);
-        String costsValue = "12000";
-
-        SQLiteDatabase db = getWritableDatabase();
-
-        String query = "select * from " + TABLE_COSTS +
-                " where " + COLUMN_COST_TYPE + " = '" + String.valueOf(costType) + "'";
 
 
-        Cursor c = null;
-        String dbResult = "error";
 
-        try {
-            c = db.rawQuery(query, null);
-            c.moveToFirst();
 
-            dbResult = c.getString(c.getColumnIndex(COLUMN_MONTHLYCOSTS));
-        } catch (Exception e) {}
-        finally {
-            if (c != null)
-                c.close();
 
-            return dbResult;
-        }
 
-    }
-*/
+
+
+
+
+
     public String getAllDB() {
         String dbString = "";
         SQLiteDatabase db = getWritableDatabase();
