@@ -41,6 +41,15 @@
                 android:id="@+id/calendarView"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Добвить событие"
+                android:id="@+id/addEventButton"
+                android:layout_alignBottom="@+id/scrollView"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal" />
         </LinearLayout>
     </ScrollView>
 

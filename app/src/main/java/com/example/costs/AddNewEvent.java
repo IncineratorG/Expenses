@@ -14,6 +14,8 @@ public class AddNewEvent extends AppCompatActivity {
     TextView eventDescription;
     CalendarView calendarView;
 
+    String dateOfEventString;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,16 +33,16 @@ public class AddNewEvent extends AppCompatActivity {
                 new CalendarView.OnDateChangeListener() {
                     @Override
                     public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                        String date = String.valueOf(dayOfMonth) + "-" + String.valueOf(month + 1) + "-" + String.valueOf(year);
+                        dateOfEventString = String.valueOf(dayOfMonth) + "-" + String.valueOf(month + 1) + "-" + String.valueOf(year);
 
+/*
                         long l = 0;
                         try {
                             l = new SimpleDateFormat("dd-MM-yyyy").parse(date).getTime();
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
-
-                        eventDescription.setText(String.valueOf(l));
+*/
                     }
                 }
         );
