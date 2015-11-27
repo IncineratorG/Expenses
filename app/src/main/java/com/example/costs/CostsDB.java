@@ -293,7 +293,7 @@ public class CostsDB extends SQLiteOpenHelper {
 
 
     public void addNewEvent(String eventDescription, String eventDate) {
-        
+
     }
 
 
