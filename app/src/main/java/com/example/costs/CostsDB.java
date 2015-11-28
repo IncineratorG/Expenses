@@ -290,8 +290,7 @@ public class CostsDB extends SQLiteOpenHelper {
         }
     }
 
-
-
+    // Добавляет записи в таблицу предстоящих событий (TABLE_EVENTS)
     public void addNewEvent(String eventDescription, String eventDate, long eventDateInMilliseconds) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -303,7 +302,65 @@ public class CostsDB extends SQLiteOpenHelper {
         db.insert(TABLE_EVENTS, null, values);
     }
 
+    public String[] getEvents() {
+        removeOldEvents();
 
+        String getEventsQuery = "select * from " + TABLE_EVENTS +
+                " order by " + COLUMN_EVENT_DATE_IN_MILLISECONDS + " ASC";
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        String string = "";
+        List<String> listStrings = new ArrayList<>();
+
+        try {
+            c = db.rawQuery(getEventsQuery, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast() && listStrings.size() < 10) {
+                if (c.getString(c.getColumnIndex("_id")) != null) {
+                    string += c.getString(c.getColumnIndex(COLUMN_EVENT_DATE)) + "$";
+                    string += c.getString(c.getColumnIndex(COLUMN_EVENT_DESCRIPTION));
+                }
+                listStrings.add(string);
+                string = "";
+                c.moveToNext();
+            }
+
+        } catch (Exception e) {}
+        finally {
+            if (c != null)
+                c.close();
+
+            String[] events = new String[listStrings.size()];
+            listStrings.toArray(events);
+
+            return events;
+        }
+
+    }
+
+    // Удаляет записи о событиях, которые уже прошли
+    private void removeOldEvents() {
+        Calendar calendar = Calendar.getInstance();
+        SQLiteDatabase db = getWritableDatabase();
+        long currentTimeInMilliseconds = calendar.getTimeInMillis();
+
+        String removeFromEventsQuery = "delete from " + TABLE_EVENTS +
+                " where " + COLUMN_EVENT_DATE_IN_MILLISECONDS + " < " + currentTimeInMilliseconds;
+
+        db.execSQL(removeFromEventsQuery);
+    }
+
+    // Удаляет из таблицы "TABLE_EVENTS" запись с данным описание
+    public void removeEvent(String eventDescription) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        String removeQuery = "delete from " + TABLE_EVENTS +
+                " where " + COLUMN_EVENT_DESCRIPTION + " = '" + eventDescription + "'";
+
+        db.execSQL(removeQuery);
+    }
 
 
 
