@@ -292,8 +292,15 @@ public class CostsDB extends SQLiteOpenHelper {
 
 
 
-    public void addNewEvent(String eventDescription, String eventDate) {
+    public void addNewEvent(String eventDescription, String eventDate, long eventDateInMilliseconds) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
 
+        values.put(COLUMN_EVENT_DESCRIPTION, eventDescription);
+        values.put(COLUMN_EVENT_DATE, eventDate);
+        values.put(COLUMN_EVENT_DATE_IN_MILLISECONDS, eventDateInMilliseconds);
+
+        db.insert(TABLE_EVENTS, null, values);
     }
 
 
