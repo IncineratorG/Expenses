@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import java.sql.SQLOutput;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     int todayDay;
 
     boolean notCurrentDate;
+    static String nearestEventShown;
 
     TextView currentDateTextView;
     TextView currentCostsTextView;
@@ -82,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         // устанавливаем выбранную дату
         Bundle chosenPeriodData = getIntent().getExtras();
         if (chosenPeriodData != null) {
+
             String chosenPeriodString = String.valueOf(chosenPeriodData.get("chosenPeriod"));
 
             if (chosenPeriodData.get("fromPeriods") != null) {
@@ -137,6 +141,8 @@ public class MainActivity extends AppCompatActivity {
                     }
             );
 
+            if (nearestEventShown == null)
+                SearchForNearestEvents();
         }
     }
 
@@ -149,9 +155,6 @@ public class MainActivity extends AppCompatActivity {
         currentYear = todayYear = c.get(Calendar.YEAR);
         currentMonth = todayMonth = c.get(Calendar.MONTH);
         currentDay = todayDay = c.get(Calendar.DAY_OF_MONTH);
-
-        //currentDateTextView.setText(currentDay + "  " + declensionMonthNames[currentMonth] + " " + String.valueOf(currentYear));
-        //currentYearTextView.setText("  " + String.valueOf(currentYear));
 
         notCurrentDate = false;
     }
@@ -243,6 +246,37 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Ищет записи в базе данных о ближайших (менее двух недель) событиях.
+    // Если находит - выводит сообщение на экран
+    public void SearchForNearestEvents() {
+        String todayDateString = String.valueOf(todayDay) + "." + String.valueOf(todayMonth + 1) + "." + String.valueOf(todayYear);
+        long todayDateInMilliseconds = 0;
+        long nearestEventDateInMilliseconds = 0;
+        String[] eventsArray = db.getEvents();
+
+        if (eventsArray.length == 0)
+            return;
+
+        try {
+            todayDateInMilliseconds = new SimpleDateFormat("dd.MM.yyyy").parse(todayDateString).getTime();
+            nearestEventDateInMilliseconds = new SimpleDateFormat("dd.MM.yyyy").
+                    parse(eventsArray[0].substring(0, eventsArray[0].indexOf("$"))).getTime();
+        } catch (Exception e) {
+            Toast errorInDateParsingToast = Toast.makeText(this, "ERROR PARSING DATE ON MAIN SCREEN", Toast.LENGTH_LONG);
+            errorInDateParsingToast.show();
+        }
+
+        if ((nearestEventDateInMilliseconds - todayDateInMilliseconds) < 1209600000) {
+            String nearestEventToastText = "До события " + eventsArray[0].substring(eventsArray[0].indexOf("$") + 1) +
+                    " осталось меньше двух недель!";
+
+            Toast nearestEventToast = Toast.makeText(this, nearestEventToastText, Toast.LENGTH_LONG);
+            nearestEventToast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER, 0, 0);
+            nearestEventToast.show();
+
+            nearestEventShown = "";
+        }
+    }
 
     // Переход к экрану выбора периода
     public void onDateClick(View view) {
@@ -260,6 +294,21 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
+
+
+
+
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            nearestEventShown = null;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
 
     @Override
