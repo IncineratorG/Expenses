@@ -117,6 +117,7 @@ public class InputDataActivity extends AppCompatActivity {
             db.addCosts(currentMonth + 1, currentYear, costType, bg.toString());
             db.addLastValues(costType, inputTextString);
             inputTextField.setText("");
+            currentCosts = bg.doubleValue();
 
             GenerateCostsPopupMenu();
         }
