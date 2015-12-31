@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        menu.add(1, 1, 1, "Добавить событие");
+        menu.add(1, 1, 1, "Напоминания");
         return true;
     }
 

@@ -26,7 +26,11 @@ public class Periods extends AppCompatActivity {
         // имеются записи в базе данных
         List<String> periodsList = db.getAllPeriods();
         String[] periodsArray = new String[periodsList.size()];
-        periodsList.toArray(periodsArray);
+        for (int i = periodsList.size() - 1, j = 0; i >= 0; --i) {
+            periodsArray[j] = periodsList.get(i);
+            ++j;
+        }
+        //periodsList.toArray(periodsArray);
 
         ListAdapter periodsListAdapter = new PeriodsAdapter(this, periodsArray);
         ListView periodsListView = (ListView) findViewById(R.id.periodsList);
