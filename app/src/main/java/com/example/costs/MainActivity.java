@@ -23,6 +23,7 @@ import java.sql.SQLOutput;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -94,7 +95,11 @@ public class MainActivity extends AppCompatActivity {
 
                 if (currentMonth != todayMonth || currentYear != todayYear) {
                     notCurrentDate = true;
-                    currentDay = 28;
+                    // Добавлено 19.01.2015
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(currentYear, currentMonth, 1);
+                    // --------------------
+                    currentDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
                 } else
                     notCurrentDate = false;
             }
@@ -234,11 +239,16 @@ public class MainActivity extends AppCompatActivity {
         costsArray[6] = "Техника$" + currentElectronicsCosts + "#ELECTRONICS";
         costsArray[7] = "Другое$" + currentOthersCosts + "#OTHERS";
 
+        // Сортируем массив по частоте использования элементов
+        OrderCostsArray(costsArray);
+
         return costsArray;
     }
 
+    // Создание списка последних десяти введённых значений
     public void GenerateCostsPopupMenu() {
         String[] lastEnteredValues = db.getLastEnteredValues();
+
         costsPopupMenu = new PopupMenu(this, currentCostsTextView);
 
         for (int i = 0; i < lastEnteredValues.length; ++i) {
@@ -289,7 +299,73 @@ public class MainActivity extends AppCompatActivity {
         costsPopupMenu.show();
     }
 
+    // Сортировка статей расходов по частоте внесения записей
+    public void OrderCostsArray(String[] costsArray) {
+        // Получаем массив последних введённых значений
+        String[] lastEnteredValues = db.getLastEnteredValues();
+        if (lastEnteredValues.length == 0)
+            return;
 
+        // Выделяем из каждой строки массива только название категории расходов
+        for (int i = 0; i < lastEnteredValues.length; ++i) {
+            lastEnteredValues[i] = lastEnteredValues[i].substring(lastEnteredValues[i].indexOf(" ") + 1);
+            lastEnteredValues[i] = lastEnteredValues[i].substring(0, lastEnteredValues[i].indexOf(" "));
+        }
+
+        Arrays.sort(lastEnteredValues);
+
+        // В список будем заносить частоту использование
+        // статьи расходов и её наименование
+        List<String> listOfItemFrequence = new ArrayList<>(10);
+
+        int frequence = 1;
+        for (int i = 1; i < lastEnteredValues.length; ++i) {
+            if (lastEnteredValues[i - 1].equals(lastEnteredValues[i])) {
+                ++frequence;
+            } else {
+                String item = String.valueOf(frequence) + "$" + lastEnteredValues[i - 1];
+                listOfItemFrequence.add(item);
+
+                frequence = 1;
+            }
+
+            if ((i + 1) >= lastEnteredValues.length) {
+                String item = String.valueOf(frequence) + "$" + lastEnteredValues[i];
+                listOfItemFrequence.add(item);
+            }
+        }
+
+        // В массиве содержится частота использования
+        // категории расходов и её наименование (через "$")
+        String[] finalOrder = new String[listOfItemFrequence.size()];
+        listOfItemFrequence.toArray(finalOrder);
+
+        Arrays.sort(finalOrder);
+
+        // Изменяем порядок следование элементов в массиве costsArray
+        // в соответствие с массивом finalOrder
+        for (int i = 0; i < finalOrder.length; ++i) {
+            String costName = finalOrder[i].substring(finalOrder[i].indexOf("$") + 1);
+
+            for (int j = 0; j < costsArray.length; ++j) {
+                String costsArrayLine = costsArray[j].substring(0, costsArray[j].indexOf("$"));
+
+                if (costsArrayLine.equals(costName)) {
+                    if (j == 0)
+                        break;
+                    else {
+                        String temp = costsArray[j];
+
+                        for (int k = j - 1; k >= 0; --k) {
+                            costsArray[k + 1] = costsArray[k];
+                        }
+                        costsArray[0] = temp;
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
 
 
