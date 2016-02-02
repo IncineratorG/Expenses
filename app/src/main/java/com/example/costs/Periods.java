@@ -1,36 +1,27 @@
 package com.example.costs;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import java.util.List;
-
 public class Periods extends AppCompatActivity {
 
-    CostsDB db;
+    CostsDataBase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_periods);
 
-        db = new CostsDB(this, null, null, 1);
+        db = new CostsDataBase(this, null, null, 1);
 
         // Создаём массив из периодов (месяца и года), для которых
         // имеются записи в базе данных
-        List<String> periodsList = db.getAllPeriods();
-        String[] periodsArray = new String[periodsList.size()];
-        for (int i = periodsList.size() - 1, j = 0; i >= 0; --i) {
-            periodsArray[j] = periodsList.get(i);
-            ++j;
-        }
-        //periodsList.toArray(periodsArray);
+        String[] periodsArray = db.getAllPeriods();
 
         ListAdapter periodsListAdapter = new PeriodsAdapter(this, periodsArray);
         ListView periodsListView = (ListView) findViewById(R.id.periodsList);

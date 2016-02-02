@@ -1,91 +1,52 @@
 package com.example.costs;
 
-import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.math.BigDecimal;
 
 public class InputDataActivity extends AppCompatActivity {
     static final String[] monthNames = {"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
-
-    CostsDB db;
+    static final String[] declensionMonthNames = {"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"};
 
     EditText inputTextField;
     TextView costsTypeTextView;
     TextView dateTextView;
 
-    PopupMenu costsPopupMenu;
-
+    int currentDay;
     int currentMonth;                                       // Начинается с нуля
     int currentYear;
 
-    String costTypeEnum;
+    String costType;
 
     Double currentCosts;
 
-    CostsDB.CostType costType;
-
+    CostsDataBase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_data);
 
-        db = new CostsDB(this, null, null, 1);
+        db = new CostsDataBase(this, null, null, 1);
 
         Bundle bundleData = getIntent().getExtras();
         if (bundleData == null)
             return;
 
-        currentMonth = (int) bundleData.get("currentMonth");        // Начинается с нуля
+        currentDay = (int) bundleData.get("currentDay");
+        currentMonth = (int) bundleData.get("currentMonth");
         currentYear = (int) bundleData.get("currentYear");
-        costTypeEnum = (String) bundleData.get("costTypeEnum");
-        currentCosts = Double.parseDouble(String.valueOf(bundleData.get("currentCosts")));
-
-        switch (costTypeEnum) {
-            case "FOOD":
-                costType = CostsDB.CostType.FOOD;
-                break;
-            case "CLOTHES":
-                costType = CostsDB.CostType.CLOTHES;
-                break;
-            case "GOODS":
-                costType = CostsDB.CostType.GOODS;
-                break;
-            case "COMMUNAL_RENT":
-                costType = CostsDB.CostType.COMMUNAL_RENT;
-                break;
-            case "SERVICES":
-                costType = CostsDB.CostType.SERVICES;
-                break;
-            case "TRANSPORT":
-                costType = CostsDB.CostType.TRANSPORT;
-                break;
-            case "ELECTRONICS":
-                costType = CostsDB.CostType.ELECTRONICS;
-                break;
-            case "OTHERS":
-                costType = CostsDB.CostType.OTHERS;
-                break;
-        }
+        costType = (String) bundleData.get("costType");
+        currentCosts = Double.parseDouble(String.valueOf(bundleData.get("costValue")));
 
         inputTextField = (EditText) findViewById(R.id.inputTextField);
-        /*
-        inputTextField.requestFocus();
-        if (inputTextField.requestFocus()) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(inputTextField, InputMethodManager.SHOW_IMPLICIT);
-        }
-        */
         inputTextField.setOnEditorActionListener(new EditText.OnEditorActionListener()
         {
             @Override
@@ -100,18 +61,19 @@ public class InputDataActivity extends AppCompatActivity {
             }
 
         });
-        dateTextView = (TextView) findViewById(R.id.date);
 
-        String currentDate = monthNames[currentMonth] + " " + currentYear;
-        dateTextView.setText(currentDate);
+        dateTextView = (TextView) findViewById(R.id.date);
+        dateTextView.setText(currentDay + " " + declensionMonthNames[currentMonth] + " " + currentYear);
 
         costsTypeTextView = (TextView) findViewById(R.id.costsType);
-        costsTypeTextView.setText(bundleData.getString("costTypeText"));
+        costsTypeTextView.setText(costType);
+
 
         // Создаём всплывающее меню для отображения
         // последних десяти введённых значений
-        GenerateCostsPopupMenu();
+        //GenerateCostsPopupMenu();
     }
+
 
     public void OkButtonOnClick(View View) {
         AddCostsToDataBase();
@@ -123,28 +85,12 @@ public class InputDataActivity extends AppCompatActivity {
             BigDecimal bg = new BigDecimal(inputTextString);
             bg = bg.add(new BigDecimal(currentCosts)).setScale(2, BigDecimal.ROUND_HALF_UP);
 
-            db.addCosts(currentMonth + 1, currentYear, costType, bg.toString());
-            db.addLastValues(costType, inputTextString);
+            db.addCosts(bg.doubleValue(), costType);
             inputTextField.setText("");
             currentCosts = bg.doubleValue();
-
-            GenerateCostsPopupMenu();
+            //GenerateCostsPopupMenu();
         }
     }
-
-    public void GenerateCostsPopupMenu() {
-        String[] lastEnteredValues = db.getLastEnteredValues();
-        costsPopupMenu = new PopupMenu(this, costsTypeTextView);
-
-        for (int i = 0; i < lastEnteredValues.length; ++i) {
-            costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastEnteredValues[i]);
-        }
-    }
-
-    public void onCostTypeClick(View view) {
-        costsPopupMenu.show();
-    }
-
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -157,4 +103,22 @@ public class InputDataActivity extends AppCompatActivity {
 
         return super.onKeyDown(keyCode, event);
     }
+
+
+
+
+    /*
+    public void GenerateCostsPopupMenu() {
+        String[] lastEnteredValues = db.getLastEnteredValues();
+        costsPopupMenu = new PopupMenu(this, costsTypeTextView);
+
+        for (int i = 0; i < lastEnteredValues.length; ++i) {
+            costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastEnteredValues[i]);
+        }
+    }
+
+    public void onCostTypeClick(View view) {
+        costsPopupMenu.show();
+    }
+    */
 }

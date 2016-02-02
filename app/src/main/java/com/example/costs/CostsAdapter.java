@@ -7,9 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.List;
-import java.util.Map;
-
 
 class CostsAdapter extends ArrayAdapter<String> {
 
@@ -24,7 +21,10 @@ class CostsAdapter extends ArrayAdapter<String> {
 
         String textLine = getItem(position);
         String costType = textLine.substring(0, textLine.indexOf("$"));
-        String costValue = textLine.substring(textLine.indexOf("$") + 1, textLine.indexOf("#")) + " руб.";
+        String costValue = textLine.substring(textLine.indexOf("$") + 1);
+
+        if (!costValue.equals("+"))
+            costValue = costValue + " руб.";
 
         TextView costTypeText = (TextView) singleCostsRow.findViewById(R.id.costType);
         TextView costValueText = (TextView) singleCostsRow.findViewById(R.id.costValue);

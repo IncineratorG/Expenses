@@ -24,7 +24,7 @@ public class PeriodsAdapter extends ArrayAdapter<String> {
         View singlePeriodRow = inflater.inflate(R.layout.single_period_row, parent, false);
 
         String textLine = getItem(position);
-        String monthText = monthNames[Integer.parseInt(textLine.substring(0, textLine.indexOf(" "))) - 1];
+        String monthText = monthNames[Integer.parseInt(textLine.substring(0, textLine.indexOf(" ")))];
         String yearText = textLine.substring(textLine.indexOf(" ") + 1);
         String dateText = monthText + " " + yearText;
 

@@ -2,30 +2,28 @@ package com.example.costs;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.SQLOutput;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -33,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     static final String[] declensionMonthNames = {"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"};
 
     CostsDB db;
+    CostsDataBase cdb;
 
     int currentYear;
     int currentMonth;                            // Начинается с нуля
@@ -50,15 +49,8 @@ public class MainActivity extends AppCompatActivity {
     PopupMenu costsPopupMenu;
 
     String currentOverallCosts;
-    String currentFoodCosts;
-    String currentClothesCosts;
-    String currentCommunalCosts;
-    String currentElectronicsCosts;
-    String currentTransportCosts;
-    String currentGoodsCosts;
-    String currentServicesCosts;
-    String currentOthersCosts;
 
+    Map<String, Double> costsMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +59,130 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+        // Получаем доступ к базе данных
+        if (cdb == null)
+            cdb = new CostsDataBase(this, null, null, 1);
+
+        // Инициализируем поле, содержащее выбранные день, месяц и год
+        if (currentDateTextView == null)
+            currentDateTextView = (TextView) findViewById(R.id.currentDate);
+
+        // Инициализируем поле, отображающее текущие расходы
+        if (currentCostsTextView == null)
+            currentCostsTextView = (TextView) findViewById(R.id.currentCosts);
+
+
+
+        // При длительном нажатии на общей сумме расходов -
+        // переходим на экран, содержащий записи расходов за
+        // последний месяц, сгруппированные по дням.
+        currentCostsTextView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent lastEnteredValues = new Intent(MainActivity.this, LastEnteredValuesActivity.class);
+                startActivity(lastEnteredValues);
+
+                return true;
+            }
+        });
+
+
+
+
+        // Узнаём текущую дату
+        SetCurrentDate();
+
+        // Получаем данные о выбранном периоде для просмотра и
+        // устанавливаем выбранную дату
+        Bundle chosenPeriodData = getIntent().getExtras();
+        if (chosenPeriodData != null) {
+
+            String chosenPeriodString = String.valueOf(chosenPeriodData.get("chosenPeriod"));
+
+            if (chosenPeriodData.get("fromPeriods") != null) {
+                currentMonth = Integer.parseInt(chosenPeriodString.substring(0, chosenPeriodString.indexOf(" ")));
+                currentYear = Integer.parseInt(chosenPeriodString.substring(chosenPeriodString.indexOf(" ") + 1));
+
+                if (currentMonth != todayMonth || currentYear != todayYear) {
+                    notCurrentDate = true;
+                    // Добавлено 19.01.2015
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(currentYear, currentMonth, 1);
+                    // --------------------
+                    currentDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                } else
+                    notCurrentDate = false;
+            }
+        }
+        // Устанавливаем текущую дату
+        currentDateTextView.setText(currentDay + "  " + declensionMonthNames[currentMonth] + " " + currentYear);
+
+        // Устанавливаем расходы за выбранный период
+        SetCurrentCosts();
+
+
+        // Формируем данные для ListView. Если пользователь просматривает затраты за какой-либо
+        // предыдущий месяц (выбранная дата не совпадает с текущей) - убираем из списка пункт с
+        // возможностью добавления новых статей расходов.
+        final String[] costsArray = CreateCostsArray();
+        String[] costsArrayWithoutAddNewCostTypeButton = new String[costsArray.length - 1];
+        System.arraycopy(costsArray, 0, costsArrayWithoutAddNewCostTypeButton, 0, costsArrayWithoutAddNewCostTypeButton.length);
+
+        ListAdapter listAdapter = null;
+        if (!notCurrentDate)
+            listAdapter = new CostsAdapter(this, costsArray);
+        else
+            listAdapter = new CostsAdapter(this, costsArrayWithoutAddNewCostTypeButton);
+
+        ListView listView = (ListView) findViewById(R.id.listView);
+        listView.setAdapter(listAdapter);
+
+        // Если выбрана текущая дата - можно добавлять данныеё
+        // о затратах за текущий период и редактировать список затрат
+        if (!notCurrentDate) {
+            listView.setOnItemClickListener(
+                    new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            String textLine = String.valueOf(parent.getItemAtPosition(position));
+                            String costValue = textLine.substring(textLine.indexOf("$") + 1);
+
+                            Intent inputDataActivity = null;
+                            if (position == costsArray.length - 1) {
+                                if (costValue.equals("+"))
+                                    inputDataActivity = new Intent(MainActivity.this, AddNewCostTypeActivity.class);
+                            } else
+                                inputDataActivity = new Intent(MainActivity.this, InputDataActivity.class);
+
+                            inputDataActivity.putExtra("costType", textLine.substring(0, textLine.indexOf("$")));
+                            inputDataActivity.putExtra("costValue", textLine.substring(textLine.indexOf("$") + 1));
+                            inputDataActivity.putExtra("currentDay", currentDay);
+                            inputDataActivity.putExtra("currentMonth", currentMonth);
+                            inputDataActivity.putExtra("currentYear", currentYear);
+
+                            startActivity(inputDataActivity);
+                        }
+                    }
+            );
+
+            // При длительном нажатии на элемент списка
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    String textLine = String.valueOf(parent.getItemAtPosition(position));
+                    if (!textLine.substring(textLine.indexOf("$") + 1).equals("+")) {
+                        Intent deleteCostTypeActivity = new Intent(MainActivity.this, DeleteCostTypeActivity.class);
+                        deleteCostTypeActivity.putExtra("costType", textLine.substring(0, textLine.indexOf("$")));
+
+                        startActivity(deleteCostTypeActivity);
+                    }
+                    return true;
+                }
+            });
+        }
+
+        /*
         // Получаем доступ к базе данных
         if (db == null)
             db = new CostsDB(this, null, null, 1);
@@ -149,6 +265,8 @@ public class MainActivity extends AppCompatActivity {
             if (nearestEventShown == null)
                 SearchForNearestEvents();
         }
+
+        */
     }
 
 
@@ -166,81 +284,31 @@ public class MainActivity extends AppCompatActivity {
 
     // Устанавливаем текущие расходы
     public void SetCurrentCosts() {
-        double total = 0.0;
-        currentFoodCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.FOOD);
-        if (currentFoodCosts.equals("error")) {
-            currentFoodCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.FOOD, currentFoodCosts);
-        }
-        total = total + Double.valueOf(currentFoodCosts);
+        List<String> costsTypes = cdb.getCostsTypes();
 
-        currentClothesCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.CLOTHES);
-        if (currentClothesCosts.equals("error")) {
-            currentClothesCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.CLOTHES, currentClothesCosts);
+        Double totalCostsValue = 0.0;
+        for (String costType : costsTypes) {
+            Double costValue = cdb.getCostValue(-1, currentMonth, currentYear, costType);
+            totalCostsValue = totalCostsValue + costValue;
+            costsMap.put(costType, costValue);
         }
-        total = total + Double.valueOf(currentClothesCosts);
-
-        currentCommunalCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.COMMUNAL_RENT);
-        if (currentCommunalCosts.equals("error")) {
-            currentCommunalCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.COMMUNAL_RENT, currentCommunalCosts);
-        }
-        total = total + Double.valueOf(currentCommunalCosts);
-
-        currentElectronicsCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.ELECTRONICS);
-        if (currentElectronicsCosts.equals("error")) {
-            currentElectronicsCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.ELECTRONICS, currentElectronicsCosts);
-        }
-        total = total + Double.valueOf(currentElectronicsCosts);
-
-        currentTransportCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.TRANSPORT);
-        if (currentTransportCosts.equals("error")) {
-            currentTransportCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.TRANSPORT, currentTransportCosts);
-        }
-        total = total + Double.valueOf(currentTransportCosts);
-
-        currentGoodsCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.GOODS);
-        if (currentGoodsCosts.equals("error")) {
-            currentGoodsCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.GOODS, currentGoodsCosts);
-        }
-        total = total + Double.valueOf(currentGoodsCosts);
-
-        currentServicesCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.SERVICES);
-        if (currentServicesCosts.equals("error")) {
-            currentServicesCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.SERVICES, currentServicesCosts);
-        }
-        total = total + Double.valueOf(currentServicesCosts);
-
-        currentOthersCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.OTHERS);
-        if (currentOthersCosts.equals("error")) {
-            currentOthersCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.OTHERS, currentOthersCosts);
-        }
-        total = total + Double.valueOf(currentOthersCosts);
 
         DecimalFormat format = new DecimalFormat("0.00");
-        currentOverallCosts = String.valueOf(format.format(total));
+        currentOverallCosts = String.valueOf(format.format(totalCostsValue));
         currentCostsTextView.setText(currentOverallCosts + " руб.");
     }
 
-    public String[] CreateCostsArray() {
-        String[] costsArray = new String[8];
-        costsArray[0] = "Еда$" + currentFoodCosts + "#FOOD";
-        costsArray[1] = "Промтовары$" + currentGoodsCosts + "#GOODS";
-        costsArray[2] = "Квартплата$" + currentCommunalCosts + "#COMMUNAL_RENT";
-        costsArray[3] = "Одежда$" + currentClothesCosts + "#CLOTHES";
-        costsArray[4] = "Услуги$" + currentServicesCosts + "#SERVICES";
-        costsArray[5] = "Транспорт$" + currentTransportCosts + "#TRANSPORT";
-        costsArray[6] = "Техника$" + currentElectronicsCosts + "#ELECTRONICS";
-        costsArray[7] = "Другое$" + currentOthersCosts + "#OTHERS";
 
-        // Сортируем массив по частоте использования элементов
-        OrderCostsArray(costsArray);
+    public String[] CreateCostsArray() {
+        List<String> listOfCosts = new ArrayList<>();
+
+        for (Map.Entry<String, Double> entry : costsMap.entrySet())
+            listOfCosts.add(entry.getKey() + "$" + entry.getValue());
+
+        String[] costsArray = new String[listOfCosts.size() + 1];
+        listOfCosts.toArray(costsArray);
+
+        costsArray[costsArray.length - 1] = "Добавить новую категорию$+";
 
         return costsArray;
     }
@@ -410,3 +478,74 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+
+
+
+
+
+
+
+/*
+    public void SetCurrentCosts() {
+        double total = 0.0;
+        currentFoodCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.FOOD);
+        if (currentFoodCosts.equals("error")) {
+            currentFoodCosts = "0.00";
+            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.FOOD, currentFoodCosts);
+        }
+        total = total + Double.valueOf(currentFoodCosts);
+
+        currentClothesCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.CLOTHES);
+        if (currentClothesCosts.equals("error")) {
+            currentClothesCosts = "0.00";
+            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.CLOTHES, currentClothesCosts);
+        }
+        total = total + Double.valueOf(currentClothesCosts);
+
+        currentCommunalCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.COMMUNAL_RENT);
+        if (currentCommunalCosts.equals("error")) {
+            currentCommunalCosts = "0.00";
+            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.COMMUNAL_RENT, currentCommunalCosts);
+        }
+        total = total + Double.valueOf(currentCommunalCosts);
+
+        currentElectronicsCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.ELECTRONICS);
+        if (currentElectronicsCosts.equals("error")) {
+            currentElectronicsCosts = "0.00";
+            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.ELECTRONICS, currentElectronicsCosts);
+        }
+        total = total + Double.valueOf(currentElectronicsCosts);
+
+        currentTransportCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.TRANSPORT);
+        if (currentTransportCosts.equals("error")) {
+            currentTransportCosts = "0.00";
+            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.TRANSPORT, currentTransportCosts);
+        }
+        total = total + Double.valueOf(currentTransportCosts);
+
+        currentGoodsCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.GOODS);
+        if (currentGoodsCosts.equals("error")) {
+            currentGoodsCosts = "0.00";
+            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.GOODS, currentGoodsCosts);
+        }
+        total = total + Double.valueOf(currentGoodsCosts);
+
+        currentServicesCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.SERVICES);
+        if (currentServicesCosts.equals("error")) {
+            currentServicesCosts = "0.00";
+            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.SERVICES, currentServicesCosts);
+        }
+        total = total + Double.valueOf(currentServicesCosts);
+
+        currentOthersCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.OTHERS);
+        if (currentOthersCosts.equals("error")) {
+            currentOthersCosts = "0.00";
+            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.OTHERS, currentOthersCosts);
+        }
+        total = total + Double.valueOf(currentOthersCosts);
+
+        DecimalFormat format = new DecimalFormat("0.00");
+        currentOverallCosts = String.valueOf(format.format(total));
+        currentCostsTextView.setText(currentOverallCosts + " руб.");
+    }
+    */

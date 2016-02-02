@@ -8,7 +8,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -19,11 +18,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".InputDataActivity"
+        <activity
+            android:name=".InputDataActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysVisible"/>
+            android:windowSoftInputMode="stateAlwaysVisible" />
         <activity android:name=".Periods" />
-        <activity android:name=".AddNewEvent"></activity>
+        <activity android:name=".AddNewEvent" />
+        <activity android:name=".AddNewCostTypeActivity" />
+        <activity android:name=".DeleteCostTypeActivity" />
+        <activity android:name=".LastEnteredValuesActivity"></activity>
     </application>
 
 </manifest>
