@@ -7,9 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-/**
- * Created by Саня on 25.11.2015.
- */
+
 public class PeriodsAdapter extends ArrayAdapter<String> {
 
     static final String[] monthNames = {"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};

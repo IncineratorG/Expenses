@@ -26,7 +26,8 @@
         <activity android:name=".AddNewEvent" />
         <activity android:name=".AddNewCostTypeActivity" />
         <activity android:name=".DeleteCostTypeActivity" />
-        <activity android:name=".LastEnteredValuesActivity"></activity>
+        <activity android:name=".LastEnteredValuesActivity" />
+        <activity android:name=".ChosenDayEntriesActivity"></activity>
     </application>
 
 </manifest>

@@ -3,6 +3,7 @@ package com.example.costs;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputFilter;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -12,11 +13,12 @@ import android.widget.TextView;
 import java.math.BigDecimal;
 
 public class InputDataActivity extends AppCompatActivity {
-    static final String[] monthNames = {"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
-    static final String[] declensionMonthNames = {"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"};
+    //static final String[] monthNames = {"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
+    //static final String[] declensionMonthNames = {"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"};
 
     EditText inputTextField;
-    TextView costsTypeTextView;
+    TextView costTypeTextView;
+    TextView costValueTextView;
     TextView dateTextView;
 
     int currentDay;
@@ -61,17 +63,16 @@ public class InputDataActivity extends AppCompatActivity {
             }
 
         });
+        inputTextField.setFilters(new InputFilter[]{new DecimalDigitsInputFilter()});
 
         dateTextView = (TextView) findViewById(R.id.date);
-        dateTextView.setText(currentDay + " " + declensionMonthNames[currentMonth] + " " + currentYear);
+        dateTextView.setText(currentDay + " " + MainActivity.declensionMonthNames[currentMonth] + " " + currentYear);
 
-        costsTypeTextView = (TextView) findViewById(R.id.costsType);
-        costsTypeTextView.setText(costType);
+        costTypeTextView = (TextView) findViewById(R.id.costsType);
+        costTypeTextView.setText(costType);
 
-
-        // Создаём всплывающее меню для отображения
-        // последних десяти введённых значений
-        //GenerateCostsPopupMenu();
+        costValueTextView = (TextView) findViewById(R.id.costValue);
+        costValueTextView.setText(String.valueOf(currentCosts) + " руб.");
     }
 
 
@@ -81,14 +82,13 @@ public class InputDataActivity extends AppCompatActivity {
 
     public void AddCostsToDataBase() {
         String inputTextString = inputTextField.getText().toString();
-        if (!inputTextString.equals("")) {
-            BigDecimal bg = new BigDecimal(inputTextString);
-            bg = bg.add(new BigDecimal(currentCosts)).setScale(2, BigDecimal.ROUND_HALF_UP);
+        if (!inputTextString.isEmpty() && !".".equals(inputTextString)) {
+            db.addCosts(Double.valueOf(inputTextString), costType);
 
-            db.addCosts(bg.doubleValue(), costType);
             inputTextField.setText("");
-            currentCosts = bg.doubleValue();
-            //GenerateCostsPopupMenu();
+            currentCosts = db.getCostValue(-1, currentMonth, currentYear, costType);
+
+            costValueTextView.setText(String.valueOf(currentCosts));
         }
     }
 
@@ -109,8 +109,8 @@ public class InputDataActivity extends AppCompatActivity {
 
     /*
     public void GenerateCostsPopupMenu() {
-        String[] lastEnteredValues = db.getLastEnteredValues();
-        costsPopupMenu = new PopupMenu(this, costsTypeTextView);
+        String[] lastEnteredValues = db.getLastMonthEntriesGroupedByDays();
+        costsPopupMenu = new PopupMenu(this, costTypeTextView);
 
         for (int i = 0; i < lastEnteredValues.length; ++i) {
             costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastEnteredValues[i]);

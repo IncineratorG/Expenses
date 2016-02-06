@@ -22,16 +22,21 @@ public class AddNewCostTypeActivity extends AppCompatActivity {
         String newCostTypeName = newCostTypeInputField.getText().toString();
 
         if (!newCostTypeName.equals("")) {
-            db.addCosts(0.0, newCostTypeName);
+            int result = db.addNewCostName(newCostTypeName);
 
-            Toast newCostTypeAddedToast = Toast.makeText(this, "Категория '" + newCostTypeName + "' создана.", Toast.LENGTH_LONG);
-            newCostTypeAddedToast.show();
+            if (result == 1) {
+                Toast newCostTypeAddedToast = Toast.makeText(this, "Категория '" + newCostTypeName + "' создана.", Toast.LENGTH_LONG);
+                newCostTypeAddedToast.show();
 
-            Intent mainScreenIntent = new Intent(this, MainActivity.class);
-            mainScreenIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(mainScreenIntent);
+                Intent mainScreenIntent = new Intent(this, MainActivity.class);
+                mainScreenIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(mainScreenIntent);
+            } else {
+                Toast newCostTypeAddedToast = Toast.makeText(this, "Категория '" + newCostTypeName + "' уже создана.", Toast.LENGTH_LONG);
+                newCostTypeAddedToast.show();
+            }
         } else {
-            Toast invalidCostTypeNameToast = Toast.makeText(this, "Введите название категории", Toast.LENGTH_LONG);
+            Toast invalidCostTypeNameToast = Toast.makeText(this, "Введите название категории.", Toast.LENGTH_LONG);
             invalidCostTypeNameToast.show();
         }
     }

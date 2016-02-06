@@ -1,6 +1,7 @@
 package com.example.costs;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +30,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     static final String[] declensionMonthNames = {"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"};
+
 
     CostsDB db;
     CostsDataBase cdb;
@@ -106,16 +108,13 @@ public class MainActivity extends AppCompatActivity {
 
                 if (currentMonth != todayMonth || currentYear != todayYear) {
                     notCurrentDate = true;
-                    // Добавлено 19.01.2015
                     Calendar calendar = Calendar.getInstance();
                     calendar.set(currentYear, currentMonth, 1);
-                    // --------------------
                     currentDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
                 } else
                     notCurrentDate = false;
             }
         }
-        // Устанавливаем текущую дату
         currentDateTextView.setText(currentDay + "  " + declensionMonthNames[currentMonth] + " " + currentYear);
 
         // Устанавливаем расходы за выбранный период
@@ -150,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
                             Intent inputDataActivity = null;
                             if (position == costsArray.length - 1) {
-                                if (costValue.equals("+"))
+                                if ("+".equals(costValue))
                                     inputDataActivity = new Intent(MainActivity.this, AddNewCostTypeActivity.class);
                             } else
                                 inputDataActivity = new Intent(MainActivity.this, InputDataActivity.class);
@@ -166,12 +165,14 @@ public class MainActivity extends AppCompatActivity {
                     }
             );
 
+
+
             // При длительном нажатии на элемент списка
             listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                     String textLine = String.valueOf(parent.getItemAtPosition(position));
-                    if (!textLine.substring(textLine.indexOf("$") + 1).equals("+")) {
+                    if (!"+".equals(textLine.substring(textLine.indexOf("$") + 1))) {
                         Intent deleteCostTypeActivity = new Intent(MainActivity.this, DeleteCostTypeActivity.class);
                         deleteCostTypeActivity.putExtra("costType", textLine.substring(0, textLine.indexOf("$")));
 
@@ -182,93 +183,8 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        /*
-        // Получаем доступ к базе данных
-        if (db == null)
-            db = new CostsDB(this, null, null, 1);
 
-        // Инициализируем поле, содержащее выбранные день, месяц и год
-        if (currentDateTextView == null)
-            currentDateTextView = (TextView) findViewById(R.id.currentDate);
-
-        // Инициализируем поле, отображающее текущие расходы
-        if (currentCostsTextView == null)
-            currentCostsTextView = (TextView) findViewById(R.id.currentCosts);
-
-        // Узнаём текущую дату
-        SetCurrentDate();
-
-        // Получаем данные о выбранном периоде для просмотра и
-        // устанавливаем выбранную дату
-        Bundle chosenPeriodData = getIntent().getExtras();
-        if (chosenPeriodData != null) {
-
-            String chosenPeriodString = String.valueOf(chosenPeriodData.get("chosenPeriod"));
-
-            if (chosenPeriodData.get("fromPeriods") != null) {
-                currentMonth = Integer.parseInt(chosenPeriodString.substring(0, chosenPeriodString.indexOf(" "))) - 1;
-                currentYear = Integer.parseInt(chosenPeriodString.substring(chosenPeriodString.indexOf(" ") + 1));
-
-                if (currentMonth != todayMonth || currentYear != todayYear) {
-                    notCurrentDate = true;
-                    // Добавлено 19.01.2015
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(currentYear, currentMonth, 1);
-                    // --------------------
-                    currentDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-                } else
-                    notCurrentDate = false;
-            }
-        }
-        currentDateTextView.setText(currentDay + "  " + declensionMonthNames[currentMonth] + " " + String.valueOf(currentYear));
-
-        // Устанавливаем расходы за выбранный период
-        SetCurrentCosts();
-
-        // Создаём всплывающее меню для отображения
-        // последних десяти введённых значений
-        GenerateCostsPopupMenu();
-
-        // Формируем данные для ListView
-        String[] costsArray = CreateCostsArray();
-
-        ListAdapter listAdapter = new CostsAdapter(this, costsArray);
-
-        ListView listView = (ListView) findViewById(R.id.listView);
-        listView.setAdapter(listAdapter);
-
-        // Если выбрана текущая дата - можно добавлять данныеё
-        // о затратах за текущий период
-        if (!notCurrentDate) {
-
-            listView.setOnItemClickListener(
-                    new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Intent inputDataIntent = new Intent(MainActivity.this, InputDataActivity.class);
-
-                            String textLine = String.valueOf(parent.getItemAtPosition(position));
-                            String costsTypeText = textLine.substring(0, textLine.indexOf("$"));
-                            String costTypeEnum = textLine.substring(textLine.indexOf("#") + 1);
-
-                            inputDataIntent.putExtra("costTypeText", costsTypeText);
-                            inputDataIntent.putExtra("costTypeEnum", costTypeEnum);
-                            inputDataIntent.putExtra("currentMonth", currentMonth);
-                            inputDataIntent.putExtra("currentYear", currentYear);
-                            inputDataIntent.putExtra("currentCosts", textLine.substring(textLine.indexOf("$") + 1, textLine.indexOf("#")));
-
-                            startActivity(inputDataIntent);
-                        }
-                    }
-            );
-
-            if (nearestEventShown == null)
-                SearchForNearestEvents();
-        }
-
-        */
     }
-
 
 
 
@@ -282,9 +198,10 @@ public class MainActivity extends AppCompatActivity {
         notCurrentDate = false;
     }
 
+
     // Устанавливаем текущие расходы
     public void SetCurrentCosts() {
-        List<String> costsTypes = cdb.getCostsTypes();
+        List<String> costsTypes = cdb.getCostNames();
 
         Double totalCostsValue = 0.0;
         for (String costType : costsTypes) {
@@ -312,6 +229,18 @@ public class MainActivity extends AppCompatActivity {
 
         return costsArray;
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Создание списка последних десяти введённых значений
     public void GenerateCostsPopupMenu() {
@@ -359,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
     // Переход к экрану выбора периода
     public void onDateClick(View view) {
         Intent chosePeriodsIntent = new Intent(this, Periods.class);
+        chosePeriodsIntent.putExtra("currentDate", currentMonth + " " + currentYear);
         startActivity(chosePeriodsIntent);
     }
 
@@ -478,6 +408,102 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+/*      OLD MAIN
+        // Получаем доступ к базе данных
+        if (db == null)
+            db = new CostsDB(this, null, null, 1);
+
+        // Инициализируем поле, содержащее выбранные день, месяц и год
+        if (currentDateTextView == null)
+            currentDateTextView = (TextView) findViewById(R.id.currentDate);
+
+        // Инициализируем поле, отображающее текущие расходы
+        if (currentCostsTextView == null)
+            currentCostsTextView = (TextView) findViewById(R.id.currentCosts);
+
+        // Узнаём текущую дату
+        SetCurrentDate();
+
+        // Получаем данные о выбранном периоде для просмотра и
+        // устанавливаем выбранную дату
+        Bundle chosenPeriodData = getIntent().getExtras();
+        if (chosenPeriodData != null) {
+
+            String chosenPeriodString = String.valueOf(chosenPeriodData.get("chosenPeriod"));
+
+            if (chosenPeriodData.get("fromPeriods") != null) {
+                currentMonth = Integer.parseInt(chosenPeriodString.substring(0, chosenPeriodString.indexOf(" "))) - 1;
+                currentYear = Integer.parseInt(chosenPeriodString.substring(chosenPeriodString.indexOf(" ") + 1));
+
+                if (currentMonth != todayMonth || currentYear != todayYear) {
+                    notCurrentDate = true;
+                    // Добавлено 19.01.2015
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(currentYear, currentMonth, 1);
+                    // --------------------
+                    currentDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                } else
+                    notCurrentDate = false;
+            }
+        }
+        currentDateTextView.setText(currentDay + "  " + declensionMonthNames[currentMonth] + " " + String.valueOf(currentYear));
+
+        // Устанавливаем расходы за выбранный период
+        SetCurrentCosts();
+
+        // Создаём всплывающее меню для отображения
+        // последних десяти введённых значений
+        GenerateCostsPopupMenu();
+
+        // Формируем данные для ListView
+        String[] costsArray = CreateCostsArray();
+
+        ListAdapter listAdapter = new CostsAdapter(this, costsArray);
+
+        ListView listView = (ListView) findViewById(R.id.listView);
+        listView.setAdapter(listAdapter);
+
+        // Если выбрана текущая дата - можно добавлять данныеё
+        // о затратах за текущий период
+        if (!notCurrentDate) {
+
+            listView.setOnItemClickListener(
+                    new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Intent inputDataIntent = new Intent(MainActivity.this, InputDataActivity.class);
+
+                            String textLine = String.valueOf(parent.getItemAtPosition(position));
+                            String costsTypeText = textLine.substring(0, textLine.indexOf("$"));
+                            String costTypeEnum = textLine.substring(textLine.indexOf("#") + 1);
+
+                            inputDataIntent.putExtra("costTypeText", costsTypeText);
+                            inputDataIntent.putExtra("costTypeEnum", costTypeEnum);
+                            inputDataIntent.putExtra("currentMonth", currentMonth);
+                            inputDataIntent.putExtra("currentYear", currentYear);
+                            inputDataIntent.putExtra("currentCosts", textLine.substring(textLine.indexOf("$") + 1, textLine.indexOf("#")));
+
+                            startActivity(inputDataIntent);
+                        }
+                    }
+            );
+
+            if (nearestEventShown == null)
+                SearchForNearestEvents();
+        }
+
+        */
 
 
 

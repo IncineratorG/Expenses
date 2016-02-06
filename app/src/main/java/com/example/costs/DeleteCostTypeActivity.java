@@ -31,14 +31,19 @@ public class DeleteCostTypeActivity extends AppCompatActivity {
 
     public void deleteButtonOnClick(View view) {
         CostsDataBase db = new CostsDataBase(this, null, null, 1);
-        db.deleteCostType(costTypeName);
+        int result = db.deleteCostName(costTypeName);
 
-        Toast costTypeDeletedToast = Toast.makeText(this, "Категория '" + costTypeName + "' удалена.", Toast.LENGTH_LONG);
-        costTypeDeletedToast.show();
+        if (result == 1) {
+            Toast costTypeDeletedToast = Toast.makeText(this, "Категория '" + costTypeName + "' удалена.", Toast.LENGTH_LONG);
+            costTypeDeletedToast.show();
 
-        Intent mainScreenIntent = new Intent(this, MainActivity.class);
-        mainScreenIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(mainScreenIntent);
+            Intent mainScreenIntent = new Intent(this, MainActivity.class);
+            mainScreenIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(mainScreenIntent);
+        } else {
+            Toast errorDeletingCostTypeToast = Toast.makeText(this, "Не удалось удалить категорию " + costTypeName + ".", Toast.LENGTH_LONG);
+            errorDeletingCostTypeToast.show();
+        }
     }
 
     public void cancelDeleteButtonOnClick(View view) {

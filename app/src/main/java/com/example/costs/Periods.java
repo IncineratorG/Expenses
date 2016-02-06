@@ -20,8 +20,17 @@ public class Periods extends AppCompatActivity {
         db = new CostsDataBase(this, null, null, 1);
 
         // Создаём массив из периодов (месяца и года), для которых
-        // имеются записи в базе данных
+        // имеются записи в базе данных. Если ни одной записи не найдено -
+        // массив будет содержать текущий месяц и год.
         String[] periodsArray = db.getAllPeriods();
+        if (periodsArray.length == 0) {
+            Bundle bundleDate = getIntent().getExtras();
+            if (bundleDate == null)
+                return;
+
+            periodsArray = new String[1];
+            periodsArray[0] = (String) bundleDate.get("currentDate");
+        }
 
         ListAdapter periodsListAdapter = new PeriodsAdapter(this, periodsArray);
         ListView periodsListView = (ListView) findViewById(R.id.periodsList);

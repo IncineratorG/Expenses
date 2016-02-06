@@ -7,9 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-/**
- * Created by Саня on 28.11.2015.
- */
+
 public class EventsAdapter extends ArrayAdapter<String> {
 
     public EventsAdapter(Context context, String[] events) {
