@@ -27,7 +27,8 @@
         <activity android:name=".AddNewCostTypeActivity" />
         <activity android:name=".DeleteCostTypeActivity" />
         <activity android:name=".LastEnteredValuesActivity" />
-        <activity android:name=".ChosenDayEntriesActivity"></activity>
+        <activity android:name=".ChosenDayEntriesActivity" />
+        <activity android:name=".DayEntriesDetalisedActivity"></activity>
     </application>
 
 </manifest>

@@ -8,6 +8,9 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import java.util.Calendar;
+import java.util.List;
+
 public class Periods extends AppCompatActivity {
 
     CostsDataBase db;
@@ -17,20 +20,26 @@ public class Periods extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_periods);
 
+        Calendar calendar = Calendar.getInstance();
+        int currentMonth = calendar.get(Calendar.MONTH);
+        int currentYear = calendar.get(Calendar.YEAR);
+
         db = new CostsDataBase(this, null, null, 1);
 
-        // Создаём массив из периодов (месяца и года), для которых
-        // имеются записи в базе данных. Если ни одной записи не найдено -
-        // массив будет содержать текущий месяц и год.
-        String[] periodsArray = db.getAllPeriods();
-        if (periodsArray.length == 0) {
-            Bundle bundleDate = getIntent().getExtras();
-            if (bundleDate == null)
-                return;
+        List<String> listOfPeriods = db.getAllPeriods();
+        String[] periodsArray = null;
+        if (!listOfPeriods.contains(currentMonth + " " + currentYear)) {
+            periodsArray = new String[listOfPeriods.size() + 1];
+            periodsArray[0] = currentMonth + " " + currentYear;
+            for (int i = 1; i < periodsArray.length; ++i) {
+                periodsArray[i] = listOfPeriods.get(i - 1);
+            }
 
-            periodsArray = new String[1];
-            periodsArray[0] = (String) bundleDate.get("currentDate");
+        } else {
+            periodsArray = new String[listOfPeriods.size()];
+            listOfPeriods.toArray(periodsArray);
         }
+
 
         ListAdapter periodsListAdapter = new PeriodsAdapter(this, periodsArray);
         ListView periodsListView = (ListView) findViewById(R.id.periodsList);

@@ -22,7 +22,6 @@ public class LastEnteredValuesActivity extends AppCompatActivity {
 
         List<String> lastMonthEntriesList = cdb.getLastMonthEntriesGroupedByDays();
         if (lastMonthEntriesList == null) {
-            System.out.println("NULL");
             return;
         }
 

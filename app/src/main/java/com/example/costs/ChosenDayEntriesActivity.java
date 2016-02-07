@@ -3,7 +3,8 @@ package com.example.costs;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.KeyEvent;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,9 +22,9 @@ public class ChosenDayEntriesActivity extends AppCompatActivity {
         if (dataFromLastEnteredValuesActivity == null)
             return;
 
-        String chosenDayString = (String) dataFromLastEnteredValuesActivity.get("chosenDay");
-        String chosenMonthString = (String) dataFromLastEnteredValuesActivity.get("chosenMonth");
-        String chosenYearString = (String) dataFromLastEnteredValuesActivity.get("chosenYear");
+        final String chosenDayString = (String) dataFromLastEnteredValuesActivity.get("chosenDay");
+        final String chosenMonthString = (String) dataFromLastEnteredValuesActivity.get("chosenMonth");
+        final String chosenYearString = (String) dataFromLastEnteredValuesActivity.get("chosenYear");
         String costValueOnChosenDayString = (String) dataFromLastEnteredValuesActivity.get("costValueOnChosenDay");
 
         TextView chosenDateTextView = (TextView) findViewById(R.id.chosenDateTextView);
@@ -35,9 +36,9 @@ public class ChosenDayEntriesActivity extends AppCompatActivity {
         overallCostsValueInChosenDateTextView.setText(costValueOnChosenDayString + " руб.");
 
         CostsDataBase db = new CostsDataBase(this, null, null, 1);
-        List<String> listOfEntries = db.getCostValuesOnSpecifiedDate(Integer.valueOf(chosenDayString),
-                                                                    Integer.valueOf(chosenMonthString),
-                                                                    Integer.valueOf(chosenYearString));
+        List<String> listOfEntries = db.getCostValueOnSpecifiedDate(Integer.valueOf(chosenDayString),
+                Integer.valueOf(chosenMonthString),
+                Integer.valueOf(chosenYearString));
 
         String[] entriesOnSpecifiedDateArray = new String[listOfEntries.size()];
         listOfEntries.toArray(entriesOnSpecifiedDateArray);
@@ -46,5 +47,20 @@ public class ChosenDayEntriesActivity extends AppCompatActivity {
 
         ListView chosenDateCostsListView = (ListView) findViewById(R.id.chosenDateCostsListView);
         chosenDateCostsListView.setAdapter(costsAdapter);
+
+        chosenDateCostsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent DayEntriesDetalisedActivity = new Intent(ChosenDayEntriesActivity.this, DayEntriesDetalisedActivity.class);
+
+                String textOnChosenPosition = String.valueOf(parent.getItemAtPosition(position));
+                DayEntriesDetalisedActivity.putExtra("costName", textOnChosenPosition.substring(0, textOnChosenPosition.indexOf("$")));
+                DayEntriesDetalisedActivity.putExtra("chosenDay", chosenDayString);
+                DayEntriesDetalisedActivity.putExtra("chosenMonth", chosenMonthString);
+                DayEntriesDetalisedActivity.putExtra("chosenYear", chosenYearString);
+
+                startActivity(DayEntriesDetalisedActivity);
+            }
+        });
     }
 }

@@ -1,7 +1,6 @@
 package com.example.costs;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -32,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     static final String[] declensionMonthNames = {"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"};
 
 
-    CostsDB db;
+    //CostsDB db;
     CostsDataBase cdb;
 
     int currentYear;
@@ -74,24 +73,6 @@ public class MainActivity extends AppCompatActivity {
         if (currentCostsTextView == null)
             currentCostsTextView = (TextView) findViewById(R.id.currentCosts);
 
-
-
-        // При длительном нажатии на общей сумме расходов -
-        // переходим на экран, содержащий записи расходов за
-        // последний месяц, сгруппированные по дням.
-        currentCostsTextView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Intent lastEnteredValues = new Intent(MainActivity.this, LastEnteredValuesActivity.class);
-                startActivity(lastEnteredValues);
-
-                return true;
-            }
-        });
-
-
-
-
         // Узнаём текущую дату
         SetCurrentDate();
 
@@ -116,6 +97,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         currentDateTextView.setText(currentDay + "  " + declensionMonthNames[currentMonth] + " " + currentYear);
+
+
+        // При длительном нажатии на общей сумме расходов -
+        // переходим на экран, содержащий записи расходов за
+        // последний месяц, сгруппированные по дням.
+        currentCostsTextView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent lastEnteredValues = new Intent(MainActivity.this, LastEnteredValuesActivity.class);
+                startActivity(lastEnteredValues);
+
+                return true;
+            }
+        });
+
 
         // Устанавливаем расходы за выбранный период
         SetCurrentCosts();
@@ -182,8 +178,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-
-
     }
 
 
@@ -201,7 +195,11 @@ public class MainActivity extends AppCompatActivity {
 
     // Устанавливаем текущие расходы
     public void SetCurrentCosts() {
-        List<String> costsTypes = cdb.getCostNames();
+        List<String> costsTypes = null;
+        if (!notCurrentDate)
+            costsTypes = cdb.getCostNames();
+        else
+            costsTypes = cdb.getCostNamesOnSpecifiedMonth(currentMonth, currentYear);
 
         Double totalCostsValue = 0.0;
         for (String costType : costsTypes) {
@@ -231,28 +229,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-    // Создание списка последних десяти введённых значений
-    public void GenerateCostsPopupMenu() {
-        String[] lastEnteredValues = db.getLastEnteredValues();
-
-        costsPopupMenu = new PopupMenu(this, currentCostsTextView);
-
-        for (int i = 0; i < lastEnteredValues.length; ++i) {
-            costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastEnteredValues[i]);
-        }
+    // Переход к экрану выбора периода
+    public void onDateClick(View view) {
+        Intent chosePeriodsIntent = new Intent(this, Periods.class);
+        startActivity(chosePeriodsIntent);
     }
 
+
+    // Просмотр последних десяти введённых значений
+    public void onCostsClick(View view) {
+        String[] lastThirtyEntriesArray = cdb.getLastThirtyEntries();
+
+        costsPopupMenu = new PopupMenu(this, currentCostsTextView);
+        for (int i = 0; i < lastThirtyEntriesArray.length; ++i) {
+            costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastThirtyEntriesArray[i]);
+        }
+        costsPopupMenu.show();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
     // Ищет записи в базе данных о ближайших (менее двух недель) событиях.
     // Если находит - выводит сообщение на экран
     public void SearchForNearestEvents() {
@@ -285,17 +298,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Переход к экрану выбора периода
-    public void onDateClick(View view) {
-        Intent chosePeriodsIntent = new Intent(this, Periods.class);
-        chosePeriodsIntent.putExtra("currentDate", currentMonth + " " + currentYear);
-        startActivity(chosePeriodsIntent);
-    }
-
-    // Просмотр последних десяти введённых значений
-    public void onCostsClick(View view) {
-        costsPopupMenu.show();
-    }
 
     // Сортировка статей расходов по частоте внесения записей
     public void OrderCostsArray(String[] costsArray) {
@@ -365,6 +367,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+*/
 
 
 

@@ -8,6 +8,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ public class InputDataActivity extends AppCompatActivity {
     TextView costTypeTextView;
     TextView costValueTextView;
     TextView dateTextView;
+    PopupMenu costsPopupMenu;
 
     int currentDay;
     int currentMonth;                                       // Начинается с нуля
@@ -105,20 +107,13 @@ public class InputDataActivity extends AppCompatActivity {
     }
 
 
-
-
-    /*
-    public void GenerateCostsPopupMenu() {
-        String[] lastEnteredValues = db.getLastMonthEntriesGroupedByDays();
+    public void onCostValueClick(View view) {
+        String[] lastEnteredValues = db.getLastThirtyEntries();
         costsPopupMenu = new PopupMenu(this, costTypeTextView);
 
         for (int i = 0; i < lastEnteredValues.length; ++i) {
             costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastEnteredValues[i]);
         }
-    }
-
-    public void onCostTypeClick(View view) {
         costsPopupMenu.show();
     }
-    */
 }
