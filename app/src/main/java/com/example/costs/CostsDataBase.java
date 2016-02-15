@@ -16,17 +16,13 @@ import java.util.List;
  */
 public class CostsDataBase extends SQLiteOpenHelper {
 
+    /*  В базе данных месяца начинаются с 0  */
 
-    // В базе данных месяца начинаются с 0
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "costs.db";
 
-    //private static final String TABLE_COSTS = "costs";
-    //private static final String TABLE_COSTS_OLD = "costsold";
     private static final String COLUMN_ID = "_id";
-
-
 
     private static final String TABLE_COST_NAMES = "costnames";
     private static final String COLUMN_COST_NAME = "costname";
@@ -37,7 +33,11 @@ public class CostsDataBase extends SQLiteOpenHelper {
     private static final String COLUMN_YEAR = "year";
     private static final String COLUMN_DATE_IN_MILLISECONDS = "dateinmilliseconds";
     private static final String COLUMN_COST_VALUE = "costvalue";
-    private static final String COLUMN_NOTE = "note";
+
+    private static final String TABLE_EVENTS = "events";
+    private static final String COLUMN_EVENT_DESCRIPTION = "eventdescription";
+    private static final String COLUMN_EVENT_DATE = "eventdate";
+    private static final String COLUMN_EVENT_DATE_IN_MILLISECONDS = "eventdateinmilliseconds";
 
 
     public CostsDataBase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -47,9 +47,12 @@ public class CostsDataBase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
+        // Таблица, хранящая названия статей расходов
         String createTableCostsNames = "CREATE TABLE " + TABLE_COST_NAMES + " (" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_COST_NAME + " TEXT)";
+
+        // Таблица, хранящая записи о расходах по соответствующей статье расходов
         String createTableCostsValues = "CREATE TABLE " + TABLE_COST_VALUES + " (" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_DAY + " INTEGER, " +
@@ -59,8 +62,17 @@ public class CostsDataBase extends SQLiteOpenHelper {
                 COLUMN_COST_NAME + " TEXT, " +
                 COLUMN_COST_VALUE + " REAL)";
 
+        // Таблица, хранящая записи о ближайщих событиях
+        String createTableEvents = "CREATE TABLE " + TABLE_EVENTS + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_EVENT_DESCRIPTION + " TEXT, " +
+                COLUMN_EVENT_DATE + " TEXT, " +
+                COLUMN_EVENT_DATE_IN_MILLISECONDS + " INTEGER " +
+                ");";
+
         db.execSQL(createTableCostsNames);
         db.execSQL(createTableCostsValues);
+        db.execSQL(createTableEvents);
     }
 
     @Override
@@ -217,7 +229,7 @@ public class CostsDataBase extends SQLiteOpenHelper {
     }
 
 
-    // Возвращает названия статей расходов, записи для которых
+    // Возвращает названия активных статей расходов, записи для которых
     // присутствуют в базе даных
     public List<String> getCostNames() {
         String getDistinctCostNamesQuery = "SELECT * FROM " + TABLE_COST_NAMES;
@@ -356,18 +368,19 @@ public class CostsDataBase extends SQLiteOpenHelper {
     }
 
 
-    // Возвращает список строк, состоящих из даты (1 1 2015) и суммы расходов
-    // за эту дату, разделённых знаком '$' (1 1 2015$77.7)
+    // Возвращает список расходов, внесённых за последний месяц, состоящих из даты (1 1 2015)
+    // и суммы расходов за эту дату, разделённых знаком '$' (1 1 2015$77.7)
     public List<String> getLastMonthEntriesGroupedByDays() {
-        //Calendar calendar = Calendar.getInstance();
-        //long currentDateInMilliseconds = calendar.getTimeInMillis();
-        //long oneDayInMilliseconds = 86400000;
-        // long monthAgoDateInMilliseconds = currentDateInMilliseconds - 30 * oneDayInMilliseconds;
+        Calendar calendar = Calendar.getInstance();
+        long currentDateInMilliseconds = calendar.getTimeInMillis();
+        long oneDayInMilliseconds = 86400000;
+        long monthAgoDateInMilliseconds = currentDateInMilliseconds - 30 * oneDayInMilliseconds;
 
         String getLastMonthEntriesQuery = "SELECT " +
                 COLUMN_DAY + ", " + COLUMN_MONTH + ", " + COLUMN_YEAR +
                 ", SUM(" + COLUMN_COST_VALUE + ") AS SUM " +
                 " FROM " + TABLE_COST_VALUES +
+                " WHERE " + COLUMN_DATE_IN_MILLISECONDS + " > " + monthAgoDateInMilliseconds +
                 " GROUP BY " +
                 COLUMN_DAY + ", " + COLUMN_MONTH + ", " + COLUMN_YEAR +
                 " ORDER BY " + COLUMN_DATE_IN_MILLISECONDS +
@@ -472,6 +485,7 @@ public class CostsDataBase extends SQLiteOpenHelper {
         return lastThirtyEntriesArray;
     }
 
+
     // Возвращает массив, состоящий из строк с названием и значением расходов
     // по заданной категории за заданный день
     public String[] getEntriesOnSpecifiedDateAndCostName(int day, int month, int year, String costName) {
@@ -521,172 +535,89 @@ public class CostsDataBase extends SQLiteOpenHelper {
         return entriesArray;
     }
 
-/*
-    // Возвращает суммарную величину расходов типа 'costType'
-    // за заданный период. Если поле 'day' отрицательно -
-    // при выборке значений учитывается только указанные месяц, год и тип расходов
-    public double getCostValue(int day, int month, int year, String costType) {
-
-        String getCostValueQuery = null;
-
-        if (day >= 0) {
-            getCostValueQuery = "select distinct " +
-                    COLUMN_COST_VALUE + " from " +
-                    TABLE_COSTS + " where " +
-                    COLUMN_COST_TYPE + " = '" +
-                    costType + "' and " +
-                    COLUMN_YEAR + " = " +
-                    year + " and " +
-                    COLUMN_MONTH + " = " +
-                    month + " and " +
-                    COLUMN_DAY + " = " +
-                    day;
-        } else {
-            getCostValueQuery = "select distinct " +
-                    COLUMN_COST_VALUE + " from " +
-                    TABLE_COSTS + " where " +
-                    COLUMN_COST_TYPE + " = '" +
-                    costType + "' and " +
-                    COLUMN_YEAR + " = " +
-                    year + " and " +
-                    COLUMN_MONTH + " = " +
-                    month;
-        }
 
 
+
+
+
+
+
+
+    // Добавляет записи в таблицу предстоящих событий (TABLE_EVENTS)
+    public void addNewEvent(String eventDescription, String eventDate, long eventDateInMilliseconds) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(COLUMN_EVENT_DESCRIPTION, eventDescription);
+        values.put(COLUMN_EVENT_DATE, eventDate);
+        values.put(COLUMN_EVENT_DATE_IN_MILLISECONDS, eventDateInMilliseconds);
+
+        db.insert(TABLE_EVENTS, null, values);
+        db.close();
+    }
+
+    public String[] getEvents() {
+        removeOldEvents();
+
+        String getEventsQuery = "select * from " + TABLE_EVENTS +
+                " order by " + COLUMN_EVENT_DATE_IN_MILLISECONDS + " ASC";
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        double sum = 0.0;
+        String string = "";
+        List<String> listStrings = new ArrayList<>();
 
         try {
-            c = db.rawQuery(getCostValueQuery, null);
+            c = db.rawQuery(getEventsQuery, null);
             c.moveToFirst();
-            while (!c.isAfterLast()) {
-                sum = sum + c.getDouble(c.getColumnIndex(COLUMN_COST_VALUE));
+
+            while (!c.isAfterLast() && listStrings.size() < 10) {
+                if (c.getString(c.getColumnIndex("_id")) != null) {
+                    string += c.getString(c.getColumnIndex(COLUMN_EVENT_DATE)) + "$";
+                    string += c.getString(c.getColumnIndex(COLUMN_EVENT_DESCRIPTION));
+                }
+                listStrings.add(string);
+                string = "";
                 c.moveToNext();
             }
-        } catch (Exception e) {
-            System.err.println("Exception in 'getCostValue()'.");
-        }
-        finally {
-            if (c != null)
-                c.close();
-            if (db != null)
-                db.close();
-        }
 
-        return sum;
-    }
-
-
-    // Удаляет статью расходов 'costTypeName' из базы данных
-    public void deleteCostType(String costTypeName) {
-        String deleteCostTypeQuery = "delete from " +
-                TABLE_COSTS + " where " +
-                COLUMN_COST_TYPE + " = '" +
-                costTypeName + "'";
-
-        SQLiteDatabase db = getWritableDatabase();
-        try {
-            db.execSQL(deleteCostTypeQuery);
-        } catch (Exception e) {
-            System.err.println("Exception in 'deleteCostType()'");
-        }
-        finally {
-            if (db != null)
-                db.close();
-        }
-    }
-
-
-    // Возвращает записи в базе данных за последний месяц
-    public String[] getLastMonthEntriesGroupedByDays() {
-
-        // Получаем текущее время в миллисекундах
-        Calendar c = Calendar.getInstance();
-        long currentDateInMilliseconds = c.getTimeInMillis();
-        long oneDyaInMilliseconds = 86400000;
-
-        // Вычитаем из текущей даты 30 дней
-        long monthAgoInMilliseconds = currentDateInMilliseconds - 30 * oneDyaInMilliseconds;
-        c.setTimeInMillis(monthAgoInMilliseconds);
-
-        // Переводим получившееся значение в миллисекундах в день, месяц и год
-        int monthAgoDay = c.get(Calendar.DAY_OF_MONTH);
-        int monthAgoMonth = c.get(Calendar.MONTH);
-        int monthAgoYear = c.get(Calendar.YEAR);
-
-        String query = "select * from " + TABLE_COSTS +
-                " where " + COLUMN_DAY + " > " + monthAgoDay +
-                " and " + COLUMN_MONTH + " >= " + monthAgoMonth +
-                " and " + COLUMN_YEAR + " >= " + monthAgoYear;
-
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = null;
-
-        try {
-            cursor = db.rawQuery(query, null);
-            cursor.moveToFirst();
-
-            while (!cursor.isAfterLast()) {
-                String str = cursor.getString(cursor.getColumnIndex(COLUMN_DAY)) +
-                        " " + cursor.getString(cursor.getColumnIndex(COLUMN_MONTH)) +
-                        " " + cursor.getString(cursor.getColumnIndex(COLUMN_YEAR)) +
-                        " " + cursor.getString(cursor.getColumnIndex(COLUMN_COST_TYPE)) +
-                        " " + cursor.getString(cursor.getColumnIndex(COLUMN_COST_VALUE));
-                System.out.println(str);
-                cursor.moveToNext();
-            }
-
-        } catch (Exception e) {
-            System.out.println("Exception in 'getLastMonthEntriesGroupedByDays()'.");
-            e.printStackTrace();
-        } finally {
-            if (cursor != null)
-                cursor.close();
-            if (db != null)
-                db.close();
-        }
-
-        return null;
-    }
-
-
-    public String[] getAllPeriods() {
-        String getAllPeriodsQuery = "select distinct " +
-                COLUMN_MONTH + ", " +
-                COLUMN_YEAR + " from " +
-                TABLE_COSTS;
-
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor c = null;
-        List<String> listOfPeriods = new ArrayList<>();
-        String[] periodsArray = null;
-
-        try {
-            c = db.rawQuery(getAllPeriodsQuery, null);
-            c.moveToFirst();
-            while (!c.isAfterLast()) {
-                listOfPeriods.add(c.getString(c.getColumnIndex(COLUMN_MONTH)) + " " + c.getString(c.getColumnIndex(COLUMN_YEAR)));
-                c.moveToNext();
-            }
-        } catch (Exception e) {
-            System.err.println("Exception in 'getAllPeriods()'.");
-        }
+        } catch (Exception e) {}
         finally {
             if (c != null)
                 c.close();
             if (db != null)
                 db.close();
 
-            periodsArray = new String[listOfPeriods.size()];
-            for (int i = 0; i < periodsArray.length; ++i) {
-                periodsArray[i] = listOfPeriods.get((listOfPeriods.size() - 1) - i);
-            }
+            String[] events = new String[listStrings.size()];
+            listStrings.toArray(events);
+
+            return events;
         }
 
-        return periodsArray;
     }
-*/
+
+    // Удаляет записи о событиях, которые уже прошли
+    private void removeOldEvents() {
+        Calendar calendar = Calendar.getInstance();
+        SQLiteDatabase db = getWritableDatabase();
+        long currentTimeInMilliseconds = calendar.getTimeInMillis();
+
+        String removeFromEventsQuery = "delete from " + TABLE_EVENTS +
+                " where " + COLUMN_EVENT_DATE_IN_MILLISECONDS + " < " + currentTimeInMilliseconds;
+
+        db.execSQL(removeFromEventsQuery);
+        db.close();
+    }
+
+    // Удаляет из таблицы "TABLE_EVENTS" запись с данным описание
+    public void removeEvent(String eventDescription) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        String removeQuery = "delete from " + TABLE_EVENTS +
+                " where " + COLUMN_EVENT_DESCRIPTION + " = '" + eventDescription + "'";
+
+        db.execSQL(removeQuery);
+        db.close();
+    }
+
 }

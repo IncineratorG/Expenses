@@ -25,7 +25,7 @@ public class AddNewEvent extends AppCompatActivity {
 
     PopupMenu eventsPopupMenu;
 
-    CostsDB db;
+    CostsDataBase db;
 
     String dateOfEventString;
     String eventDateError = "Некорректная дата";
@@ -46,7 +46,7 @@ public class AddNewEvent extends AppCompatActivity {
         eventsListView = (ListView) findViewById(R.id.eventsList);
 
         // Получаем доступ к базе данных
-        db = new CostsDB(this, null, null, 1);
+        db = new CostsDataBase(this, null, null, 1);
 
         // Инициализируем список предстоящих событий
         SetEventsListView();

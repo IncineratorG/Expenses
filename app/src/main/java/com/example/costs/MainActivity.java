@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
 
     static final String[] declensionMonthNames = {"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"};
 
-
-    //CostsDB db;
     CostsDataBase cdb;
 
     int currentYear;
@@ -52,6 +51,10 @@ public class MainActivity extends AppCompatActivity {
     String currentOverallCosts;
 
     Map<String, Double> costsMap = new HashMap<>();
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +146,9 @@ public class MainActivity extends AppCompatActivity {
                             String textLine = String.valueOf(parent.getItemAtPosition(position));
                             String costValue = textLine.substring(textLine.indexOf("$") + 1);
 
+                            // Если пользователь выбрал пункт "Добавить новую категорию" - переходим на
+                            // экран добавления новой категории расходов. Иначе - переходим на экран
+                            // ввода затрат по выбранной категории
                             Intent inputDataActivity = null;
                             if (position == costsArray.length - 1) {
                                 if ("+".equals(costValue))
@@ -163,20 +169,37 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            // При длительном нажатии на элемент списка
+            // При длительном нажатии на элемент списка переходим
+            // на экран удаления выбарнной категории расходов
             listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                     String textLine = String.valueOf(parent.getItemAtPosition(position));
-                    if (!"+".equals(textLine.substring(textLine.indexOf("$") + 1))) {
-                        Intent deleteCostTypeActivity = new Intent(MainActivity.this, DeleteCostTypeActivity.class);
-                        deleteCostTypeActivity.putExtra("costType", textLine.substring(0, textLine.indexOf("$")));
+                    String costValue = textLine.substring(textLine.indexOf("$") + 1);
 
-                        startActivity(deleteCostTypeActivity);
+                    // Если значение расходов в данном месяце по выбранной категориии
+                    // не равны нулю - её не возможно удалить
+                    if (Double.parseDouble(costValue) > 0) {
+                        Toast canNotDeleteChosenCategoryToast = Toast.makeText(MainActivity.this,
+                                "Нельзя удалить категорию, по которой имеются записи в текущем месяце!",
+                                Toast.LENGTH_LONG);
+                        canNotDeleteChosenCategoryToast.show();
+                        return true;
+                    } else {
+                        if (!"+".equals(textLine.substring(textLine.indexOf("$") + 1))) {
+                            Intent deleteCostTypeActivity = new Intent(MainActivity.this, DeleteCostTypeActivity.class);
+                            deleteCostTypeActivity.putExtra("costType", textLine.substring(0, textLine.indexOf("$")));
+
+                            startActivity(deleteCostTypeActivity);
+                        }
+                        return true;
                     }
-                    return true;
+
                 }
             });
+
+            if (nearestEventShown == null)
+                SearchForNearestEvents();
         }
     }
 
@@ -225,90 +248,23 @@ public class MainActivity extends AppCompatActivity {
 
         costsArray[costsArray.length - 1] = "Добавить новую категорию$+";
 
+        // Сортируем массив в соответсвие с частотой использования каждого элемента массива
+        OrderCostsArray(costsArray);
+
         return costsArray;
-    }
-
-
-    // Переход к экрану выбора периода
-    public void onDateClick(View view) {
-        Intent chosePeriodsIntent = new Intent(this, Periods.class);
-        startActivity(chosePeriodsIntent);
-    }
-
-
-    // Просмотр последних десяти введённых значений
-    public void onCostsClick(View view) {
-        String[] lastThirtyEntriesArray = cdb.getLastThirtyEntries();
-
-        costsPopupMenu = new PopupMenu(this, currentCostsTextView);
-        for (int i = 0; i < lastThirtyEntriesArray.length; ++i) {
-            costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastThirtyEntriesArray[i]);
-        }
-        costsPopupMenu.show();
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-    // Ищет записи в базе данных о ближайших (менее двух недель) событиях.
-    // Если находит - выводит сообщение на экран
-    public void SearchForNearestEvents() {
-        String todayDateString = String.valueOf(todayDay) + "." + String.valueOf(todayMonth + 1) + "." + String.valueOf(todayYear);
-        long todayDateInMilliseconds = 0;
-        long nearestEventDateInMilliseconds = 0;
-        String[] eventsArray = db.getEvents();
-
-        if (eventsArray.length == 0)
-            return;
-
-        try {
-            todayDateInMilliseconds = new SimpleDateFormat("dd.MM.yyyy").parse(todayDateString).getTime();
-            nearestEventDateInMilliseconds = new SimpleDateFormat("dd.MM.yyyy").
-                    parse(eventsArray[0].substring(0, eventsArray[0].indexOf("$"))).getTime();
-        } catch (Exception e) {
-            Toast errorInDateParsingToast = Toast.makeText(this, "ERROR PARSING DATE ON MAIN SCREEN", Toast.LENGTH_LONG);
-            errorInDateParsingToast.show();
-        }
-
-        if ((nearestEventDateInMilliseconds - todayDateInMilliseconds) < 1209600000) {
-            String nearestEventToastText = "До события " + eventsArray[0].substring(eventsArray[0].indexOf("$") + 1) +
-                    " осталось меньше двух недель!";
-
-            Toast nearestEventToast = Toast.makeText(this, nearestEventToastText, Toast.LENGTH_LONG);
-            nearestEventToast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER, 0, 0);
-            nearestEventToast.show();
-
-            nearestEventShown = "";
-        }
     }
 
 
     // Сортировка статей расходов по частоте внесения записей
     public void OrderCostsArray(String[] costsArray) {
         // Получаем массив последних введённых значений
-        String[] lastEnteredValues = db.getLastEnteredValues();
+        String[] lastEnteredValues = cdb.getLastThirtyEntries();
         if (lastEnteredValues.length == 0)
             return;
 
         // Выделяем из каждой строки массива только название категории расходов
         for (int i = 0; i < lastEnteredValues.length; ++i) {
-            lastEnteredValues[i] = lastEnteredValues[i].substring(lastEnteredValues[i].indexOf(" ") + 1);
+            lastEnteredValues[i] = lastEnteredValues[i].substring(lastEnteredValues[i].indexOf(":") + 2);
             lastEnteredValues[i] = lastEnteredValues[i].substring(0, lastEnteredValues[i].indexOf(" "));
         }
 
@@ -340,7 +296,13 @@ public class MainActivity extends AppCompatActivity {
         String[] finalOrder = new String[listOfItemFrequence.size()];
         listOfItemFrequence.toArray(finalOrder);
 
-        Arrays.sort(finalOrder);
+        // Сортируем массив "finalOrder" по частоте использования категорий расходов
+        Arrays.sort(finalOrder, new Comparator<String>() {
+            @Override
+            public int compare(String lhs, String rhs) {
+                return Double.compare(Double.valueOf(lhs.substring(0, lhs.indexOf("$"))), Double.valueOf(rhs.substring(0, rhs.indexOf("$"))));
+            }
+        });
 
         // Изменяем порядок следование элементов в массиве costsArray
         // в соответствие с массивом finalOrder
@@ -363,13 +325,63 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                 }
+
             }
         }
+
     }
 
-*/
+
+    // Переход к экрану выбора периода
+    public void onDateClick(View view) {
+        Intent chosePeriodsIntent = new Intent(this, Periods.class);
+        startActivity(chosePeriodsIntent);
+    }
 
 
+    // Просмотр последних десяти введённых значений
+    public void onCostsClick(View view) {
+        String[] lastThirtyEntriesArray = cdb.getLastThirtyEntries();
+
+        costsPopupMenu = new PopupMenu(this, currentCostsTextView);
+        for (int i = 0; i < lastThirtyEntriesArray.length; ++i) {
+            costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastThirtyEntriesArray[i]);
+        }
+        costsPopupMenu.show();
+    }
+
+
+    // Ищет записи в базе данных о ближайших (менее двух недель) событиях.
+    // Если находит - выводит сообщение на экран
+    public void SearchForNearestEvents() {
+        String todayDateString = String.valueOf(todayDay) + "." + String.valueOf(todayMonth + 1) + "." + String.valueOf(todayYear);
+        long todayDateInMilliseconds = 0;
+        long nearestEventDateInMilliseconds = 0;
+        String[] eventsArray = cdb.getEvents();
+
+        if (eventsArray.length == 0)
+            return;
+
+        try {
+            todayDateInMilliseconds = new SimpleDateFormat("dd.MM.yyyy").parse(todayDateString).getTime();
+            nearestEventDateInMilliseconds = new SimpleDateFormat("dd.MM.yyyy").
+                    parse(eventsArray[0].substring(0, eventsArray[0].indexOf("$"))).getTime();
+        } catch (Exception e) {
+            Toast errorInDateParsingToast = Toast.makeText(this, "ERROR PARSING DATE ON MAIN SCREEN", Toast.LENGTH_LONG);
+            errorInDateParsingToast.show();
+        }
+
+        if ((nearestEventDateInMilliseconds - todayDateInMilliseconds) < 1209600000) {
+            String nearestEventToastText = "До события '" + eventsArray[0].substring(eventsArray[0].indexOf("$") + 1) +
+                    "' осталось меньше двух недель.";
+
+            Toast nearestEventToast = Toast.makeText(this, nearestEventToastText, Toast.LENGTH_LONG);
+            nearestEventToast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER, 0, 0);
+            nearestEventToast.show();
+
+            nearestEventShown = "";
+        }
+    }
 
 
 
@@ -411,170 +423,3 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-/*      OLD MAIN
-        // Получаем доступ к базе данных
-        if (db == null)
-            db = new CostsDB(this, null, null, 1);
-
-        // Инициализируем поле, содержащее выбранные день, месяц и год
-        if (currentDateTextView == null)
-            currentDateTextView = (TextView) findViewById(R.id.currentDate);
-
-        // Инициализируем поле, отображающее текущие расходы
-        if (currentCostsTextView == null)
-            currentCostsTextView = (TextView) findViewById(R.id.currentCosts);
-
-        // Узнаём текущую дату
-        SetCurrentDate();
-
-        // Получаем данные о выбранном периоде для просмотра и
-        // устанавливаем выбранную дату
-        Bundle chosenPeriodData = getIntent().getExtras();
-        if (chosenPeriodData != null) {
-
-            String chosenPeriodString = String.valueOf(chosenPeriodData.get("chosenPeriod"));
-
-            if (chosenPeriodData.get("fromPeriods") != null) {
-                currentMonth = Integer.parseInt(chosenPeriodString.substring(0, chosenPeriodString.indexOf(" "))) - 1;
-                currentYear = Integer.parseInt(chosenPeriodString.substring(chosenPeriodString.indexOf(" ") + 1));
-
-                if (currentMonth != todayMonth || currentYear != todayYear) {
-                    notCurrentDate = true;
-                    // Добавлено 19.01.2015
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(currentYear, currentMonth, 1);
-                    // --------------------
-                    currentDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-                } else
-                    notCurrentDate = false;
-            }
-        }
-        currentDateTextView.setText(currentDay + "  " + declensionMonthNames[currentMonth] + " " + String.valueOf(currentYear));
-
-        // Устанавливаем расходы за выбранный период
-        SetCurrentCosts();
-
-        // Создаём всплывающее меню для отображения
-        // последних десяти введённых значений
-        GenerateCostsPopupMenu();
-
-        // Формируем данные для ListView
-        String[] costsArray = CreateCostsArray();
-
-        ListAdapter listAdapter = new CostsAdapter(this, costsArray);
-
-        ListView listView = (ListView) findViewById(R.id.listView);
-        listView.setAdapter(listAdapter);
-
-        // Если выбрана текущая дата - можно добавлять данныеё
-        // о затратах за текущий период
-        if (!notCurrentDate) {
-
-            listView.setOnItemClickListener(
-                    new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Intent inputDataIntent = new Intent(MainActivity.this, InputDataActivity.class);
-
-                            String textLine = String.valueOf(parent.getItemAtPosition(position));
-                            String costsTypeText = textLine.substring(0, textLine.indexOf("$"));
-                            String costTypeEnum = textLine.substring(textLine.indexOf("#") + 1);
-
-                            inputDataIntent.putExtra("costTypeText", costsTypeText);
-                            inputDataIntent.putExtra("costTypeEnum", costTypeEnum);
-                            inputDataIntent.putExtra("currentMonth", currentMonth);
-                            inputDataIntent.putExtra("currentYear", currentYear);
-                            inputDataIntent.putExtra("currentCosts", textLine.substring(textLine.indexOf("$") + 1, textLine.indexOf("#")));
-
-                            startActivity(inputDataIntent);
-                        }
-                    }
-            );
-
-            if (nearestEventShown == null)
-                SearchForNearestEvents();
-        }
-
-        */
-
-
-
-
-
-
-
-/*
-    public void SetCurrentCosts() {
-        double total = 0.0;
-        currentFoodCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.FOOD);
-        if (currentFoodCosts.equals("error")) {
-            currentFoodCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.FOOD, currentFoodCosts);
-        }
-        total = total + Double.valueOf(currentFoodCosts);
-
-        currentClothesCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.CLOTHES);
-        if (currentClothesCosts.equals("error")) {
-            currentClothesCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.CLOTHES, currentClothesCosts);
-        }
-        total = total + Double.valueOf(currentClothesCosts);
-
-        currentCommunalCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.COMMUNAL_RENT);
-        if (currentCommunalCosts.equals("error")) {
-            currentCommunalCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.COMMUNAL_RENT, currentCommunalCosts);
-        }
-        total = total + Double.valueOf(currentCommunalCosts);
-
-        currentElectronicsCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.ELECTRONICS);
-        if (currentElectronicsCosts.equals("error")) {
-            currentElectronicsCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.ELECTRONICS, currentElectronicsCosts);
-        }
-        total = total + Double.valueOf(currentElectronicsCosts);
-
-        currentTransportCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.TRANSPORT);
-        if (currentTransportCosts.equals("error")) {
-            currentTransportCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.TRANSPORT, currentTransportCosts);
-        }
-        total = total + Double.valueOf(currentTransportCosts);
-
-        currentGoodsCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.GOODS);
-        if (currentGoodsCosts.equals("error")) {
-            currentGoodsCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.GOODS, currentGoodsCosts);
-        }
-        total = total + Double.valueOf(currentGoodsCosts);
-
-        currentServicesCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.SERVICES);
-        if (currentServicesCosts.equals("error")) {
-            currentServicesCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.SERVICES, currentServicesCosts);
-        }
-        total = total + Double.valueOf(currentServicesCosts);
-
-        currentOthersCosts = db.getCosts(currentMonth + 1, currentYear, CostsDB.CostType.OTHERS);
-        if (currentOthersCosts.equals("error")) {
-            currentOthersCosts = "0.00";
-            db.addCosts(currentMonth + 1, currentYear, CostsDB.CostType.OTHERS, currentOthersCosts);
-        }
-        total = total + Double.valueOf(currentOthersCosts);
-
-        DecimalFormat format = new DecimalFormat("0.00");
-        currentOverallCosts = String.valueOf(format.format(total));
-        currentCostsTextView.setText(currentOverallCosts + " руб.");
-    }
-    */
