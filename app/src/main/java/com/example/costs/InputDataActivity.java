@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputFilter;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.math.BigDecimal;
 
@@ -75,9 +77,49 @@ public class InputDataActivity extends AppCompatActivity {
 
         costValueTextView = (TextView) findViewById(R.id.costValue);
         costValueTextView.setText(String.valueOf(currentCosts) + " руб.");
+
+
+
+
+        GeneratePopupMenu();
+
+        // При нажатии на элемент списка последних введённых значений -
+        // удаляем этот элемент из базы
+        costsPopupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                String textLine = item.toString();
+
+                String date = textLine.substring(0, textLine.indexOf(":"));
+                String d = date.substring(0, date.indexOf(" "));
+                int day = Integer.parseInt(d);
+                String m = date.substring(date.indexOf(" ") + 1, date.lastIndexOf(" "));
+                int month = Integer.parseInt(m) - 1;
+                String y = date.substring(date.lastIndexOf(" ") + 1);
+                int year = Integer.parseInt(y);
+
+                String categoryName = textLine.substring(textLine.indexOf(":") + 2);
+                categoryName = categoryName.substring(0, categoryName.indexOf(" "));
+
+                String value = textLine.substring(0, textLine.lastIndexOf(" "));
+                value = value.substring(value.lastIndexOf(" ") + 1);
+                Double val = Double.valueOf(value);
+
+                int result = db.removeValue(categoryName, val, day, month, year);
+                System.out.println("Result: " + result);
+                GeneratePopupMenu();
+                currentCosts = db.getCostValue(-1, currentMonth, currentYear, costType);
+                costValueTextView.setText(String.valueOf(currentCosts) + " руб.");
+
+                return true;
+            }
+        });
+
+
     }
 
 
+    // Принажатии на кнопку "OK" происходит добавление
     public void OkButtonOnClick(View View) {
         AddCostsToDataBase();
     }
@@ -90,9 +132,33 @@ public class InputDataActivity extends AppCompatActivity {
             inputTextField.setText("");
             currentCosts = db.getCostValue(-1, currentMonth, currentYear, costType);
 
-            costValueTextView.setText(String.valueOf(currentCosts));
+            costValueTextView.setText(String.valueOf(currentCosts) + " руб.");
+
+            GeneratePopupMenu();
         }
     }
+
+
+
+
+
+
+
+
+    public void GeneratePopupMenu() {
+        String[] lastEnteredValues = db.getLastThirtyEntries();
+        costsPopupMenu = new PopupMenu(this, costTypeTextView);
+
+        for (int i = 0; i < lastEnteredValues.length; ++i) {
+            costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastEnteredValues[i]);
+        }
+    }
+
+    public void onCostValueClick(View view) {
+        costsPopupMenu.show();
+    }
+
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -104,16 +170,5 @@ public class InputDataActivity extends AppCompatActivity {
         }
 
         return super.onKeyDown(keyCode, event);
-    }
-
-
-    public void onCostValueClick(View view) {
-        String[] lastEnteredValues = db.getLastThirtyEntries();
-        costsPopupMenu = new PopupMenu(this, costTypeTextView);
-
-        for (int i = 0; i < lastEnteredValues.length; ++i) {
-            costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastEnteredValues[i]);
-        }
-        costsPopupMenu.show();
     }
 }

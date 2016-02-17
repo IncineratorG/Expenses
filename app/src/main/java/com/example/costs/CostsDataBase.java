@@ -34,6 +34,8 @@ public class CostsDataBase extends SQLiteOpenHelper {
     private static final String COLUMN_DATE_IN_MILLISECONDS = "dateinmilliseconds";
     private static final String COLUMN_COST_VALUE = "costvalue";
 
+    private static final String TABLE_COST_VALUES_OLD = "costvaluesold";
+
     private static final String TABLE_EVENTS = "events";
     private static final String COLUMN_EVENT_DESCRIPTION = "eventdescription";
     private static final String COLUMN_EVENT_DATE = "eventdate";
@@ -62,6 +64,15 @@ public class CostsDataBase extends SQLiteOpenHelper {
                 COLUMN_COST_NAME + " TEXT, " +
                 COLUMN_COST_VALUE + " REAL)";
 
+        // Таблица, в которой хранятся записи расходов, внесённых
+        // больше чем два месяца назад
+        String createTableCostValuesOld = "CREATE TABLE " + TABLE_COST_VALUES_OLD + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_MONTH + " INTEGER, " +
+                COLUMN_YEAR + " INTEGER, " +
+                COLUMN_COST_NAME + " TEXT, " +
+                COLUMN_COST_VALUE + " REAL)";
+
         // Таблица, хранящая записи о ближайщих событиях
         String createTableEvents = "CREATE TABLE " + TABLE_EVENTS + " (" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -72,6 +83,7 @@ public class CostsDataBase extends SQLiteOpenHelper {
 
         db.execSQL(createTableCostsNames);
         db.execSQL(createTableCostsValues);
+        db.execSQL(createTableCostValuesOld);
         db.execSQL(createTableEvents);
     }
 
@@ -344,6 +356,7 @@ public class CostsDataBase extends SQLiteOpenHelper {
 
 
     // Удаляет из таблицы COST_NAMES поле costName
+    // Если ошибок не было - возвращает 1
     public int deleteCostName(String costName) {
         String deleteQuery = "DELETE FROM " + TABLE_COST_NAMES +
                 " WHERE " + COLUMN_COST_NAME +
@@ -360,6 +373,35 @@ public class CostsDataBase extends SQLiteOpenHelper {
             e.printStackTrace();
         }
         finally {
+            if (db != null)
+                db.close();
+        }
+
+        return result;
+    }
+
+
+    // Удаляет запись из таблицы TABLE_COST_VALUES.
+    // Если ошибок не было - возвращает 1
+    public int removeValue(String costName, double value, int day, int month, int year) {
+        String deleteValueQuery = "DELETE FROM " + TABLE_COST_VALUES +
+                " WHERE " + COLUMN_YEAR + " = " + year +
+                " AND " + COLUMN_MONTH + " = " + month +
+                " AND " + COLUMN_DAY + " = " + day +
+                " AND " + COLUMN_COST_NAME +
+                " LIKE '" + costName +
+                "' AND " + COLUMN_COST_VALUE + " = " + value;
+
+        SQLiteDatabase db = getWritableDatabase();
+        int result = 1;
+
+        try {
+            db.execSQL(deleteValueQuery);
+        } catch (Exception e) {
+            System.err.println("EXCEPTION IN 'removeValue()'");
+            result = 0;
+            e.printStackTrace();
+        } finally {
             if (db != null)
                 db.close();
         }
@@ -533,6 +575,17 @@ public class CostsDataBase extends SQLiteOpenHelper {
         listOfEntries.toArray(entriesArray);
 
         return entriesArray;
+    }
+
+
+    // Копирует значения, которые старше двух месяцев от текущей даты,
+    // из таблицы 'TABLE_COST_VALUES' в таблицу 'TABLE_COST_VALUES_OLD'
+    public int archiveOldValues() {
+        int result = 1;
+
+        String copyOldValuesQuery = "";
+
+        return result;
     }
 
 
