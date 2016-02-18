@@ -1,9 +1,13 @@
 package com.example.costs;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputFilter;
+import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,14 +20,11 @@ import android.widget.Toast;
 import java.math.BigDecimal;
 
 public class InputDataActivity extends AppCompatActivity {
-    //static final String[] monthNames = {"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
-    //static final String[] declensionMonthNames = {"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"};
 
     EditText inputTextField;
     TextView costTypeTextView;
     TextView costValueTextView;
     TextView dateTextView;
-    PopupMenu costsPopupMenu;
 
     int currentDay;
     int currentMonth;                                       // Начинается с нуля
@@ -78,44 +79,8 @@ public class InputDataActivity extends AppCompatActivity {
         costValueTextView = (TextView) findViewById(R.id.costValue);
         costValueTextView.setText(String.valueOf(currentCosts) + " руб.");
 
-
-
-
-        GeneratePopupMenu();
-
-        // При нажатии на элемент списка последних введённых значений -
-        // удаляем этот элемент из базы
-        costsPopupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                String textLine = item.toString();
-
-                String date = textLine.substring(0, textLine.indexOf(":"));
-                String d = date.substring(0, date.indexOf(" "));
-                int day = Integer.parseInt(d);
-                String m = date.substring(date.indexOf(" ") + 1, date.lastIndexOf(" "));
-                int month = Integer.parseInt(m) - 1;
-                String y = date.substring(date.lastIndexOf(" ") + 1);
-                int year = Integer.parseInt(y);
-
-                String categoryName = textLine.substring(textLine.indexOf(":") + 2);
-                categoryName = categoryName.substring(0, categoryName.indexOf(" "));
-
-                String value = textLine.substring(0, textLine.lastIndexOf(" "));
-                value = value.substring(value.lastIndexOf(" ") + 1);
-                Double val = Double.valueOf(value);
-
-                int result = db.removeValue(categoryName, val, day, month, year);
-                System.out.println("Result: " + result);
-                GeneratePopupMenu();
-                currentCosts = db.getCostValue(-1, currentMonth, currentYear, costType);
-                costValueTextView.setText(String.valueOf(currentCosts) + " руб.");
-
-                return true;
-            }
-        });
-
-
+        // Создаём контекстное меню для просмотра и удаления последних введённых значений
+        registerForContextMenu(costValueTextView);
     }
 
 
@@ -133,30 +98,71 @@ public class InputDataActivity extends AppCompatActivity {
             currentCosts = db.getCostValue(-1, currentMonth, currentYear, costType);
 
             costValueTextView.setText(String.valueOf(currentCosts) + " руб.");
-
-            GeneratePopupMenu();
         }
     }
 
 
 
 
+    // ---------------------- Логика работы контекстного меню --------------------------------------
+    // Создание контекстного меню, содержащего последние введённые значения
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
 
-
-
-
-    public void GeneratePopupMenu() {
         String[] lastEnteredValues = db.getLastThirtyEntries();
-        costsPopupMenu = new PopupMenu(this, costTypeTextView);
-
         for (int i = 0; i < lastEnteredValues.length; ++i) {
-            costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastEnteredValues[i]);
+            menu.add(1, i + 1, i + 1, lastEnteredValues[i]);
         }
+
     }
 
-    public void onCostValueClick(View view) {
-        costsPopupMenu.show();
+    // При нажатии на элементе контекстного меню происходит удаление этого элемента
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        String textLine = item.toString();
+
+        String date = textLine.substring(0, textLine.indexOf(":"));
+        final int day = Integer.parseInt(date.substring(0, date.indexOf(" ")));
+        final int month = Integer.parseInt(date.substring(date.indexOf(" ") + 1, date.lastIndexOf(" "))) - 1;
+        final int year = Integer.parseInt(date.substring(date.lastIndexOf(" ") + 1));
+
+        String categoryNameTemp = textLine.substring(textLine.indexOf(":") + 2);
+        final String categoryName = categoryNameTemp.substring(0, categoryNameTemp.indexOf(" "));
+
+        String value = textLine.substring(0, textLine.lastIndexOf(" "));
+        value = value.substring(value.lastIndexOf(" ") + 1);
+        final Double val = Double.valueOf(value);
+
+        // Диалоговое окно, запрашивающее подтверждение на удаление
+        // выбранного элемента контекстного меню. При нажатии на кнопку "Удалить"
+        // происходит удаление выбранного элемента из базы данных и обновление
+        // текущей суммы расходов по данной категории
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(InputDataActivity.this);
+        adBuilder.setNegativeButton("Отмена", null);
+        adBuilder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int result = db.removeValue(categoryName, val, day, month, year);
+                currentCosts = db.getCostValue(-1, currentMonth, currentYear, costType);
+                costValueTextView.setText(String.valueOf(currentCosts) + " руб.");
+            }
+        });
+        adBuilder.setMessage(textLine);
+
+        AlertDialog dialog = adBuilder.create();
+        dialog.show();
+
+        TextView dialogText = (TextView) dialog.findViewById(android.R.id.message);
+        dialogText.setGravity(Gravity.CENTER);
+
+        return super.onContextItemSelected(item);
     }
+    // ---------------------------------------------------------------------------------------------
+
+
+
+
 
 
 

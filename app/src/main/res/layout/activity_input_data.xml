@@ -60,7 +60,6 @@
         android:id="@+id/costValue"
         android:layout_marginTop="26dp"
         android:layout_below="@+id/costsType"
-        android:layout_centerInParent="true"
-        android:onClick="onCostValueClick" />
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>
