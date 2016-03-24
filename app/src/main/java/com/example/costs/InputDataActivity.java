@@ -134,18 +134,6 @@ public class InputDataActivity extends AppCompatActivity {
 
         final int itemPositionInLastEnteredValuesArray = item.getItemId() - 1;
 
-        String date = textLine.substring(0, textLine.indexOf(":"));
-        final int day = Integer.parseInt(date.substring(0, date.indexOf(".")));
-        final int month = Integer.parseInt(date.substring(date.indexOf(".") + 1, date.lastIndexOf("."))) - 1;
-        final int year = Integer.parseInt(date.substring(date.lastIndexOf(".") + 1));
-
-        String categoryNameTemp = textLine.substring(textLine.indexOf(":") + 2);
-        final String categoryName = categoryNameTemp.substring(0, categoryNameTemp.indexOf(" "));
-
-        String value = textLine.substring(0, textLine.lastIndexOf(" "));
-        value = value.substring(value.lastIndexOf(" ") + 1);
-        final Double val = Double.valueOf(value);
-
         // Диалоговое окно, запрашивающее подтверждение на удаление
         // выбранного элемента контекстного меню. При нажатии на кнопку "Удалить"
         // происходит удаление выбранного элемента из базы данных и обновление
