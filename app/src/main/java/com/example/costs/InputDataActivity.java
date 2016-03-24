@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 public class InputDataActivity extends AppCompatActivity {
 
@@ -31,10 +33,13 @@ public class InputDataActivity extends AppCompatActivity {
     int currentYear;
 
     String costType;
+    String currentCosts;
 
-    Double currentCosts;
+    String[] lastEnteredValues;
 
     CostsDataBase db;
+
+    NumberFormat format;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +47,9 @@ public class InputDataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_input_data);
 
         db = new CostsDataBase(this, null, null, 1);
+
+        format = NumberFormat.getInstance();
+        format.setGroupingUsed(false);
 
         Bundle bundleData = getIntent().getExtras();
         if (bundleData == null)
@@ -51,7 +59,7 @@ public class InputDataActivity extends AppCompatActivity {
         currentMonth = (int) bundleData.get("currentMonth");
         currentYear = (int) bundleData.get("currentYear");
         costType = (String) bundleData.get("costType");
-        currentCosts = Double.parseDouble(String.valueOf(bundleData.get("costValue")));
+        currentCosts = format.format(db.getCostValue(-1, currentMonth, currentYear, costType));
 
         inputTextField = (EditText) findViewById(R.id.inputTextField);
         inputTextField.setOnEditorActionListener(new EditText.OnEditorActionListener()
@@ -77,7 +85,7 @@ public class InputDataActivity extends AppCompatActivity {
         costTypeTextView.setText(costType);
 
         costValueTextView = (TextView) findViewById(R.id.costValue);
-        costValueTextView.setText(String.valueOf(currentCosts) + " руб.");
+        costValueTextView.setText(currentCosts + " руб.");
 
         // Создаём контекстное меню для просмотра и удаления последних введённых значений
         registerForContextMenu(costValueTextView);
@@ -95,7 +103,7 @@ public class InputDataActivity extends AppCompatActivity {
             db.addCosts(Double.valueOf(inputTextString), costType);
 
             inputTextField.setText("");
-            currentCosts = db.getCostValue(-1, currentMonth, currentYear, costType);
+            currentCosts = format.format(db.getCostValue(-1, currentMonth, currentYear, costType));
 
             costValueTextView.setText(String.valueOf(currentCosts) + " руб.");
         }
@@ -110,9 +118,11 @@ public class InputDataActivity extends AppCompatActivity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
-        String[] lastEnteredValues = db.getLastThirtyEntries();
+        lastEnteredValues = db.getLastThirtyEntriesWithMilliseconds();
+
         for (int i = 0; i < lastEnteredValues.length; ++i) {
-            menu.add(1, i + 1, i + 1, lastEnteredValues[i]);
+            menu.add(1, i + 1, i + 1, lastEnteredValues[i].substring(0, lastEnteredValues[i].indexOf("%")));
+            //System.out.println((i + 1) + " - " + lastEnteredValues[i]);
         }
 
     }
@@ -122,10 +132,12 @@ public class InputDataActivity extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         String textLine = item.toString();
 
+        final int itemPositionInLastEnteredValuesArray = item.getItemId() - 1;
+
         String date = textLine.substring(0, textLine.indexOf(":"));
-        final int day = Integer.parseInt(date.substring(0, date.indexOf(" ")));
-        final int month = Integer.parseInt(date.substring(date.indexOf(" ") + 1, date.lastIndexOf(" "))) - 1;
-        final int year = Integer.parseInt(date.substring(date.lastIndexOf(" ") + 1));
+        final int day = Integer.parseInt(date.substring(0, date.indexOf(".")));
+        final int month = Integer.parseInt(date.substring(date.indexOf(".") + 1, date.lastIndexOf("."))) - 1;
+        final int year = Integer.parseInt(date.substring(date.lastIndexOf(".") + 1));
 
         String categoryNameTemp = textLine.substring(textLine.indexOf(":") + 2);
         final String categoryName = categoryNameTemp.substring(0, categoryNameTemp.indexOf(" "));
@@ -143,9 +155,12 @@ public class InputDataActivity extends AppCompatActivity {
         adBuilder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                int result = db.removeValue(categoryName, val, day, month, year);
-                currentCosts = db.getCostValue(-1, currentMonth, currentYear, costType);
-                costValueTextView.setText(String.valueOf(currentCosts) + " руб.");
+                long chosenEntryDateInMilliseconds =
+                        Long.parseLong(lastEnteredValues[itemPositionInLastEnteredValuesArray].substring(lastEnteredValues[itemPositionInLastEnteredValuesArray].lastIndexOf("%") + 1));
+
+                int result = db.removeValue(chosenEntryDateInMilliseconds);
+                currentCosts = format.format(db.getCostValue(-1, currentMonth, currentYear, costType));
+                costValueTextView.setText(currentCosts + " руб.");
             }
         });
         adBuilder.setMessage(textLine);
@@ -155,6 +170,7 @@ public class InputDataActivity extends AppCompatActivity {
 
         TextView dialogText = (TextView) dialog.findViewById(android.R.id.message);
         dialogText.setGravity(Gravity.CENTER);
+
 
         return super.onContextItemSelected(item);
     }

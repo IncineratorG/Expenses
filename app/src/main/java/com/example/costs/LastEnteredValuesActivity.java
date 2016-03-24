@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -25,34 +26,47 @@ public class LastEnteredValuesActivity extends AppCompatActivity {
             return;
         }
 
-        String[] lastMonthEntriesByDayArray = new String[lastMonthEntriesList.size()];
-        lastMonthEntriesList.toArray(lastMonthEntriesByDayArray);
+        if (lastMonthEntriesList.size() == 0) {
 
-        ListView lastEnteredValuesListView = (ListView) findViewById(R.id.lastEnteredValuesListView);
-        ListAdapter adapter = new LastEntriesAdapter(this, lastMonthEntriesByDayArray);
+            String[] lastMonthEntriesByDayArray = new String[1];
+            lastMonthEntriesByDayArray[0] = "Нет записей.";
 
-        lastEnteredValuesListView.setAdapter(adapter);
+            ListView lastEnteredValuesListView = (ListView) findViewById(R.id.lastEnteredValuesListView);
+            ListAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, lastMonthEntriesByDayArray);
 
-        lastEnteredValuesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String chosenTextLine = String.valueOf(parent.getItemAtPosition(position));
+            lastEnteredValuesListView.setAdapter(adapter);
 
-                String day = chosenTextLine.substring(0, chosenTextLine.indexOf(" "));
-                String month = chosenTextLine.substring(chosenTextLine.indexOf(" ") + 1, chosenTextLine.indexOf("$") - 5);
-                String year = chosenTextLine.substring(chosenTextLine.indexOf("$") - 4, chosenTextLine.indexOf("$"));
-                String costValue = chosenTextLine.substring(chosenTextLine.indexOf("$") + 1);
+        } else {
+            String[] lastMonthEntriesByDayArray = new String[lastMonthEntriesList.size()];
 
-                Intent chosenDayEntriesActivity = new Intent(LastEnteredValuesActivity.this, ChosenDayEntriesActivity.class);
+            lastMonthEntriesList.toArray(lastMonthEntriesByDayArray);
 
-                chosenDayEntriesActivity.putExtra("chosenDay", day);
-                chosenDayEntriesActivity.putExtra("chosenMonth", month);
-                chosenDayEntriesActivity.putExtra("chosenYear", year);
-                chosenDayEntriesActivity.putExtra("costValueOnChosenDay", costValue);
+            ListView lastEnteredValuesListView = (ListView) findViewById(R.id.lastEnteredValuesListView);
+            ListAdapter adapter = new LastEntriesAdapter(this, lastMonthEntriesByDayArray);
 
-                startActivity(chosenDayEntriesActivity);
-            }
-        });
+            lastEnteredValuesListView.setAdapter(adapter);
+
+            lastEnteredValuesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String chosenTextLine = String.valueOf(parent.getItemAtPosition(position));
+
+                    String day = chosenTextLine.substring(0, chosenTextLine.indexOf(" "));
+                    String month = chosenTextLine.substring(chosenTextLine.indexOf(" ") + 1, chosenTextLine.indexOf("$") - 5);
+                    String year = chosenTextLine.substring(chosenTextLine.indexOf("$") - 4, chosenTextLine.indexOf("$"));
+                    String costValue = chosenTextLine.substring(chosenTextLine.indexOf("$") + 1);
+
+                    Intent chosenDayEntriesActivity = new Intent(LastEnteredValuesActivity.this, ChosenDayEntriesActivity.class);
+
+                    chosenDayEntriesActivity.putExtra("chosenDay", day);
+                    chosenDayEntriesActivity.putExtra("chosenMonth", month);
+                    chosenDayEntriesActivity.putExtra("chosenYear", year);
+                    chosenDayEntriesActivity.putExtra("costValueOnChosenDay", costValue);
+
+                    startActivity(chosenDayEntriesActivity);
+                }
+            });
+        }
     }
 
 

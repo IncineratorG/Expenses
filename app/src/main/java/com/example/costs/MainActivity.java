@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     Map<String, Double> costsMap = new HashMap<>();
 
+    NumberFormat format;
 
 
 
@@ -63,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+        format = NumberFormat.getInstance();
+        format.setGroupingUsed(false);
 
         // Получаем доступ к базе данных
         if (cdb == null)
@@ -157,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                                 inputDataActivity = new Intent(MainActivity.this, InputDataActivity.class);
 
                             inputDataActivity.putExtra("costType", textLine.substring(0, textLine.indexOf("$")));
-                            inputDataActivity.putExtra("costValue", textLine.substring(textLine.indexOf("$") + 1));
+                            //inputDataActivity.putExtra("costValue", textLine.substring(textLine.indexOf("$") + 1));
                             inputDataActivity.putExtra("currentDay", currentDay);
                             inputDataActivity.putExtra("currentMonth", currentMonth);
                             inputDataActivity.putExtra("currentYear", currentYear);
@@ -231,8 +236,8 @@ public class MainActivity extends AppCompatActivity {
             costsMap.put(costType, costValue);
         }
 
-        DecimalFormat format = new DecimalFormat("0.00");
-        currentOverallCosts = String.valueOf(format.format(totalCostsValue));
+        // Устанавливаем суммарное значение расходов за текущий месяц
+        currentOverallCosts = format.format(totalCostsValue);
         currentCostsTextView.setText(currentOverallCosts + " руб.");
     }
 
@@ -241,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         List<String> listOfCosts = new ArrayList<>();
 
         for (Map.Entry<String, Double> entry : costsMap.entrySet())
-            listOfCosts.add(entry.getKey() + "$" + entry.getValue());
+            listOfCosts.add(entry.getKey() + "$" + format.format(entry.getValue()));
 
         String[] costsArray = new String[listOfCosts.size() + 1];
         listOfCosts.toArray(costsArray);
@@ -339,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // Просмотр последних десяти введённых значений
+    // Просмотр последних тридцати введённых значений
     public void onCostsClick(View view) {
         String[] lastThirtyEntriesArray = cdb.getLastThirtyEntries();
 

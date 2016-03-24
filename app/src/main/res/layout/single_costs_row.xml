@@ -10,8 +10,10 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Cost type"
         android:id="@+id/costType"
-        android:layout_weight="0.98"
-        android:layout_margin="15dp" />
+        android:layout_weight="0.5"
+        android:layout_margin="15dp"
+        android:singleLine="true" />
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,6 +21,9 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Value"
         android:id="@+id/costValue"
-        android:layout_margin="15dp" />
+        android:layout_weight="0.5"
+        android:layout_margin="15dp"
+        android:gravity="right"
+        android:singleLine="true" />
 
 </LinearLayout>

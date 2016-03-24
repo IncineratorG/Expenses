@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:id="@+id/inputTextField"
-        android:layout_marginTop="125dp"
+        android:layout_marginTop="81dp"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:inputType="number|numberSigned|numberDecimal"
@@ -47,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Еда"
+        android:text="Категория расходов"
         android:id="@+id/costsType"
         android:layout_below="@+id/date"
         android:layout_centerHorizontal="true" />
@@ -56,10 +56,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="0.0"
+        android:text="100000.00"
         android:id="@+id/costValue"
-        android:layout_marginTop="26dp"
         android:layout_below="@+id/costsType"
-        android:layout_centerInParent="true" />
+        android:layout_alignRight="@+id/date"
+        android:layout_alignEnd="@+id/date" />
 
 </RelativeLayout>

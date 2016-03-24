@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.ListAdapter;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -383,23 +384,18 @@ public class CostsDataBase extends SQLiteOpenHelper {
 
     // Удаляет запись из таблицы TABLE_COST_VALUES.
     // Если ошибок не было - возвращает 1
-    public int removeValue(String costName, double value, int day, int month, int year) {
+    public int removeValue(long dateInMilliseconds) {
+        int result = 1;
         String deleteValueQuery = "DELETE FROM " + TABLE_COST_VALUES +
-                " WHERE " + COLUMN_YEAR + " = " + year +
-                " AND " + COLUMN_MONTH + " = " + month +
-                " AND " + COLUMN_DAY + " = " + day +
-                " AND " + COLUMN_COST_NAME +
-                " LIKE '" + costName +
-                "' AND " + COLUMN_COST_VALUE + " = " + value;
+                " WHERE " + COLUMN_DATE_IN_MILLISECONDS + " = " + dateInMilliseconds;
 
         SQLiteDatabase db = getWritableDatabase();
-        int result = 1;
 
         try {
             db.execSQL(deleteValueQuery);
         } catch (Exception e) {
-            System.err.println("EXCEPTION IN 'removeValue()'");
             result = 0;
+            System.err.println("EXCEPTION IN 'removeValue()'.");
             e.printStackTrace();
         } finally {
             if (db != null)
@@ -485,6 +481,9 @@ public class CostsDataBase extends SQLiteOpenHelper {
         List<String> lastThirtyEntriesList = new ArrayList<>(30);
         StringBuilder sb = new StringBuilder();
 
+        NumberFormat format = NumberFormat.getInstance();
+        format.setGroupingUsed(false);
+
         try {
             c = db.rawQuery(getLastThirtyEnteredValuesQuery, null);
             c.moveToFirst();
@@ -502,8 +501,70 @@ public class CostsDataBase extends SQLiteOpenHelper {
                 sb.append(c.getString(c.getColumnIndex(COLUMN_COST_NAME)));
                 sb.append(" ");
 
-                sb.append(c.getString(c.getColumnIndex(COLUMN_COST_VALUE)));
+                sb.append(format.format(c.getDouble(c.getColumnIndex(COLUMN_COST_VALUE))));
                 sb.append(" руб.");
+
+                lastThirtyEntriesList.add(sb.toString());
+                sb.setLength(0);
+
+                c.moveToNext();
+            }
+
+        } catch (Exception e) {
+            System.err.println("EXCEPTION IN 'getLastThirtyEntries()'.");
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        String[] lastThirtyEntriesArray = new String[lastThirtyEntriesList.size()];
+        lastThirtyEntriesList.toArray(lastThirtyEntriesArray);
+
+        return lastThirtyEntriesArray;
+    }
+
+    public String[] getLastThirtyEntriesWithMilliseconds() {
+        String getLastThirtyEnteredValuesQuery = "SELECT " +
+                COLUMN_DAY + ", " + COLUMN_MONTH + ", " + COLUMN_YEAR + ", " +
+                COLUMN_COST_NAME + ", " + COLUMN_COST_VALUE + ", " + COLUMN_DATE_IN_MILLISECONDS +
+                " FROM " + TABLE_COST_VALUES +
+                " ORDER BY " + COLUMN_DATE_IN_MILLISECONDS +
+                " DESC " +
+                " LIMIT " + 30;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<String> lastThirtyEntriesList = new ArrayList<>(30);
+        StringBuilder sb = new StringBuilder();
+
+        NumberFormat format = NumberFormat.getInstance();
+        format.setGroupingUsed(false);
+
+        try {
+            c = db.rawQuery(getLastThirtyEnteredValuesQuery, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                sb.append(c.getString(c.getColumnIndex(COLUMN_DAY)));
+                sb.append(".");
+
+                sb.append(c.getInt(c.getColumnIndex(COLUMN_MONTH)) + 1);
+                sb.append(".");
+
+                sb.append(c.getString(c.getColumnIndex(COLUMN_YEAR)));
+                sb.append(": ");
+
+                sb.append(c.getString(c.getColumnIndex(COLUMN_COST_NAME)));
+                sb.append(" ");
+
+                sb.append(format.format(c.getDouble(c.getColumnIndex(COLUMN_COST_VALUE))));
+                sb.append(" руб.");
+                sb.append("%");
+
+                sb.append(c.getString(c.getColumnIndex(COLUMN_DATE_IN_MILLISECONDS)));
 
                 lastThirtyEntriesList.add(sb.toString());
                 sb.setLength(0);
