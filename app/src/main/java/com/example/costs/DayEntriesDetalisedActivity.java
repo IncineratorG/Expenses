@@ -21,10 +21,10 @@ public class DayEntriesDetalisedActivity extends AppCompatActivity {
         String month = (String) dataFromChosenDayEntriesActivity.get("chosenMonth");
         String year = (String) dataFromChosenDayEntriesActivity.get("chosenYear");
 
-        String[] entriesOnSpecifiedDayArray = db.getEntriesOnSpecifiedDateAndCostName(Integer.valueOf(day),
-                                                                                        Integer.valueOf(month),
-                                                                                        Integer.valueOf(year),
-                                                                                        costName);
+        String[] entriesOnSpecifiedDayArray = db.getEntriesOnSpecifiedDayAndCostName(Integer.valueOf(day),
+                Integer.valueOf(month),
+                Integer.valueOf(year),
+                costName);
 
         ListView entriesOnSpecifiedDayListView = (ListView) findViewById(R.id.entriesOnSpecifiedDayListView);
         ListAdapter entriesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, entriesOnSpecifiedDayArray);

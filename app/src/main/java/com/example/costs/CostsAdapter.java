@@ -23,7 +23,7 @@ class CostsAdapter extends ArrayAdapter<String> {
         String costType = textLine.substring(0, textLine.indexOf("$"));
         String costValue = textLine.substring(textLine.indexOf("$") + 1);
 
-        if (!costValue.equals("+"))
+        if (!"+".equals(costValue))
             costValue = costValue + " руб.";
 
         TextView costTypeText = (TextView) singleCostsRow.findViewById(R.id.costType);

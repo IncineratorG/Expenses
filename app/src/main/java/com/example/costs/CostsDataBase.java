@@ -290,6 +290,9 @@ public class CostsDataBase extends SQLiteOpenHelper {
         List<String> listOfEntries = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
+        NumberFormat format = NumberFormat.getInstance();
+        format.setGroupingUsed(false);
+
         try {
             c = db.rawQuery(getCostValuesOnSpecifiedDayQuery, null);
             c.moveToFirst();
@@ -298,7 +301,7 @@ public class CostsDataBase extends SQLiteOpenHelper {
                 sb.append(c.getString(c.getColumnIndex(COLUMN_COST_NAME)));
                 sb.append("$");
 
-                sb.append(c.getString(c.getColumnIndex("SUM")));
+                sb.append(format.format(c.getDouble(c.getColumnIndex("SUM"))));
 
                 listOfEntries.add(sb.toString());
                 sb.setLength(0);
@@ -407,7 +410,8 @@ public class CostsDataBase extends SQLiteOpenHelper {
 
 
     // Возвращает список расходов, внесённых за последний месяц, состоящих из даты (1 1 2015)
-    // и суммы расходов за эту дату, разделённых знаком '$' (1 1 2015$77.7)
+    // и суммы расходов за эту дату, разделённых знаком '$' (1 1 2015$77.7).
+    // Месяц - это последние 30 дней.
     public List<String> getLastMonthEntriesGroupedByDays() {
         Calendar calendar = Calendar.getInstance();
         long currentDateInMilliseconds = calendar.getTimeInMillis();
@@ -429,6 +433,9 @@ public class CostsDataBase extends SQLiteOpenHelper {
         StringBuilder sb = new StringBuilder();
         List<String> lastMonthEntriesList = new ArrayList<>();
 
+        NumberFormat format = NumberFormat.getInstance();
+        format.setGroupingUsed(false);
+
         try {
             c = db.rawQuery(getLastMonthEntriesQuery, null);
             c.moveToFirst();
@@ -443,7 +450,7 @@ public class CostsDataBase extends SQLiteOpenHelper {
                 sb.append(c.getString(c.getColumnIndex(COLUMN_YEAR)));
                 sb.append("$");
 
-                sb.append(c.getString(c.getColumnIndex("SUM")));
+                sb.append(format.format(c.getDouble(c.getColumnIndex("SUM"))));
                 sb.append(" ");
 
                 lastMonthEntriesList.add(sb.toString());
@@ -589,11 +596,11 @@ public class CostsDataBase extends SQLiteOpenHelper {
     }
 
 
-    // Возвращает массив, состоящий из строк с названием и значением расходов
-    // по заданной категории за заданный день
-    public String[] getEntriesOnSpecifiedDateAndCostName(int day, int month, int year, String costName) {
+    // Возвращает массив, состоящий из строк с названием статьи расходов, её значением и
+    // датой добавления в базу в миллисекундах на заданный день
+    public String[] getEntriesOnSpecifiedDayAndCostName(int day, int month, int year, String costName) {
         String getEntriesOnSpecifiedDateByCostNameQuery = "SELECT " +
-                COLUMN_COST_NAME + ", " + COLUMN_COST_VALUE +
+                COLUMN_COST_NAME + ", " + COLUMN_COST_VALUE + ", " + COLUMN_DATE_IN_MILLISECONDS +
                 " FROM " + TABLE_COST_VALUES +
                 " WHERE " + COLUMN_DAY + " = " + day +
                 " AND " + COLUMN_MONTH + " = " + month +
@@ -605,16 +612,22 @@ public class CostsDataBase extends SQLiteOpenHelper {
         List<String> listOfEntries = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
+        NumberFormat format = NumberFormat.getInstance();
+        format.setGroupingUsed(false);
+
         try {
             c = db.rawQuery(getEntriesOnSpecifiedDateByCostNameQuery, null);
             c.moveToFirst();
 
             while (!c.isAfterLast()) {
                 sb.append(c.getString(c.getColumnIndex(COLUMN_COST_NAME)));
-                sb.append(":    ");
+                sb.append(":");
 
-                sb.append(c.getString(c.getColumnIndex(COLUMN_COST_VALUE)));
+                sb.append(format.format(c.getDouble(c.getColumnIndex(COLUMN_COST_VALUE))));
                 sb.append(" руб.");
+                sb.append("%");
+
+                sb.append(c.getString(c.getColumnIndex(COLUMN_DATE_IN_MILLISECONDS)));
 
                 listOfEntries.add(sb.toString());
                 sb.setLength(0);
@@ -623,7 +636,7 @@ public class CostsDataBase extends SQLiteOpenHelper {
             }
 
         } catch (Exception e) {
-            System.err.println("EXCEPTION IN 'getEntriesOnSpecifiedDateAndCostName()'.");
+            System.err.println("EXCEPTION IN 'getEntriesOnSpecifiedDayAndCostName()'.");
             e.printStackTrace();
         } finally {
             if (c != null)
@@ -639,6 +652,7 @@ public class CostsDataBase extends SQLiteOpenHelper {
     }
 
 
+    //================== НЕДОДЕЛАНО ===================//
     // Копирует значения, которые старше двух месяцев от текущей даты,
     // из таблицы 'TABLE_COST_VALUES' в таблицу 'TABLE_COST_VALUES_OLD'
     public int archiveOldValues() {

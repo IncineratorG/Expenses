@@ -48,6 +48,7 @@ public class ChosenDayEntriesActivity extends AppCompatActivity {
         ListView chosenDateCostsListView = (ListView) findViewById(R.id.chosenDateCostsListView);
         chosenDateCostsListView.setAdapter(costsAdapter);
 
+        /*
         chosenDateCostsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -62,5 +63,7 @@ public class ChosenDayEntriesActivity extends AppCompatActivity {
                 startActivity(DayEntriesDetalisedActivity);
             }
         });
+        */
+
     }
 }
