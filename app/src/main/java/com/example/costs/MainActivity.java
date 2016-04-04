@@ -10,13 +10,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     static String nearestEventShown;
 
     TextView currentDateTextView;
-    TextView currentCostsTextView;
+    Button currentCostsButton;
 
     PopupMenu costsPopupMenu;
 
@@ -78,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
             currentDateTextView = (TextView) findViewById(R.id.currentDate);
 
         // Инициализируем поле, отображающее текущие расходы
-        if (currentCostsTextView == null)
-            currentCostsTextView = (TextView) findViewById(R.id.currentCosts);
+        if (currentCostsButton == null)
+            currentCostsButton = (Button) findViewById(R.id.currentCosts);
 
         // Узнаём текущую дату
         SetCurrentDate();
@@ -106,11 +106,23 @@ public class MainActivity extends AppCompatActivity {
         }
         currentDateTextView.setText(currentDay + "  " + declensionMonthNames[currentMonth] + " " + currentYear);
 
+        // Если выбрана текущая дата - можно просматривать последние введённые значения
+        if (!notCurrentDate) {
+            currentCostsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent lastEnteredValues = new Intent(MainActivity.this, LastEnteredValuesActivity.class);
+                    startActivity(lastEnteredValues);
+                }
+            });
+        }
 
+
+        /*
         // При длительном нажатии на общей сумме расходов -
         // переходим на экран, содержащий записи расходов за
         // последний месяц, сгруппированные по дням.
-        currentCostsTextView.setOnLongClickListener(new View.OnLongClickListener() {
+        currentCostsButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 Intent lastEnteredValues = new Intent(MainActivity.this, LastEnteredValuesActivity.class);
@@ -119,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
+        */
 
         // Устанавливаем расходы за выбранный период
         SetCurrentCosts();
@@ -238,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Устанавливаем суммарное значение расходов за текущий месяц
         currentOverallCosts = format.format(totalCostsValue);
-        currentCostsTextView.setText(currentOverallCosts + " руб.");
+        currentCostsButton.setText(currentOverallCosts + " руб.");
     }
 
 
@@ -344,17 +356,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /*
     // Просмотр последних тридцати введённых значений
     public void onCostsClick(View view) {
+
+        Intent lastEnteredValues = new Intent(MainActivity.this, LastEnteredValuesActivity.class);
+        startActivity(lastEnteredValues);
+
+
+
+
+
         String[] lastThirtyEntriesArray = cdb.getLastThirtyEntries();
 
-        costsPopupMenu = new PopupMenu(this, currentCostsTextView);
+        costsPopupMenu = new PopupMenu(this, currentCostsButton);
         for (int i = 0; i < lastThirtyEntriesArray.length; ++i) {
             costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastThirtyEntriesArray[i]);
         }
         costsPopupMenu.show();
-    }
 
+    }
+    */
 
     // Ищет записи в базе данных о ближайших (менее двух недель) событиях.
     // Если находит - выводит сообщение на экран

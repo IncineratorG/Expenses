@@ -9,18 +9,18 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main" tools:context=".MainActivity">
 
-    <TextView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/costs"
+        android:text="2000"
+        android:textSize="24sp"
         android:id="@+id/currentCosts"
-        android:layout_alignParentTop="true"
+        android:textStyle="bold|italic"
+        android:textAlignment="center"
+        android:background="@drawable/costs_button_shape"
+        android:layout_below="@+id/currentDate"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="48dp"
-        android:onClick="onCostsClick"
-        android:maxLines="1"
-        android:singleLine="true" />
+        android:nestedScrollingEnabled="false" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,16 +28,15 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/dayAndMonth"
         android:id="@+id/currentDate"
+        android:onClick="onDateClick"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="onDateClick" />
+        android:layout_centerHorizontal="true" />
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/listView"
         android:layout_below="@+id/currentCosts"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

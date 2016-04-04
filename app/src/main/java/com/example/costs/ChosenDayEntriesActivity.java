@@ -1,14 +1,19 @@
 package com.example.costs;
 
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChosenDayEntriesActivity extends AppCompatActivity {
@@ -48,7 +53,6 @@ public class ChosenDayEntriesActivity extends AppCompatActivity {
         ListView chosenDateCostsListView = (ListView) findViewById(R.id.chosenDateCostsListView);
         chosenDateCostsListView.setAdapter(costsAdapter);
 
-        /*
         chosenDateCostsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -63,7 +67,6 @@ public class ChosenDayEntriesActivity extends AppCompatActivity {
                 startActivity(DayEntriesDetalisedActivity);
             }
         });
-        */
 
     }
 }

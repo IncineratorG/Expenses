@@ -2,6 +2,8 @@ package com.example.costs;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -26,8 +28,20 @@ public class DayEntriesDetalisedActivity extends AppCompatActivity {
                 Integer.valueOf(year),
                 costName);
 
+        /*
+        for (String s : entriesOnSpecifiedDayArray)
+            System.out.println(s);
+        */
+
         ListView entriesOnSpecifiedDayListView = (ListView) findViewById(R.id.entriesOnSpecifiedDayListView);
-        ListAdapter entriesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, entriesOnSpecifiedDayArray);
-        entriesOnSpecifiedDayListView.setAdapter(entriesAdapter);
+        DayEntriesDetalisedAdapter adapter = new DayEntriesDetalisedAdapter(this, entriesOnSpecifiedDayArray);
+        entriesOnSpecifiedDayListView.setAdapter(adapter);
+
+        entriesOnSpecifiedDayListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println("On Click!");
+            }
+        });
     }
 }

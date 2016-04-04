@@ -12,20 +12,17 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 public class InputDataActivity extends AppCompatActivity {
 
     EditText inputTextField;
     TextView costTypeTextView;
-    TextView costValueTextView;
+    Button costValueButton;
     TextView dateTextView;
 
     int currentDay;
@@ -84,11 +81,11 @@ public class InputDataActivity extends AppCompatActivity {
         costTypeTextView = (TextView) findViewById(R.id.costsType);
         costTypeTextView.setText(costType);
 
-        costValueTextView = (TextView) findViewById(R.id.costValue);
-        costValueTextView.setText(currentCosts + " руб.");
+        costValueButton = (Button) findViewById(R.id.costValue);
+        costValueButton.setText(currentCosts + " руб.");
 
         // Создаём контекстное меню для просмотра и удаления последних введённых значений
-        registerForContextMenu(costValueTextView);
+        registerForContextMenu(costValueButton);
     }
 
 
@@ -105,7 +102,7 @@ public class InputDataActivity extends AppCompatActivity {
             inputTextField.setText("");
             currentCosts = format.format(db.getCostValue(-1, currentMonth, currentYear, costType));
 
-            costValueTextView.setText(String.valueOf(currentCosts) + " руб.");
+            costValueButton.setText(String.valueOf(currentCosts) + " руб.");
         }
     }
 
@@ -122,7 +119,6 @@ public class InputDataActivity extends AppCompatActivity {
 
         for (int i = 0; i < lastEnteredValues.length; ++i) {
             menu.add(1, i + 1, i + 1, lastEnteredValues[i].substring(0, lastEnteredValues[i].indexOf("%")));
-            //System.out.println((i + 1) + " - " + lastEnteredValues[i]);
         }
 
     }
@@ -148,7 +144,7 @@ public class InputDataActivity extends AppCompatActivity {
 
                 int result = db.removeValue(chosenEntryDateInMilliseconds);
                 currentCosts = format.format(db.getCostValue(-1, currentMonth, currentYear, costType));
-                costValueTextView.setText(currentCosts + " руб.");
+                costValueButton.setText(currentCosts + " руб.");
             }
         });
         adBuilder.setMessage(textLine);
