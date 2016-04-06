@@ -59,6 +59,7 @@ public class InputDataActivity extends AppCompatActivity {
         currentCosts = format.format(db.getCostValue(-1, currentMonth, currentYear, costType));
 
         inputTextField = (EditText) findViewById(R.id.inputTextField);
+        /*
         inputTextField.setOnEditorActionListener(new EditText.OnEditorActionListener()
         {
             @Override
@@ -73,6 +74,7 @@ public class InputDataActivity extends AppCompatActivity {
             }
 
         });
+        */
         inputTextField.setFilters(new InputFilter[]{new DecimalDigitsInputFilter()});
 
         dateTextView = (TextView) findViewById(R.id.date);
@@ -104,6 +106,12 @@ public class InputDataActivity extends AppCompatActivity {
 
             costValueButton.setText(String.valueOf(currentCosts) + " руб.");
         }
+    }
+
+    // Обработка нажатий эранной клавиатуры
+    public void OnKeyboardButtonClick(View view) {
+        Button b = (Button) view;
+        System.out.println(b.getText());
     }
 
 

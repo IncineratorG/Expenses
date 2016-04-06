@@ -11,6 +11,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,14 +22,21 @@
         <activity
             android:name=".InputDataActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysVisible" />
-        <activity android:name=".Periods" />
-        <activity android:name=".AddNewEvent" />
-        <activity android:name=".AddNewCostTypeActivity" />
-        <activity android:name=".DeleteCostTypeActivity" />
-        <activity android:name=".LastEnteredValuesActivity" />
-        <activity android:name=".ChosenDayEntriesActivity" />
-        <activity android:name=".DayEntriesDetalisedActivity"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name=".Periods"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AddNewEvent"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AddNewCostTypeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".DeleteCostTypeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".LastEnteredValuesActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ChosenDayEntriesActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".DayEntriesDetalisedActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

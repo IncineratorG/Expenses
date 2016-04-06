@@ -1,0 +1,5 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="OnCustomDigitalKeyboardClick" >
+        <item name="android:onClick">OnKeyboardButtonClick</item>
+    </style>
+</resources>
