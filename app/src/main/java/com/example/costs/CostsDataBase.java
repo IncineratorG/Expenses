@@ -27,6 +27,7 @@ public class CostsDataBase extends SQLiteOpenHelper {
 
     private static final String TABLE_COST_NAMES = "costnames";
     private static final String COLUMN_COST_NAME = "costname";
+    private static final String COLUMN_IS_ACTIVE = "isactive";
 
     private static final String TABLE_COST_VALUES = "costsvalues";
     private static final String COLUMN_DAY = "day";
@@ -53,7 +54,8 @@ public class CostsDataBase extends SQLiteOpenHelper {
         // Таблица, хранящая названия статей расходов
         String createTableCostsNames = "CREATE TABLE " + TABLE_COST_NAMES + " (" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_COST_NAME + " TEXT)";
+                COLUMN_COST_NAME + " TEXT, " +
+                COLUMN_IS_ACTIVE + " INTEGER)";
 
         // Таблица, хранящая записи о расходах по соответствующей статье расходов
         String createTableCostsValues = "CREATE TABLE " + TABLE_COST_VALUES + " (" +
@@ -168,32 +170,28 @@ public class CostsDataBase extends SQLiteOpenHelper {
         return sum;
     }
 
-
-    // Возвращает массив строк, состоящих из месяца и года (1 2016),
-    // для которых присутствуют записи в базе
-    public List<String> getAllPeriods() {
-        String getAllPeriodsQuery = "SELECT DISTINCT " +
-                COLUMN_MONTH + ", " +
-                COLUMN_YEAR + " FROM " +
-                TABLE_COST_VALUES +
-                " ORDER BY " + COLUMN_DATE_IN_MILLISECONDS +
-                " DESC";
+    // ------------------------ NEW FUNCTIONS -------------------------------------
+    // Возвращает суммарное значение затрат за указанный месяц
+    public double getTotalCostValueOnSpecifiedMonth(int month, int year) {
+        String query = "SELECT SUM(" + COLUMN_COST_VALUE + ") AS SUM " +
+                " FROM " + TABLE_COST_VALUES +
+                " WHERE " + COLUMN_MONTH + " = " + month +
+                " AND " + COLUMN_YEAR + " = " + year;
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        List<String> listOfPeriods = new ArrayList<>();
-        String[] periodsArray = null;
+        double total = 0.0;
 
         try {
-            c = db.rawQuery(getAllPeriodsQuery, null);
+            c = db.rawQuery(query, null);
             c.moveToFirst();
-
             while (!c.isAfterLast()) {
-                listOfPeriods.add(c.getString(c.getColumnIndex(COLUMN_MONTH)) + " " + c.getString(c.getColumnIndex(COLUMN_YEAR)));
+                total = total + c.getDouble(c.getColumnIndex("SUM"));
                 c.moveToNext();
             }
         } catch (Exception e) {
-            System.err.println("EXCEPTION IN 'getAllPeriods()'.");
+            System.err.println("EXCEPTION IN 'getTotalCostValueOnSpecifiedMonth()'.");
+            e.printStackTrace();
         } finally {
             if (c != null)
                 c.close();
@@ -201,8 +199,119 @@ public class CostsDataBase extends SQLiteOpenHelper {
                 db.close();
         }
 
-        return listOfPeriods;
+        return total;
     }
+
+    // Возвращает строку, состоящую из самого старого месяца и года,
+    // разделённые знаком "$" записи для которого имеются в программе
+    public String getOldestDate() {
+        String query = "SELECT " +
+                COLUMN_MONTH + ", " +
+                COLUMN_YEAR + ", " +
+                "MIN(" + COLUMN_DATE_IN_MILLISECONDS +
+                ") FROM " + TABLE_COST_VALUES;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            c = db.rawQuery(query, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                sb.append(c.getString(c.getColumnIndex(COLUMN_MONTH)));
+                sb.append("$");
+
+                sb.append(c.getString(c.getColumnIndex(COLUMN_YEAR)));
+
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            System.err.println("EXCEPTION IN 'getCostValueOnSpecifiedDate()'.");
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        String oldestDateString = sb.toString();
+
+        return oldestDateString;
+    }
+
+    // Возвращает массив, состоящий из значений затрат за выбранный месяц по выбранной категории расходов
+    public String[] getCostValuesOnSpecifiedDateAndCostName(int month, int year, String costName) {
+        String query = "SELECT " + COLUMN_COST_VALUE + ", " + COLUMN_DAY +
+                " FROM " + TABLE_COST_VALUES +
+                " WHERE " + COLUMN_MONTH + " = " + month +
+                " AND " + COLUMN_YEAR + " = " + year +
+                " AND " + COLUMN_COST_NAME + " LIKE '" + costName + "'" +
+                " ORDER BY " + COLUMN_DAY + " ASC";
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<String> stringList = new ArrayList<>();
+
+        try {
+            c = db.rawQuery(query, null);
+
+            c.moveToFirst();
+            while (!c.isAfterLast()) {
+                stringList.add(c.getString(c.getColumnIndex(COLUMN_DAY)) + "." + month + "." + year + "$" + c.getString(c.getColumnIndex(COLUMN_COST_VALUE)));
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            System.err.println("EXCEPTION IN 'getCostValuesOnSpecifiedDateAndCostName()'.");
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        String[] array = new String[stringList.size()];
+        stringList.toArray(array);
+
+        return array;
+    }
+
+    public double getTotalCostsForSpecifiedCostTypeAndSpecifiedPeriodInMilliseconds(long startPeriodMillis, long endPeriodMillis, String costName) {
+        String query = "SELECT " + COLUMN_COST_VALUE +
+                " FROM " + TABLE_COST_VALUES +
+                " WHERE " + COLUMN_COST_NAME + " LIKE '" + costName + "'" +
+                " AND " + COLUMN_DATE_IN_MILLISECONDS + " BETWEEN " + startPeriodMillis + " AND " + endPeriodMillis;
+//                " >= " + startPeriodMillis +
+//                " AND " + COLUMN_DATE_IN_MILLISECONDS +
+//                " <= " + endPeriodMillis;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        double total = 0.0;
+
+        try {
+            c = db.rawQuery(query, null);
+            c.moveToFirst();
+            while (!c.isAfterLast()) {
+                total = total + c.getDouble(c.getColumnIndex(COLUMN_COST_VALUE));
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            System.err.println("EXCEPTION IN 'getTotalCostsForSpecifiedCostTypeAndSpecifiedPeriodInMilliseconds()'.");
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return total;
+    }
+    // ----------------------------------------------------------------------------
 
 
     // Добавляет новую статью расходов в базу. Если такая запись
@@ -274,91 +383,6 @@ public class CostsDataBase extends SQLiteOpenHelper {
     }
 
 
-    // Возвращает названия статей расходов и их значения на заданную дату
-    public List<String> getCostValueOnSpecifiedDate(int day, int month, int year) {
-        String getCostValuesOnSpecifiedDayQuery = "SELECT " +
-                COLUMN_COST_NAME + ", " +
-                "SUM(" + COLUMN_COST_VALUE + ") AS SUM " +
-                " FROM " + TABLE_COST_VALUES +
-                " WHERE " + COLUMN_DAY + " = " + day +
-                " AND " + COLUMN_MONTH + " = " + month +
-                " AND " + COLUMN_YEAR + " = " + year +
-                " GROUP BY " + COLUMN_COST_NAME;
-
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor c = null;
-        List<String> listOfEntries = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-
-        NumberFormat format = NumberFormat.getInstance();
-        format.setGroupingUsed(false);
-
-        try {
-            c = db.rawQuery(getCostValuesOnSpecifiedDayQuery, null);
-            c.moveToFirst();
-
-            while (!c.isAfterLast()) {
-                sb.append(c.getString(c.getColumnIndex(COLUMN_COST_NAME)));
-                sb.append("$");
-
-                sb.append(format.format(c.getDouble(c.getColumnIndex("SUM"))));
-
-                listOfEntries.add(sb.toString());
-                sb.setLength(0);
-
-                c.moveToNext();
-            }
-
-        } catch (Exception e) {
-            System.err.println("EXCEPTION IN 'getCostValueOnSpecifiedDate()'.");
-            e.printStackTrace();
-        } finally {
-            if (c != null)
-                c.close();
-            if (db != null)
-                db.close();
-        }
-
-        return listOfEntries;
-    }
-
-
-    // Возвращает список с названиями статей расходов,
-    // присутствующих в базе на заданную дату
-    public List<String> getCostNamesOnSpecifiedMonth(int month, int year) {
-        String getCostNamesOnSpecifiedDateQuery = "SELECT DISTINCT " +
-                COLUMN_COST_NAME +
-                " FROM " + TABLE_COST_VALUES +
-                " WHERE " + COLUMN_YEAR + " = " + year +
-                " AND " + COLUMN_MONTH + " = " + month;
-
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor c = null;
-        List<String> listOfCostNames = new ArrayList<>();
-
-        try {
-            c = db.rawQuery(getCostNamesOnSpecifiedDateQuery, null);
-            c.moveToFirst();
-
-            while (!c.isAfterLast()) {
-                listOfCostNames.add(c.getString(c.getColumnIndex(COLUMN_COST_NAME)));
-                c.moveToNext();
-            }
-
-        } catch (Exception e) {
-            System.err.println("EXCEPTION IN 'getCostNamesOnSpecifiedMonth()'.");
-            e.printStackTrace();
-        } finally {
-            if (c != null)
-                c.close();
-            if (db != null)
-                db.close();
-        }
-
-        return listOfCostNames;
-    }
-
-
     // Удаляет из таблицы COST_NAMES поле costName
     // Если ошибок не было - возвращает 1
     public int deleteCostName(String costName) {
@@ -406,71 +430,6 @@ public class CostsDataBase extends SQLiteOpenHelper {
         }
 
         return result;
-    }
-
-
-    // Возвращает список расходов, внесённых за последний месяц, состоящих из даты (1 1 2015)
-    // и суммы расходов за эту дату, разделённых знаком '$' (1 1 2015$77.7).
-    // Месяц - это последние 30 дней.
-    public List<String> getLastMonthEntriesGroupedByDays() {
-        Calendar calendar = Calendar.getInstance();
-        long currentDateInMilliseconds = calendar.getTimeInMillis();
-        long oneDayInMilliseconds = 86400000;
-        long monthAgoDateInMilliseconds = currentDateInMilliseconds - 30 * oneDayInMilliseconds;
-
-        String getLastMonthEntriesQuery = "SELECT " +
-                COLUMN_DAY + ", " + COLUMN_MONTH + ", " + COLUMN_YEAR +
-                ", SUM(" + COLUMN_COST_VALUE + ") AS SUM " +
-                " FROM " + TABLE_COST_VALUES +
-                " WHERE " + COLUMN_DATE_IN_MILLISECONDS + " > " + monthAgoDateInMilliseconds +
-                " GROUP BY " +
-                COLUMN_DAY + ", " + COLUMN_MONTH + ", " + COLUMN_YEAR +
-                " ORDER BY " + COLUMN_DATE_IN_MILLISECONDS +
-                " DESC";
-
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor c = null;
-        StringBuilder sb = new StringBuilder();
-        List<String> lastMonthEntriesList = new ArrayList<>();
-
-        NumberFormat format = NumberFormat.getInstance();
-        format.setGroupingUsed(false);
-
-        try {
-            c = db.rawQuery(getLastMonthEntriesQuery, null);
-            c.moveToFirst();
-
-            while (!c.isAfterLast()) {
-                sb.append(c.getString(c.getColumnIndex(COLUMN_DAY)));
-                sb.append(" ");
-
-                sb.append(c.getString(c.getColumnIndex(COLUMN_MONTH)));
-                sb.append(" ");
-
-                sb.append(c.getString(c.getColumnIndex(COLUMN_YEAR)));
-                sb.append("$");
-
-                sb.append(format.format(c.getDouble(c.getColumnIndex("SUM"))));
-                sb.append(" ");
-
-                lastMonthEntriesList.add(sb.toString());
-                sb.setLength(0);
-
-                c.moveToNext();
-            }
-
-
-        } catch (Exception e) {
-            System.err.println("EXCEPTION IN 'getLastMonthEntriesGroupedByDays()'.");
-            e.printStackTrace();
-        } finally {
-            if (c != null)
-                c.close();
-            if (db != null)
-                db.close();
-        }
-
-        return lastMonthEntriesList;
     }
 
 
@@ -596,6 +555,179 @@ public class CostsDataBase extends SQLiteOpenHelper {
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Возвращает названия статей расходов и их значения на заданную дату
+    public List<String> getCostValueOnSpecifiedDate(int day, int month, int year) {
+        String getCostValuesOnSpecifiedDayQuery = "SELECT " +
+                COLUMN_COST_NAME + ", " +
+                "SUM(" + COLUMN_COST_VALUE + ") AS SUM " +
+                " FROM " + TABLE_COST_VALUES +
+                " WHERE " + COLUMN_DAY + " = " + day +
+                " AND " + COLUMN_MONTH + " = " + month +
+                " AND " + COLUMN_YEAR + " = " + year +
+                " GROUP BY " + COLUMN_COST_NAME;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<String> listOfEntries = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+
+        NumberFormat format = NumberFormat.getInstance();
+        format.setGroupingUsed(false);
+
+        try {
+            c = db.rawQuery(getCostValuesOnSpecifiedDayQuery, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                sb.append(c.getString(c.getColumnIndex(COLUMN_COST_NAME)));
+                sb.append("$");
+
+                sb.append(format.format(c.getDouble(c.getColumnIndex("SUM"))));
+
+                listOfEntries.add(sb.toString());
+                sb.setLength(0);
+
+                c.moveToNext();
+            }
+
+        } catch (Exception e) {
+            System.err.println("EXCEPTION IN 'getCostValueOnSpecifiedDate()'.");
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return listOfEntries;
+    }
+
+    // Возвращает список с названиями статей расходов,
+    // присутствующих в базе на заданную дату
+    public List<String> getCostNamesOnSpecifiedMonth(int month, int year) {
+        String getCostNamesOnSpecifiedDateQuery = "SELECT DISTINCT " +
+                COLUMN_COST_NAME +
+                " FROM " + TABLE_COST_VALUES +
+                " WHERE " + COLUMN_YEAR + " = " + year +
+                " AND " + COLUMN_MONTH + " = " + month;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<String> listOfCostNames = new ArrayList<>();
+
+        try {
+            c = db.rawQuery(getCostNamesOnSpecifiedDateQuery, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                listOfCostNames.add(c.getString(c.getColumnIndex(COLUMN_COST_NAME)));
+                c.moveToNext();
+            }
+
+        } catch (Exception e) {
+            System.err.println("EXCEPTION IN 'getCostNamesOnSpecifiedMonth()'.");
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return listOfCostNames;
+    }
+
+    // Возвращает список расходов, внесённых за последний месяц, состоящих из даты (1 1 2015)
+    // и суммы расходов за эту дату, разделённых знаком '$' (1 1 2015$77.7).
+    // Месяц - это последние 30 дней.
+    public List<String> getLastMonthEntriesGroupedByDays() {
+        Calendar calendar = Calendar.getInstance();
+        long currentDateInMilliseconds = calendar.getTimeInMillis();
+        long oneDayInMilliseconds = 86400000;
+        long monthAgoDateInMilliseconds = currentDateInMilliseconds - 30 * oneDayInMilliseconds;
+
+        String getLastMonthEntriesQuery = "SELECT " +
+                COLUMN_DAY + ", " + COLUMN_MONTH + ", " + COLUMN_YEAR +
+                ", SUM(" + COLUMN_COST_VALUE + ") AS SUM " +
+                " FROM " + TABLE_COST_VALUES +
+                " WHERE " + COLUMN_DATE_IN_MILLISECONDS + " > " + monthAgoDateInMilliseconds +
+                " GROUP BY " +
+                COLUMN_DAY + ", " + COLUMN_MONTH + ", " + COLUMN_YEAR +
+                " ORDER BY " + COLUMN_DATE_IN_MILLISECONDS +
+                " DESC";
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        StringBuilder sb = new StringBuilder();
+        List<String> lastMonthEntriesList = new ArrayList<>();
+
+        NumberFormat format = NumberFormat.getInstance();
+        format.setGroupingUsed(false);
+
+        try {
+            c = db.rawQuery(getLastMonthEntriesQuery, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                sb.append(c.getString(c.getColumnIndex(COLUMN_DAY)));
+                sb.append(" ");
+
+                sb.append(c.getString(c.getColumnIndex(COLUMN_MONTH)));
+                sb.append(" ");
+
+                sb.append(c.getString(c.getColumnIndex(COLUMN_YEAR)));
+                sb.append("$");
+
+                sb.append(format.format(c.getDouble(c.getColumnIndex("SUM"))));
+                sb.append(" ");
+
+                lastMonthEntriesList.add(sb.toString());
+                sb.setLength(0);
+
+                c.moveToNext();
+            }
+
+
+        } catch (Exception e) {
+            System.err.println("EXCEPTION IN 'getLastMonthEntriesGroupedByDays()'.");
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return lastMonthEntriesList;
+    }
+
     // Возвращает массив, состоящий из строк с названием статьи расходов, её значением и
     // датой добавления в базу в миллисекундах на заданный день
     public String[] getEntriesOnSpecifiedDayAndCostName(int day, int month, int year, String costName) {
@@ -650,6 +782,42 @@ public class CostsDataBase extends SQLiteOpenHelper {
 
         return entriesArray;
     }
+
+    // Возвращает массив строк, состоящих из месяца и года (1 2016),
+    // для которых присутствуют записи в базе
+    public List<String> getAllPeriods() {
+        String getAllPeriodsQuery = "SELECT DISTINCT " +
+                COLUMN_MONTH + ", " +
+                COLUMN_YEAR + " FROM " +
+                TABLE_COST_VALUES +
+                " ORDER BY " + COLUMN_DATE_IN_MILLISECONDS +
+                " DESC";
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<String> listOfPeriods = new ArrayList<>();
+        String[] periodsArray = null;
+
+        try {
+            c = db.rawQuery(getAllPeriodsQuery, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                listOfPeriods.add(c.getString(c.getColumnIndex(COLUMN_MONTH)) + " " + c.getString(c.getColumnIndex(COLUMN_YEAR)));
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            System.err.println("EXCEPTION IN 'getAllPeriods()'.");
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return listOfPeriods;
+    }
+
 
 
     //================== НЕДОДЕЛАНО ===================//

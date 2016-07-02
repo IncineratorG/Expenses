@@ -8,9 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 
-class CostsAdapter extends ArrayAdapter<String> {
+class CostsListViewAdapter extends ArrayAdapter<String> {
 
-    public CostsAdapter(Context context, String[] costs) {
+    public CostsListViewAdapter(Context context, String[] costs) {
         super(context, R.layout.single_costs_row, costs);
     }
 
@@ -20,6 +20,7 @@ class CostsAdapter extends ArrayAdapter<String> {
         View singleCostsRow = inflater.inflate(R.layout.single_costs_row, parent, false);
 
         String textLine = getItem(position);
+
         String costType = textLine.substring(0, textLine.indexOf("$"));
         String costValue = textLine.substring(textLine.indexOf("$") + 1);
 

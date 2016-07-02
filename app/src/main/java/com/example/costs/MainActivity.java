@@ -1,5 +1,8 @@
 package com.example.costs;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,8 +12,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -40,31 +45,45 @@ public class MainActivity extends AppCompatActivity {
     int todayMonth;
     int todayYear;
     int todayDay;
+    int chosenItemPosition;
 
     boolean notCurrentDate;
     static String nearestEventShown;
 
-    TextView currentDateTextView;
-    Button currentCostsButton;
+    TextView currentDateTextViewMainActivity;
+    TextView currentOverallCostsTextViewMainActivity;
 
     PopupMenu costsPopupMenu;
 
     String currentOverallCosts;
 
-    Map<String, Double> costsMap = new HashMap<>();
+    Map<String, Double> costsMap;
 
     NumberFormat format;
 
 
 
 
+    String[] costsArray;
+    ListAdapter costsListViewMainActivityAdapter;
+    ListView costsListViewMainActivity;
+    Dialog currentDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //Remove title bar
+        //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //Remove notification bar
+        //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //getSupportActionBar().hide();
 
         format = NumberFormat.getInstance();
         format.setGroupingUsed(false);
@@ -74,151 +93,307 @@ public class MainActivity extends AppCompatActivity {
             cdb = new CostsDataBase(this, null, null, 1);
 
         // Инициализируем поле, содержащее выбранные день, месяц и год
-        if (currentDateTextView == null)
-            currentDateTextView = (TextView) findViewById(R.id.currentDate);
+        if (currentDateTextViewMainActivity == null)
+            currentDateTextViewMainActivity = (TextView) findViewById(R.id.currentDateMainActivity);
 
         // Инициализируем поле, отображающее текущие расходы
-        if (currentCostsButton == null)
-            currentCostsButton = (Button) findViewById(R.id.currentCosts);
+        if (currentOverallCostsTextViewMainActivity == null)
+            currentOverallCostsTextViewMainActivity = (TextView) findViewById(R.id.currentOverallCostsMainActivity);
 
-        // Узнаём текущую дату
+        // Устанавливаем текущую дату
         SetCurrentDate();
 
-        // Получаем данные о выбранном периоде для просмотра и
-        // устанавливаем выбранную дату
-        Bundle chosenPeriodData = getIntent().getExtras();
-        if (chosenPeriodData != null) {
+        // Устанавливаем суммарное значение расходов за текущий месяц
+        SetCurrentOverallCosts();
 
-            String chosenPeriodString = String.valueOf(chosenPeriodData.get("chosenPeriod"));
+        // Формируем данные для costsListViewMainActivity - названия статей расходов и
+        // значения по этим статьям за текущий месяц; устанавливаем слушатели на
+        // нажатие элемента списка статей расходов (costsListViewMainActivity)
+        CreateListViewContent();
+    }
 
-            if (chosenPeriodData.get("fromPeriods") != null) {
-                currentMonth = Integer.parseInt(chosenPeriodString.substring(0, chosenPeriodString.indexOf(" ")));
-                currentYear = Integer.parseInt(chosenPeriodString.substring(chosenPeriodString.indexOf(" ") + 1));
 
-                if (currentMonth != todayMonth || currentYear != todayYear) {
-                    notCurrentDate = true;
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(currentYear, currentMonth, 1);
-                    currentDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-                } else
-                    notCurrentDate = false;
+    // Обработчик нажатий кнопок в input_data_popup
+    public void OnInputDataPopupClickListener(View view) {
+        Button pressedButton = (Button) view;
+        String buttonLabel = (String)pressedButton.getText();
+
+        TextView costTypeTextView = (TextView) currentDialog.findViewById(R.id.costTypeTextViewInInputDataPopup);
+        String costTypeName = costTypeTextView.getText().toString();
+
+        EditText inputDataEditText = (EditText) currentDialog.findViewById(R.id.inputTextFieldEditTextInInputDataPopup);
+        inputDataEditText.setFilters(new DecimalDigitsInputFilter[] {new DecimalDigitsInputFilter()});
+        inputDataEditText.setCursorVisible(false);
+
+        switch (buttonLabel){
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+            case "5":
+            case "6":
+            case "7":
+            case "8":
+            case "9":
+            case "0":
+                inputDataEditText.append(buttonLabel);
+                break;
+
+            case ".": {
+                String inputText = String.valueOf(inputDataEditText.getText());
+                if (!inputText.contains(".")) {
+                    inputDataEditText.append(".");
+                }
+                break;
             }
-        }
-        currentDateTextView.setText(currentDay + "  " + declensionMonthNames[currentMonth] + " " + currentYear);
 
-        // Если выбрана текущая дата - можно просматривать последние введённые значения
-        if (!notCurrentDate) {
-            currentCostsButton.setOnClickListener(new View.OnClickListener() {
+            case "Del": {
+                String inputText = String.valueOf(inputDataEditText.getText());
+                if (inputText != null && inputText.length() != 0) {
+                    inputText = inputText.substring(0, inputText.length() -1);
+                    inputDataEditText.setText(inputText);
+                }
+                break;
+            }
+
+            case "OK": {
+                String inputText = String.valueOf(inputDataEditText.getText());
+                if (inputText != null && inputText.length() != 0 && !".".equals(inputText)) {
+                    Double enteredCostValue = Double.parseDouble(inputText);
+                    System.out.println(costTypeName + ":" + " " + enteredCostValue);
+
+                    cdb.addCosts(enteredCostValue, costTypeName);
+
+                    // Обновляем главный экран приложения (MainActivity)
+                    SetCurrentOverallCosts();
+                    CreateListViewContent();
+
+                    inputDataEditText.setText("");
+                }
+                break;
+            }
+
+        }
+    }
+
+    // При нажатии на пункт списка статей расходов появляется всплывающее окно,
+    // в котором можно ввести значение расходов по выбранной статье. При нажатии
+    // на пункт "Добавить новую категорию" появляется всплывающее окно, в котором
+    // можно добавить название новой категории расходов
+    public void OnCostsListViewItemClick(AdapterView<?> parent, View view, int position, long id) {
+        String textLine = String.valueOf(parent.getItemAtPosition(position));
+
+        // Нажатие на пункт "Добавить новую категорию"
+        if ("+".equals(String.valueOf(textLine.charAt(textLine.length() - 1)))) {
+            final Dialog dialog = new Dialog(MainActivity.this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.add_new_cost_type_popup);
+
+            // Инициализируем поле ввода названия новой статьи расходов
+            final EditText inputTextField = (EditText) dialog.findViewById(R.id.costTypeTextViewInAddNewCostTypePopup);
+            inputTextField.setCursorVisible(false);
+
+            // Инициализируем кнопки всплывающего окна
+            Button addNewCostTypeButton = (Button) dialog.findViewById(R.id.addNewCostTypeButton);
+            Button cancelButton = (Button) dialog.findViewById(R.id.cancelButton);
+
+            // Устанавливаем слушатели на кнопки
+            addNewCostTypeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent lastEnteredValues = new Intent(MainActivity.this, LastEnteredValuesActivity.class);
-                    startActivity(lastEnteredValues);
+                    String newCostTypeName = inputTextField.getText().toString();
+
+                    if (newCostTypeName.length() > 0) {
+                        int result = cdb.addNewCostName(newCostTypeName);
+                        if (result == 1) {
+                            Toast newCostTypeAddedToast = Toast.makeText(MainActivity.this, "Категория '" + newCostTypeName + "' создана.", Toast.LENGTH_LONG);
+
+                            // Обновляем главный экран приложения (MainActivity)
+                            SetCurrentOverallCosts();
+                            CreateListViewContent();
+
+                            dialog.cancel();
+                            newCostTypeAddedToast.show();
+                        } else {
+                            Toast newCostTypeAddedToast = Toast.makeText(MainActivity.this, "Категория '" + newCostTypeName + "' уже создана.", Toast.LENGTH_LONG);
+                            newCostTypeAddedToast.show();
+                        }
+                    }
                 }
             });
+
+            cancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.cancel();
+                }
+            });
+
+            dialog.show();
+        }
+        // Нажатие на название категроии расходов
+        else {
+            // Получаем название выбранной статьи расходов
+            String costTypeName = textLine.substring(0, textLine.indexOf("$"));
+
+            final Dialog dialog = new Dialog(MainActivity.this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.input_data_popup);
+            currentDialog = dialog;
+
+            // Инициализируем поле с названием выбранной статьи расходов
+            TextView chosenCostTypeNameTextView = (TextView) dialog.findViewById(R.id.costTypeTextViewInInputDataPopup);
+            chosenCostTypeNameTextView.setText(costTypeName);
+
+            dialog.show();
+        }
+    }
+
+
+    // При длительном нажатии на пункт списка статей расходов появляется всплывающее окно,
+    // позволяющее редактировать название выбранной статьи расходов (удалить, перименовать)
+    public boolean OnCostsListViewItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        String textLine = String.valueOf(parent.getItemAtPosition(position));
+
+        if (!"+".equals(String.valueOf(textLine.charAt(textLine.length() - 1)))) {
+            final String chosenCostTypeName = textLine.substring(0, textLine.indexOf("$"));
+
+            final Dialog dialog = new Dialog(MainActivity.this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.edit_cost_type_popup);
+
+            // Устанавливаем поле с названием выбранной статьи расходов
+            final EditText chosenCostTypeNameEditText = (EditText) dialog.findViewById(R.id.costTypeNameEditTextInEditCostTypePopup);
+            chosenCostTypeNameEditText.setCursorVisible(false);
+            chosenCostTypeNameEditText.setText(chosenCostTypeName);
+            chosenCostTypeNameEditText.setEnabled(false);
+
+            // Инициализируем кнопки всплывающего окна
+            Button renameButton = (Button) dialog.findViewById(R.id.renameButton);
+            Button deleteButton = (Button) dialog.findViewById(R.id.deleteButton);
+            Button cancelButton = (Button) dialog.findViewById(R.id.cancelButton);
+
+            cancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.cancel();
+                }
+            });
+
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int result = cdb.deleteCostName(chosenCostTypeName);
+                    if (result == 1) {
+                        Toast costTypeDeletedToast = Toast.makeText(MainActivity.this, "Категория '" + chosenCostTypeName + "' удалена.", Toast.LENGTH_LONG);
+                        costTypeDeletedToast.show();
+
+                        // Обновляем главный экран приложения (MainActivity)
+                        SetCurrentOverallCosts();
+                        CreateListViewContent();
+
+                        // Закрываем окно редактирования
+                        dialog.cancel();
+                    } else {
+                        Toast errorDeletingCostTypeToast = Toast.makeText(MainActivity.this, "Не удалось удалить категорию " + chosenCostTypeName + ".", Toast.LENGTH_LONG);
+                        errorDeletingCostTypeToast.show();
+                    }
+                }
+            });
+
+            renameButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast notImplementedToast = Toast.makeText(MainActivity.this, "Не реализовано.", Toast.LENGTH_LONG);
+                    notImplementedToast.show();
+                }
+            });
+
+            dialog.show();
         }
 
+        return true;
+    }
 
-        /*
-        // При длительном нажатии на общей сумме расходов -
-        // переходим на экран, содержащий записи расходов за
-        // последний месяц, сгруппированные по дням.
-        currentCostsButton.setOnLongClickListener(new View.OnLongClickListener() {
+
+    // При нажатии на суммарное значение расходов за текущий месяц появляется список,
+    // содержащий последние тридцать введённых значений. При нажатии на элемент этого
+    // списка появляется всплывающее окно, предлагающее удалить выбранную запись из программы
+    public void OnOverallCostsValueClick(View view) {
+        final String[] lastEnteredValues = cdb.getLastThirtyEntriesWithMilliseconds();
+
+        PopupMenu lastEntriesPopupMenu = new PopupMenu(this, currentOverallCostsTextViewMainActivity);
+        for (int i = 0; i < lastEnteredValues.length; ++i)
+            lastEntriesPopupMenu.getMenu().add(1, i + 1, i + 1, lastEnteredValues[i].substring(0, lastEnteredValues[i].indexOf("%")));
+
+        lastEntriesPopupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
-            public boolean onLongClick(View v) {
-                Intent lastEnteredValues = new Intent(MainActivity.this, LastEnteredValuesActivity.class);
-                startActivity(lastEnteredValues);
+            public boolean onMenuItemClick(MenuItem item) {
+                System.out.println(item.getTitle().toString());
+                System.out.println(lastEnteredValues[item.getItemId() - 1]);
+
+                final int itemPositionInLastEnteredValuesArray = item.getItemId() - 1;
+
+                // Диалоговое окно, запрашивающее подтверждение на удаление
+                // выбранного элемента контекстного меню. При нажатии на кнопку "Удалить"
+                // происходит удаление выбранного элемента из базы данных и обновление
+                // текущей суммы расходов по данной категории
+                AlertDialog.Builder adBuilder = new AlertDialog.Builder(MainActivity.this);
+                adBuilder.setNegativeButton("Отмена", null);
+                adBuilder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String dateString = lastEnteredValues[itemPositionInLastEnteredValuesArray].substring(lastEnteredValues[itemPositionInLastEnteredValuesArray].indexOf("%") + 1);
+                        Long chosenItemDateInMilliseconds = Long.parseLong(dateString);
+                        int result = cdb.removeValue(chosenItemDateInMilliseconds);
+
+                        // Обновляем главный экран приложения (MainActivity)
+                        SetCurrentOverallCosts();
+                        CreateListViewContent();
+                    }
+                });
+                adBuilder.setMessage(item.getTitle().toString());
+
+                AlertDialog dialog = adBuilder.create();
+                dialog.show();
+
+                TextView dialogText = (TextView) dialog.findViewById(android.R.id.message);
+                dialogText.setGravity(Gravity.CENTER);
 
                 return true;
             }
         });
-        */
-
-        // Устанавливаем расходы за выбранный период
-        SetCurrentCosts();
 
 
-        // Формируем данные для ListView. Если пользователь просматривает затраты за какой-либо
-        // предыдущий месяц (выбранная дата не совпадает с текущей) - убираем из списка пункт с
-        // возможностью добавления новых статей расходов.
-        final String[] costsArray = CreateCostsArray();
-        String[] costsArrayWithoutAddNewCostTypeButton = new String[costsArray.length - 1];
-        System.arraycopy(costsArray, 0, costsArrayWithoutAddNewCostTypeButton, 0, costsArrayWithoutAddNewCostTypeButton.length);
-
-        ListAdapter listAdapter = null;
-        if (!notCurrentDate)
-            listAdapter = new CostsAdapter(this, costsArray);
-        else
-            listAdapter = new CostsAdapter(this, costsArrayWithoutAddNewCostTypeButton);
-
-        ListView listView = (ListView) findViewById(R.id.listView);
-        listView.setAdapter(listAdapter);
-
-        // Если выбрана текущая дата - можно добавлять данныеё
-        // о затратах за текущий период и редактировать список затрат
-        if (!notCurrentDate) {
-            listView.setOnItemClickListener(
-                    new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            String textLine = String.valueOf(parent.getItemAtPosition(position));
-                            String costValue = textLine.substring(textLine.indexOf("$") + 1);
-
-                            // Если пользователь выбрал пункт "Добавить новую категорию" - переходим на
-                            // экран добавления новой категории расходов. Иначе - переходим на экран
-                            // ввода затрат по выбранной категории
-                            Intent inputDataActivity = null;
-                            if (position == costsArray.length - 1) {
-                                if ("+".equals(costValue))
-                                    inputDataActivity = new Intent(MainActivity.this, AddNewCostTypeActivity.class);
-                            } else
-                                inputDataActivity = new Intent(MainActivity.this, InputDataActivity.class);
-
-                            inputDataActivity.putExtra("costType", textLine.substring(0, textLine.indexOf("$")));
-                            //inputDataActivity.putExtra("costValue", textLine.substring(textLine.indexOf("$") + 1));
-                            inputDataActivity.putExtra("currentDay", currentDay);
-                            inputDataActivity.putExtra("currentMonth", currentMonth);
-                            inputDataActivity.putExtra("currentYear", currentYear);
-
-                            startActivity(inputDataActivity);
-                        }
-                    }
-            );
-
-
-
-            // При длительном нажатии на элемент списка переходим
-            // на экран удаления выбарнной категории расходов
-            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    String textLine = String.valueOf(parent.getItemAtPosition(position));
-                    String costValue = textLine.substring(textLine.indexOf("$") + 1);
-
-                    // Если значение расходов в данном месяце по выбранной категориии
-                    // не равны нулю - её не возможно удалить
-                    if (Double.parseDouble(costValue) > 0) {
-                        Toast canNotDeleteChosenCategoryToast = Toast.makeText(MainActivity.this,
-                                "Нельзя удалить категорию, по которой имеются записи в текущем месяце!",
-                                Toast.LENGTH_LONG);
-                        canNotDeleteChosenCategoryToast.show();
-                        return true;
-                    } else {
-                        if (!"+".equals(textLine.substring(textLine.indexOf("$") + 1))) {
-                            Intent deleteCostTypeActivity = new Intent(MainActivity.this, DeleteCostTypeActivity.class);
-                            deleteCostTypeActivity.putExtra("costType", textLine.substring(0, textLine.indexOf("$")));
-
-                            startActivity(deleteCostTypeActivity);
-                        }
-                        return true;
-                    }
-
-                }
-            });
-
-            if (nearestEventShown == null)
-                SearchForNearestEvents();
-        }
+        lastEntriesPopupMenu.show();
     }
+
+
+    // Инициализирует costsListViewMainActivity и заполняет его
+    // данными (названия статей расходов и значения по этим статьям
+    // за текущий месяц); устанавливает слушатель на
+    // нажатие элемента списка статей расходов (costsListViewMainActivity)
+    public void CreateListViewContent() {
+        costsArray = CreateCostsArray();
+
+        costsListViewMainActivityAdapter = new CostsListViewAdapter(this, costsArray);
+
+        costsListViewMainActivity = (ListView) findViewById(R.id.costsListViewMainActivity);
+        costsListViewMainActivity.setAdapter(costsListViewMainActivityAdapter);
+        costsListViewMainActivity.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                OnCostsListViewItemClick(parent, view, position, id);
+            }
+        });
+        costsListViewMainActivity.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                return OnCostsListViewItemLongClick(parent, view, position, id);
+            }
+        });
+    }
+
 
 
 
@@ -229,17 +404,17 @@ public class MainActivity extends AppCompatActivity {
         currentMonth = todayMonth = c.get(Calendar.MONTH);
         currentDay = todayDay = c.get(Calendar.DAY_OF_MONTH);
 
-        notCurrentDate = false;
+        currentDateTextViewMainActivity.setText(currentDay + " " + declensionMonthNames[currentMonth] + " " + currentYear);
     }
 
 
-    // Устанавливаем текущие расходы
-    public void SetCurrentCosts() {
-        List<String> costsTypes = null;
-        if (!notCurrentDate)
-            costsTypes = cdb.getCostNames();
-        else
-            costsTypes = cdb.getCostNamesOnSpecifiedMonth(currentMonth, currentYear);
+    // Устанавливает суммарное значение расходов за текущий месяц - создаёт карту (Map), состоящую из
+    // пар: название статьи расходов и значение по этой статье за текущий месяц; все значения суммируются
+    // и сумма устанавливается в currentOverallCostsTextViewMainActivity. Созданная карта используеься в
+    // дальнейшем в функции CreateCostsArray.
+    public void SetCurrentOverallCosts() {
+        List<String> costsTypes = cdb.getCostNames();
+        costsMap = new HashMap<>();
 
         Double totalCostsValue = 0.0;
         for (String costType : costsTypes) {
@@ -250,10 +425,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Устанавливаем суммарное значение расходов за текущий месяц
         currentOverallCosts = format.format(totalCostsValue);
-        currentCostsButton.setText(currentOverallCosts + " руб.");
+        currentOverallCostsTextViewMainActivity.setText(currentOverallCosts + " руб.");
     }
 
 
+    // Создаёт массив, состоящий из строк с названиями статей расходов и значениями по этим статьям
+    // за текущий месяц, разделённые символом "$". Последним элементом созданного массива всегда
+    // идёт строка "Добавить новую категорию$+".
     public String[] CreateCostsArray() {
         List<String> listOfCosts = new ArrayList<>();
 
@@ -349,75 +527,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // Переход к экрану выбора периода
-    public void onDateClick(View view) {
-        Intent chosePeriodsIntent = new Intent(this, Periods.class);
-        startActivity(chosePeriodsIntent);
-    }
-
-
-    /*
-    // Просмотр последних тридцати введённых значений
-    public void onCostsClick(View view) {
-
-        Intent lastEnteredValues = new Intent(MainActivity.this, LastEnteredValuesActivity.class);
-        startActivity(lastEnteredValues);
-
-
-
-
-
-        String[] lastThirtyEntriesArray = cdb.getLastThirtyEntries();
-
-        costsPopupMenu = new PopupMenu(this, currentCostsButton);
-        for (int i = 0; i < lastThirtyEntriesArray.length; ++i) {
-            costsPopupMenu.getMenu().add(1, i + 1, i + 1, lastThirtyEntriesArray[i]);
-        }
-        costsPopupMenu.show();
-
-    }
-    */
-
-    // Ищет записи в базе данных о ближайших (менее двух недель) событиях.
-    // Если находит - выводит сообщение на экран
-    public void SearchForNearestEvents() {
-        String todayDateString = String.valueOf(todayDay) + "." + String.valueOf(todayMonth + 1) + "." + String.valueOf(todayYear);
-        long todayDateInMilliseconds = 0;
-        long nearestEventDateInMilliseconds = 0;
-        String[] eventsArray = cdb.getEvents();
-
-        if (eventsArray.length == 0)
-            return;
-
-        try {
-            todayDateInMilliseconds = new SimpleDateFormat("dd.MM.yyyy").parse(todayDateString).getTime();
-            nearestEventDateInMilliseconds = new SimpleDateFormat("dd.MM.yyyy").
-                    parse(eventsArray[0].substring(0, eventsArray[0].indexOf("$"))).getTime();
-        } catch (Exception e) {
-            Toast errorInDateParsingToast = Toast.makeText(this, "ERROR PARSING DATE ON MAIN SCREEN", Toast.LENGTH_LONG);
-            errorInDateParsingToast.show();
-        }
-
-        if ((nearestEventDateInMilliseconds - todayDateInMilliseconds) < 1209600000) {
-            String nearestEventToastText = "До события '" + eventsArray[0].substring(eventsArray[0].indexOf("$") + 1) +
-                    "' осталось меньше двух недель.";
-
-            Toast nearestEventToast = Toast.makeText(this, nearestEventToastText, Toast.LENGTH_LONG);
-            nearestEventToast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER, 0, 0);
-            nearestEventToast.show();
-
-            nearestEventShown = "";
-        }
-    }
-
-
-
-
-
-
-
-
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -431,7 +540,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        menu.add(1, 1, 1, "Напоминания");
+        menu.add(1, 1, 1, "Просмотр статистики");
+        menu.add(1, 2, 2, "Последние введённые значения");
+        menu.add(1, 3, 3, "Редактировать название статей");
+
         return true;
     }
 
@@ -442,11 +554,76 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        // Переход на экран просмотра статистики расходов
         if (id == 1) {
-            Intent addNewEventIntent = new Intent(this, AddNewEvent.class);
-            startActivity(addNewEventIntent);
+            Intent statisticMainScreenIntent = new Intent(MainActivity.this, StatisticMainScreenActivity.class);
+            startActivity(statisticMainScreenIntent);
+        }
+
+        // Просмотр последних введённых значений
+        if (id == 2) {
+            OnOverallCostsValueClick(currentOverallCostsTextViewMainActivity);
+        }
+
+        // Редактирование названия статей расходов
+        if (id == 3) {
+            Toast notImplementedToast = Toast.makeText(MainActivity.this, "Не реализовано.", Toast.LENGTH_LONG);
+            notImplementedToast.show();
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+//    // Ищет записи в базе данных о ближайших (менее двух недель) событиях.
+//    // Если находит - выводит сообщение на экран
+//    public void SearchForNearestEvents() {
+//        String todayDateString = String.valueOf(todayDay) + "." + String.valueOf(todayMonth + 1) + "." + String.valueOf(todayYear);
+//        long todayDateInMilliseconds = 0;
+//        long nearestEventDateInMilliseconds = 0;
+//        String[] eventsArray = cdb.getEvents();
+//
+//        if (eventsArray.length == 0)
+//            return;
+//
+//        try {
+//            todayDateInMilliseconds = new SimpleDateFormat("dd.MM.yyyy").parse(todayDateString).getTime();
+//            nearestEventDateInMilliseconds = new SimpleDateFormat("dd.MM.yyyy").
+//                    parse(eventsArray[0].substring(0, eventsArray[0].indexOf("$"))).getTime();
+//        } catch (Exception e) {
+//            Toast errorInDateParsingToast = Toast.makeText(this, "ERROR PARSING DATE ON MAIN SCREEN", Toast.LENGTH_LONG);
+//            errorInDateParsingToast.show();
+//        }
+//
+//        if ((nearestEventDateInMilliseconds - todayDateInMilliseconds) < 1209600000) {
+//            String nearestEventToastText = "До события '" + eventsArray[0].substring(eventsArray[0].indexOf("$") + 1) +
+//                    "' осталось меньше двух недель.";
+//
+//            Toast nearestEventToast = Toast.makeText(this, nearestEventToastText, Toast.LENGTH_LONG);
+//            nearestEventToast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER, 0, 0);
+//            nearestEventToast.show();
+//
+//            nearestEventShown = "";
+//        }
+//    }
+
+
+
+
+
+
+
+
+
+
 }
