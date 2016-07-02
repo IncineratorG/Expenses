@@ -23,11 +23,16 @@
         <activity
             android:name=".AddNewEvent"
             android:screenOrientation="portrait" />
-        <activity android:name=".StatisticMainScreenActivity" />
-        <activity android:name=".StatisticDetailedActivity" />
-        <activity android:name=".StatisticCostTypeDetailedActivity" />
-        <activity android:name=".StatisticChosePeriodActivity" />
-        <activity android:name=".StatisticChosenPeriodActivity"></activity>
+        <activity android:name=".StatisticMainScreenActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".StatisticDetailedActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".StatisticCostTypeDetailedActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".StatisticChosePeriodActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".StatisticChosenPeriodActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
