@@ -1,4 +1,4 @@
-package com.example.costs;
+package com.example.newcosts;
 
 import org.junit.Test;
 

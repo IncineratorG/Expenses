@@ -1,4 +1,4 @@
-package com.example.costs;
+package com.example.newcosts;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -23,7 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -45,15 +44,11 @@ public class MainActivity extends AppCompatActivity {
     int todayMonth;
     int todayYear;
     int todayDay;
-    int chosenItemPosition;
 
-    boolean notCurrentDate;
     static String nearestEventShown;
 
     TextView currentDateTextViewMainActivity;
     TextView currentOverallCostsTextViewMainActivity;
-
-    PopupMenu costsPopupMenu;
 
     String currentOverallCosts;
 
@@ -111,6 +106,84 @@ public class MainActivity extends AppCompatActivity {
         // нажатие элемента списка статей расходов (costsListViewMainActivity)
         CreateListViewContent();
     }
+
+/*    public void NewButtonOnClick(View view) {
+        CostsDB costsDB = new CostsDB(this, null, null, 1);
+        //String[] dbArray = costsDB.getAllDB();
+
+        cdb.addNewCostName("Еда");
+        cdb.addNewCostName("Промтовары");
+        cdb.addNewCostName("Квартплата");
+        cdb.addNewCostName("Одежда");
+        cdb.addNewCostName("Услуги");
+        cdb.addNewCostName("Транспорт");
+        cdb.addNewCostName("Техника");
+        cdb.addNewCostName("Другое");
+
+
+        int month = 0;
+        int year = 0;
+
+        String monthString = "none";
+        String yearString = "none";
+
+        List<String> periodsList = costsDB.getAllPeriods();
+        for (String period : periodsList) {
+            monthString = period.substring(0, period.indexOf(" "));
+            yearString = period.substring(period.lastIndexOf(" ") + 1);
+
+            month = Integer.parseInt(monthString);
+            year = Integer.parseInt(yearString);
+
+            Func(month, year);
+        }
+    }
+    public void Func(int month, int year) {
+        CostsDB costsDB = new CostsDB(this, null, null, 1);
+
+        String value = "";
+        double doubleValue = 0.0;
+
+        value = costsDB.getCosts(month, year, CostsDB.CostType.FOOD);
+        doubleValue = Double.valueOf(value);
+        cdb.addCostsOnSpecifiedDate(doubleValue, "Еда", month - 1, year);
+        System.out.println(doubleValue);
+
+        value = costsDB.getCosts(month, year, CostsDB.CostType.CLOTHES);
+        doubleValue = Double.valueOf(value);
+        cdb.addCostsOnSpecifiedDate(doubleValue, "Одежда", month - 1, year);
+        System.out.println(doubleValue);
+
+        value = costsDB.getCosts(month, year, CostsDB.CostType.COMMUNAL_RENT);
+        doubleValue = Double.valueOf(value);
+        cdb.addCostsOnSpecifiedDate(doubleValue, "Квартплата", month - 1, year);
+        System.out.println(doubleValue);
+
+        value = costsDB.getCosts(month, year, CostsDB.CostType.ELECTRONICS);
+        doubleValue = Double.valueOf(value);
+        cdb.addCostsOnSpecifiedDate(doubleValue, "Техника", month - 1, year);
+        System.out.println(doubleValue);
+
+        value = costsDB.getCosts(month, year, CostsDB.CostType.GOODS);
+        doubleValue = Double.valueOf(value);
+        cdb.addCostsOnSpecifiedDate(doubleValue, "Промтовары", month - 1, year);
+        System.out.println(doubleValue);
+
+        value = costsDB.getCosts(month, year, CostsDB.CostType.OTHERS);
+        doubleValue = Double.valueOf(value);
+        cdb.addCostsOnSpecifiedDate(doubleValue, "Другое", month - 1, year);
+        System.out.println(doubleValue);
+
+        value = costsDB.getCosts(month, year, CostsDB.CostType.SERVICES);
+        doubleValue = Double.valueOf(value);
+        cdb.addCostsOnSpecifiedDate(doubleValue, "Услуги", month - 1, year);
+        System.out.println(doubleValue);
+
+        value = costsDB.getCosts(month, year, CostsDB.CostType.TRANSPORT);
+        doubleValue = Double.valueOf(value);
+        cdb.addCostsOnSpecifiedDate(doubleValue, "Транспорт", month - 1, year);
+        System.out.println(doubleValue);
+    }*/
 
 
     // Обработчик нажатий кнопок в input_data_popup

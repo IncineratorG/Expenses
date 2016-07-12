@@ -1,4 +1,4 @@
-package com.example.costs;
+package com.example.newcosts;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
@@ -10,8 +10,6 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import java.util.List;
 
 public class StatisticChosenPeriodActivity extends AppCompatActivity {
 
@@ -39,15 +37,15 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
 
         CostsDataBase cdb = new CostsDataBase(this, null, null, 1);
 
-        List<String> costNames = cdb.getCostNames();
+//        List<String> costNames = cdb.getCostNames();
 
-        String[] costNamesAndValues = new String[costNames.size()];
-        double totalCostForChosenPeriod = 0.0;
-        for (int i = 0; i < costNamesAndValues.length; ++i) {
-            double sum = cdb.getTotalCostsForSpecifiedCostTypeAndSpecifiedPeriodInMilliseconds(initialDateInMilliseconds, endingDateInMilliseconds, costNames.get(i));
-            costNamesAndValues[i] = costNames.get(i) + "$" + sum;
-            totalCostForChosenPeriod = totalCostForChosenPeriod + sum;
-        }
+        String[] costNamesAndValues = cdb.getCostValuesOnSpecifiedDateInMilliseconds(initialDateInMilliseconds, endingDateInMilliseconds);
+        double totalCostForChosenPeriod = cdb.getTotalCostForChosenPeriod(initialDateInMilliseconds, endingDateInMilliseconds);
+//        for (int i = 0; i < costNamesAndValues.length; ++i) {
+//            double sum = cdb.getTotalCostsForSpecifiedCostTypeAndSpecifiedPeriodInMilliseconds(initialDateInMilliseconds, endingDateInMilliseconds, costNames.get(i));
+//            costNamesAndValues[i] = costNames.get(i) + "$" + sum;
+//            totalCostForChosenPeriod = totalCostForChosenPeriod + sum;
+//        }
 
         overallCostsForChosenPeriodTextView.setText(String.valueOf(totalCostForChosenPeriod) + " руб.");
 

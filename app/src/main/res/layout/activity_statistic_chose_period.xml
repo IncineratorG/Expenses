@@ -7,7 +7,7 @@
     android:paddingLeft="0sp"
     android:paddingRight="0sp"
     android:paddingTop="0sp"
-    tools:context="com.example.costs.StatisticChosePeriodActivity">
+    tools:context="com.example.newcosts.StatisticChosePeriodActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -76,11 +76,6 @@
             android:layout_weight="6"
             android:layout_gravity="bottom"
             android:layout_marginBottom="0sp">
-
-            <CalendarView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/calendarView" />
 
             <Button
                 android:layout_width="match_parent"

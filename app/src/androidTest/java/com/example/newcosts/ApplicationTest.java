@@ -1,4 +1,4 @@
-package com.example.costs;
+package com.example.newcosts;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

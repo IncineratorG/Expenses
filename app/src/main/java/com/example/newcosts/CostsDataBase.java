@@ -1,16 +1,19 @@
-package com.example.costs;
+package com.example.newcosts;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.ListAdapter;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Саня on 29.01.2016.
@@ -21,7 +24,7 @@ public class CostsDataBase extends SQLiteOpenHelper {
 
 
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "costs.db";
+    private static final String DATABASE_NAME = "newcosts.db";
 
     private static final String COLUMN_ID = "_id";
 
@@ -100,6 +103,30 @@ public class CostsDataBase extends SQLiteOpenHelper {
 
 
 
+    // КОСТЫЛЬ!!!!!!!!!!!!!
+    public void addCostsOnSpecifiedDate(double costValue, String costName, int month, int year) {
+        SQLiteDatabase db = getWritableDatabase();
+
+
+        Date initialDate = null;
+        try {
+            initialDate = new SimpleDateFormat("dd.MM.yyyy", Locale.UK).parse("1." + month + "." + year);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long dateInMilliseconds = initialDate.getTime();
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_DAY, 28);
+        values.put(COLUMN_MONTH, month);
+        values.put(COLUMN_YEAR, year);
+        values.put(COLUMN_DATE_IN_MILLISECONDS, dateInMilliseconds);
+        values.put(COLUMN_COST_NAME, costName);
+        values.put(COLUMN_COST_VALUE, costValue);
+        db.insert(TABLE_COST_VALUES, null, values);
+
+        db.close();
+    }
     // Добавляет новую запись по статье расходов 'costName' в базу данных
     public void addCosts(double costValue, String costName) {
         Calendar calendar = Calendar.getInstance();
@@ -260,7 +287,7 @@ public class CostsDataBase extends SQLiteOpenHelper {
 
             c.moveToFirst();
             while (!c.isAfterLast()) {
-                stringList.add(c.getString(c.getColumnIndex(COLUMN_DAY)) + "." + month + "." + year + "$" + c.getString(c.getColumnIndex(COLUMN_COST_VALUE)));
+                stringList.add(c.getString(c.getColumnIndex(COLUMN_DAY)) + "." + (month + 1) + "." + year + "$" + c.getString(c.getColumnIndex(COLUMN_COST_VALUE)));
                 c.moveToNext();
             }
         } catch (Exception e) {
@@ -277,6 +304,103 @@ public class CostsDataBase extends SQLiteOpenHelper {
         stringList.toArray(array);
 
         return array;
+    }
+
+    public String[] getCostValuesOnSpecifiedDate(int month, int year) {
+        String query = "SELECT " + COLUMN_COST_NAME + ", " + "SUM(" + COLUMN_COST_VALUE + ") AS SUM " +
+                " FROM " + TABLE_COST_VALUES +
+                " WHERE " + COLUMN_MONTH + " = " + month +
+                " AND " + COLUMN_YEAR + " = " + year +
+                " GROUP BY " + COLUMN_COST_NAME;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<String> stringList = new ArrayList<>();
+
+        try {
+            c = db.rawQuery(query, null);
+
+            c.moveToFirst();
+            while (!c.isAfterLast()) {
+                stringList.add(c.getString(c.getColumnIndex(COLUMN_COST_NAME)) + "$" + c.getString(c.getColumnIndex("SUM")));
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            System.err.println("EXCEPTION IN 'getCostValuesOnSpecifiedDate()'.");
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        String[] array = new String[stringList.size()];
+        stringList.toArray(array);
+
+        return array;
+    }
+
+    public String[] getCostValuesOnSpecifiedDateInMilliseconds(long startPeriodMillis, long endPeriodMillis) {
+        String query = "SELECT " + COLUMN_COST_VALUE + ", " + COLUMN_COST_NAME +
+                " FROM " + TABLE_COST_VALUES +
+                " WHERE " + COLUMN_DATE_IN_MILLISECONDS + " BETWEEN " + startPeriodMillis + " AND " + endPeriodMillis;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<String> stringList = new ArrayList<>();
+
+        try {
+            c = db.rawQuery(query, null);
+
+            c.moveToFirst();
+            while (!c.isAfterLast()) {
+                stringList.add(c.getString(c.getColumnIndex(COLUMN_COST_NAME)) + "$" + c.getString(c.getColumnIndex(COLUMN_COST_VALUE)));
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            System.err.println("EXCEPTION IN 'getCostValuesOnSpecifiedDate()'.");
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        String[] array = new String[stringList.size()];
+        stringList.toArray(array);
+
+        return array;
+    }
+
+    public double getTotalCostForChosenPeriod(long startPeriodMillis, long endPeriodMillis) {
+        String query = "SELECT " + COLUMN_COST_VALUE +
+                " FROM " + TABLE_COST_VALUES +
+                " WHERE " + COLUMN_DATE_IN_MILLISECONDS + " BETWEEN " + startPeriodMillis + " AND " + endPeriodMillis;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        double total = 0.0;
+
+        try {
+            c = db.rawQuery(query, null);
+            c.moveToFirst();
+            while (!c.isAfterLast()) {
+                total = total + c.getDouble(c.getColumnIndex(COLUMN_COST_VALUE));
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            System.err.println("EXCEPTION IN 'getTotalCostForChosenPeriod()'.");
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return total;
     }
 
     public double getTotalCostsForSpecifiedCostTypeAndSpecifiedPeriodInMilliseconds(long startPeriodMillis, long endPeriodMillis, String costName) {
@@ -311,6 +435,8 @@ public class CostsDataBase extends SQLiteOpenHelper {
 
         return total;
     }
+
+
     // ----------------------------------------------------------------------------
 
 

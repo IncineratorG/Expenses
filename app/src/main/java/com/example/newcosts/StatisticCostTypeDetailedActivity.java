@@ -1,4 +1,4 @@
-package com.example.costs;
+package com.example.newcosts;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBar;

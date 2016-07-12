@@ -7,7 +7,7 @@
     android:paddingLeft="0sp"
     android:paddingRight="0sp"
     android:paddingTop="0sp"
-    tools:context="com.example.costs.StatisticCostTypeDetailedActivity">
+    tools:context="com.example.newcosts.StatisticCostTypeDetailedActivity">
 
     <LinearLayout
         android:orientation="vertical"

@@ -1,11 +1,9 @@
-package com.example.costs;
+package com.example.newcosts;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,16 +29,24 @@ public class StatisticMainScreenActivity extends AppCompatActivity {
 
         CostsDataBase cdb = new CostsDataBase(this, null, null, 1);
 
-        String oldestDateString = cdb.getOldestDate();
-        String oldestMonthString = oldestDateString.substring(0, oldestDateString.indexOf("$"));
-        String oldestYearString = oldestDateString.substring(oldestDateString.indexOf("$") + 1);
-
-        int oldestMonth = Integer.parseInt(oldestMonthString);
-        int oldestYear = Integer.parseInt(oldestYearString);
-
         Calendar c = Calendar.getInstance();
         int currentMonth = c.get(Calendar.MONTH);
         int currentYear = c.get(Calendar.YEAR);
+
+        int oldestMonth = currentMonth;
+        int oldestYear = currentYear;
+
+        String oldestDateString = cdb.getOldestDate();
+        if (oldestDateString != null && !oldestDateString.equals("") && !oldestDateString.equals("null$null")) {
+            String oldestMonthString = oldestDateString.substring(0, oldestDateString.indexOf("$"));
+            String oldestYearString = oldestDateString.substring(oldestDateString.indexOf("$") + 1);
+
+            System.out.println(oldestMonthString);
+            System.out.println(oldestYearString);
+
+            oldestMonth = Integer.parseInt(oldestMonthString);
+            oldestYear = Integer.parseInt(oldestYearString);
+        }
 
         List<String> periodsList = new ArrayList<>();
         while (true) {

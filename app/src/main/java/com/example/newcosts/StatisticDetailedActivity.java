@@ -1,4 +1,4 @@
-package com.example.costs;
+package com.example.newcosts;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
@@ -11,11 +11,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class StatisticDetailedActivity extends AppCompatActivity {
 
@@ -52,13 +48,12 @@ public class StatisticDetailedActivity extends AppCompatActivity {
 
         CostsDataBase cdb = new CostsDataBase(this, null, null, 1);
 
-        List<String> costNamesList = cdb.getCostNames();
-        List<String> costsList = new ArrayList<>();
-        for (String costName : costNamesList)
-            costsList.add(costName + "$" + cdb.getCostValue(-1, chosenMonth, chosenYear, costName));
+//        List<String> costNamesList = cdb.getCostNames();
+//        List<String> costsList = new ArrayList<>();
+//        for (String costName : costNamesList)
+//            costsList.add(costName + "$" + cdb.getCostValue(-1, chosenMonth, chosenYear, costName));
 
-        String[] costsArray = new String[costsList.size()];
-        costsList.toArray(costsArray);
+        String[] costsArray = cdb.getCostValuesOnSpecifiedDate(chosenMonth, chosenYear);
 
         ListAdapter costsListViewStatisticDetailedActivityAdapter = new CostsListViewAdapter(this, costsArray);
 

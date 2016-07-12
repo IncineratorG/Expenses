@@ -1,4 +1,4 @@
-package com.example.costs;
+package com.example.newcosts;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

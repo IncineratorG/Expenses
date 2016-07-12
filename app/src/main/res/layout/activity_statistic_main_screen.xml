@@ -7,7 +7,7 @@
     android:paddingLeft="0sp"
     android:paddingRight="0sp"
     android:paddingTop="0sp"
-    tools:context="com.example.costs.StatisticMainScreenActivity">
+    tools:context="com.example.newcosts.StatisticMainScreenActivity">
 
     <LinearLayout
         android:orientation="vertical"
