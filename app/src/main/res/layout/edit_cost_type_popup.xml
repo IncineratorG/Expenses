@@ -17,7 +17,9 @@
 
         android:textColor="#000000"
         android:textSize="50sp"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:gravity="center"
+        android:editable="true" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -44,6 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Переименовать"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/renameButton"
                     android:background="@drawable/keyboard_buttons_custom" />
 
@@ -60,8 +63,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Удалить"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/deleteButton"
-                    android:background="@drawable/keyboard_buttons_custom" />
+                    android:background="@drawable/del_button_custom" />
 
             </LinearLayout>
 
@@ -76,6 +80,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Отмена"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/cancelButton"
                     android:background="@drawable/keyboard_buttons_custom" />
 

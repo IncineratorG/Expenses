@@ -9,30 +9,41 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.example.newcosts.MainActivity"
+            android:name=".MainActivity"
             android:label="Мои расходы"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
         </activity>
         <activity
-            android:name="com.example.newcosts.AddNewEvent"
+            android:name=".AddNewEvent"
             android:screenOrientation="portrait" />
-        <activity android:name="com.example.newcosts.StatisticMainScreenActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name="com.example.newcosts.StatisticDetailedActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name="com.example.newcosts.StatisticCostTypeDetailedActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name="com.example.newcosts.StatisticChosePeriodActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name="com.example.newcosts.StatisticChosenPeriodActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".StatisticMainScreenActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".StatisticDetailedActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".StatisticCostTypeDetailedActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".StatisticChosePeriodActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".StatisticChosenPeriodActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".TestMainActivity">
+
+
+
+        </activity>
     </application>
 
 </manifest>

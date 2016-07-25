@@ -11,41 +11,57 @@ import android.widget.TextView;
 
 public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
 
-    String chosenDateString;
-    String overallCostsString;
+    String dataForStatisticDetailedActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_cost_type_detailed);
 
-        Bundle statisticDetailedActivityBundle = getIntent().getExtras();
-        chosenDateString = statisticDetailedActivityBundle.getString("chosenDate");
-        overallCostsString = statisticDetailedActivityBundle.getString("overallCosts");
-
-        int chosenMonth = statisticDetailedActivityBundle.getInt("chosenMonth");
-        int chosenYear = statisticDetailedActivityBundle.getInt("chosenYear");
-        String costName = statisticDetailedActivityBundle.getString("costName");
-        String costValue = statisticDetailedActivityBundle.getString("costValue");
-
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(costName + ": " + chosenDateString);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
-        TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
+        Bundle dataFromStatisticDetailedActivity = getIntent().getExtras();
+        if (dataFromStatisticDetailedActivity != null) {
+            String costName = dataFromStatisticDetailedActivity.getString("costName");
+            String costValue = dataFromStatisticDetailedActivity.getString("costValue");
+            int chosenMonth = dataFromStatisticDetailedActivity.getInt("chosenMonth");
+            int chosenYear = dataFromStatisticDetailedActivity.getInt("chosenYear");
+            dataForStatisticDetailedActivity = dataFromStatisticDetailedActivity.getString("dataForStatisticDetailedActivity");
 
-        dateTextView.setText(chosenDateString);
-        costNameAndCostValueTextView.setText(costName + ": " + costValue + " руб.");
+            CostsDB cdb = new CostsDB(this, null, null, 1);
+            String[] dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
 
-        CostsDataBase cdb = new CostsDataBase(this, null, null, 1);
+            TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
+            TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
 
-        String[] costsArray = cdb.getCostValuesOnSpecifiedDateAndCostName(chosenMonth, chosenYear, costName);
+            dateTextView.setText(StatisticMainScreenActivity.monthNames[chosenMonth] + " " + chosenYear);
+            costNameAndCostValueTextView.setText(costName + ": " + costValue + " руб.");
+            actionBar.setTitle(StatisticMainScreenActivity.monthNames[chosenMonth] + " " + chosenYear + ": " + costName);
 
-        ListAdapter costsListAdapter = new CostsListViewAdapter(this, costsArray);
+            ListAdapter costsListAdapter = new CostsListViewAdapter(this, dataArray);
+            ListView detailedCostsListView = (ListView) findViewById(R.id.listViewInCostTypeDetailed);
+            detailedCostsListView.setAdapter(costsListAdapter);
+        }
 
-        ListView detailedCostsListView = (ListView) findViewById(R.id.listViewInCostTypeDetailed);
-        detailedCostsListView.setAdapter(costsListAdapter);
+//        Bundle statisticDetailedActivityBundle = getIntent().getExtras();
+//        chosenDateString = statisticDetailedActivityBundle.getString("chosenDate");
+//        overallCostsString = statisticDetailedActivityBundle.getString("overallCosts");
+//
+//        int chosenMonth = statisticDetailedActivityBundle.getInt("chosenMonth");
+//        int chosenYear = statisticDetailedActivityBundle.getInt("chosenYear");
+//        String costName = statisticDetailedActivityBundle.getString("costName");
+//        String costValue = statisticDetailedActivityBundle.getString("costValue");
+//
+
+//
+
+//
+//        CostsDataBase cdb = new CostsDataBase(this, null, null, 1);
+//
+//        String[] costsArray = cdb.getCostValuesOnSpecifiedDateAndCostName(chosenMonth, chosenYear, costName);
+//
+
     }
 
     @Override
@@ -55,8 +71,7 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
                 // app icon in action bar clicked; go home
                 Intent intent = new Intent(this, StatisticDetailedActivity.class);
 
-                intent.putExtra("chosenDate", chosenDateString);
-                intent.putExtra("overallCosts", overallCostsString);
+                intent.putExtra("data", dataForStatisticDetailedActivity);
 
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);

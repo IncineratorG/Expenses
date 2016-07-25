@@ -35,21 +35,17 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
         TextView overallCostsForChosenPeriodTextView = (TextView) findViewById(R.id.overallCostsForChosenPeriodTextView);
         ListView chosenPeriodListView = (ListView) findViewById(R.id.chosenPeriodListView);
 
-        CostsDataBase cdb = new CostsDataBase(this, null, null, 1);
+        CostsDB cdb = new CostsDB(this, null, null, 1);
+        String[] dataArray = cdb.test(initialDateInMilliseconds, endingDateInMilliseconds);
+        double totalForPeriod = 0.0;
+        for (String s : dataArray) {
+            double d = Double.parseDouble(s.substring(s.indexOf("$") + 1));
+            totalForPeriod = totalForPeriod + d;
+        }
 
-//        List<String> costNames = cdb.getCostNames();
+        overallCostsForChosenPeriodTextView.setText(String.valueOf(totalForPeriod) + " руб.");
 
-        String[] costNamesAndValues = cdb.getCostValuesOnSpecifiedDateInMilliseconds(initialDateInMilliseconds, endingDateInMilliseconds);
-        double totalCostForChosenPeriod = cdb.getTotalCostForChosenPeriod(initialDateInMilliseconds, endingDateInMilliseconds);
-//        for (int i = 0; i < costNamesAndValues.length; ++i) {
-//            double sum = cdb.getTotalCostsForSpecifiedCostTypeAndSpecifiedPeriodInMilliseconds(initialDateInMilliseconds, endingDateInMilliseconds, costNames.get(i));
-//            costNamesAndValues[i] = costNames.get(i) + "$" + sum;
-//            totalCostForChosenPeriod = totalCostForChosenPeriod + sum;
-//        }
-
-        overallCostsForChosenPeriodTextView.setText(String.valueOf(totalCostForChosenPeriod) + " руб.");
-
-        ListAdapter listViewAdapter = new CostsListViewAdapter(this, costNamesAndValues);
+        ListAdapter listViewAdapter = new CostsListViewAdapter(this, dataArray);
         chosenPeriodListView.setAdapter(listViewAdapter);
 
         chosenPeriodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

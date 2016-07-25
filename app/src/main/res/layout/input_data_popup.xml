@@ -31,7 +31,8 @@
         android:minHeight="70sp"
 
         android:textAlignment="center"
-        android:textSize="50sp" />
+        android:textSize="50sp"
+        android:gravity="center" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -57,6 +58,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="7"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/seven"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
@@ -66,6 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="8"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/eight"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
@@ -75,6 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="9"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/nine"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
@@ -92,6 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="4"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/four"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
@@ -101,6 +106,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/five"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
@@ -110,6 +116,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="6"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/six"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
@@ -127,6 +134,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="1"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/one"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
@@ -136,6 +144,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/two"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
@@ -145,6 +154,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="3"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/three"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
@@ -162,6 +172,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="0"
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/zero"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
@@ -171,6 +182,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="."
+                    android:textColor="@drawable/button_text_color"
                     android:id="@+id/dot"
                     android:layout_weight="2"
                     android:background="@drawable/keyboard_buttons_custom"
@@ -189,18 +201,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Del"
+                android:textColor="@drawable/button_text_color"
                 android:id="@+id/del"
                 android:layout_weight="3"
-                android:background="@drawable/keyboard_buttons_custom"
+                android:background="@drawable/del_button_custom"
                 android:onClick="OnInputDataPopupClickListener" />
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="OK"
+                android:textColor="@drawable/button_text_color"
                 android:id="@+id/ok"
                 android:layout_weight="1"
-                android:background="@drawable/keyboard_buttons_custom"
+                android:background="@drawable/ok_button_custom"
                 android:onClick="OnInputDataPopupClickListener" />
         </LinearLayout>
     </LinearLayout>

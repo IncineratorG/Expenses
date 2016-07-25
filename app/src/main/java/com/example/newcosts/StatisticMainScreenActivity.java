@@ -11,7 +11,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class StatisticMainScreenActivity extends AppCompatActivity {
@@ -27,58 +26,36 @@ public class StatisticMainScreenActivity extends AppCompatActivity {
         actionBar.setTitle("Просмотр статистики");
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        CostsDataBase cdb = new CostsDataBase(this, null, null, 1);
+        CostsDB cdb = new CostsDB(this, null, null, 1);
 
-        Calendar c = Calendar.getInstance();
-        int currentMonth = c.get(Calendar.MONTH);
-        int currentYear = c.get(Calendar.YEAR);
+        // Получаем суммарные значения за месяц и год в формате: "5$1989$575"
+        String[] periodsArrayRaw = cdb.getSumByMonthsEntries();
+        List<String> listOfPeriods = new ArrayList<>();
 
-        int oldestMonth = currentMonth;
-        int oldestYear = currentYear;
-
-        String oldestDateString = cdb.getOldestDate();
-        if (oldestDateString != null && !oldestDateString.equals("") && !oldestDateString.equals("null$null")) {
-            String oldestMonthString = oldestDateString.substring(0, oldestDateString.indexOf("$"));
-            String oldestYearString = oldestDateString.substring(oldestDateString.indexOf("$") + 1);
-
-            System.out.println(oldestMonthString);
-            System.out.println(oldestYearString);
-
-            oldestMonth = Integer.parseInt(oldestMonthString);
-            oldestYear = Integer.parseInt(oldestYearString);
+        // Приводим полученные значения к виду: "Май 1989$575"
+        for (String entry : periodsArrayRaw) {
+            String[] arrayOfEntries = entry.split("\\$");
+            int month = Integer.parseInt(arrayOfEntries[0]);
+            String periodString = month + "$" + monthNames[month] + " " + arrayOfEntries[1] + "$" + arrayOfEntries[2];
+            listOfPeriods.add(periodString);
         }
+        String[] periodsArray = new String[listOfPeriods.size()];
+        listOfPeriods.toArray(periodsArray);
 
-        List<String> periodsList = new ArrayList<>();
-        while (true) {
-            double totalForSpecifiedMonth = cdb.getTotalCostValueOnSpecifiedMonth(oldestMonth, oldestYear);
-            periodsList.add(monthNames[oldestMonth] + " " + oldestYear + "$" + totalForSpecifiedMonth);
-            ++oldestMonth;
-
-            if (oldestMonth == 12) {
-                oldestMonth = 0;
-                ++oldestYear;
-            }
-            if (oldestMonth > currentMonth && oldestYear == currentYear)
-                break;
-        }
-        String[] periodsArray = new String[periodsList.size()];
-        for (int i = 0; i < periodsList.size(); ++i)
-            periodsArray[periodsArray.length - i - 1] = periodsList.get(i);
-
+        // Инициализируем listView
         ListView periodsListView = (ListView) findViewById(R.id.monthlyCostsListViewStatisticActivity);
-        ListAdapter periodsListViewAdapter = new CostsListViewAdapter(this, periodsArray);
+        ListAdapter periodsListViewAdapter = new NewCostsListViewAdapter(this, periodsArray);
         periodsListView.setAdapter(periodsListViewAdapter);
 
+        // При нажатии на выбранный период переходим на экран с
+        // детальной  информацией о расходоах за выбранный период
         periodsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent statisticDetailedActivityIntent = new Intent(StatisticMainScreenActivity.this, StatisticDetailedActivity.class);
                 String textLine = String.valueOf(parent.getItemAtPosition(position));
-                String chosenDate = textLine.substring(0, textLine.indexOf("$"));
-                String overallCosts = textLine.substring(textLine.indexOf("$") + 1);
 
-                statisticDetailedActivityIntent.putExtra("chosenDate", chosenDate);
-                statisticDetailedActivityIntent.putExtra("overallCosts", overallCosts);
+                statisticDetailedActivityIntent.putExtra("data", textLine);
 
                 startActivity(statisticDetailedActivityIntent);
             }

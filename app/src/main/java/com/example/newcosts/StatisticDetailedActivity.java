@@ -11,8 +11,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.Arrays;
-
 public class StatisticDetailedActivity extends AppCompatActivity {
 
     @Override
@@ -21,65 +19,63 @@ public class StatisticDetailedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_statistic_detailed);
 
         ActionBar actionBar = getSupportActionBar();
-
-        String chosenDateString = "none";
-
-        Bundle chosenDateBundle = getIntent().getExtras();
-        if (chosenDateBundle != null) {
-            chosenDateString = chosenDateBundle.getString("chosenDate");
-        }
-        final String chosenDateStringFinal = chosenDateString;
-        actionBar.setTitle(chosenDateString);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        String overallCostsString = chosenDateBundle.getString("overallCosts");
-        final String overallCostsStringFinal = overallCostsString;
+        // Получаем строку с информацией о выбранной дате и суммарных затратах за выбранный месяц
+        String dataString = "none";
+        Bundle dataFromStatisticMainScreenActivity = getIntent().getExtras();
+        if (dataFromStatisticMainScreenActivity != null)
+            dataString = dataFromStatisticMainScreenActivity.getString("data");
 
-        TextView chosenDateTextViewStatisticDetailedActivity = (TextView) findViewById(R.id.chosenDateStatisticDetailedActivity);
-        TextView overallCostsTextViewStatisticDetailedActivity = (TextView) findViewById(R.id.overallCostsStatisticDetailedActivity);
+        if (dataString != null && !dataString.equals("none")) {
+            // Вытаскиваем нужную нам информацию (месяц, год, суммарные затараты за этот месяц) из переданной строки
+            String[] dataStringContent = dataString.split(" ");
+            final int chosenMonthNumber = Integer.parseInt(dataStringContent[0].substring(0, dataStringContent[0].indexOf("$")));
+            final int chosenYear = Integer.parseInt(dataStringContent[1].substring(0, dataStringContent[1].indexOf("$")));
+            String overallCostValueForChosenPeriodString = dataStringContent[1].substring(dataStringContent[1].indexOf("$") + 1);
+            String actionBarTitleString = dataStringContent[0].substring(dataStringContent[0].indexOf("$") + 1) +  " " + chosenYear;
 
-        chosenDateTextViewStatisticDetailedActivity.setText(chosenDateString);
-        overallCostsTextViewStatisticDetailedActivity.setText(overallCostsString + " руб.");
+            actionBar.setTitle(actionBarTitleString);
 
-        final int chosenYear = Integer.parseInt(chosenDateString.substring(chosenDateString.indexOf(" ") + 1));
+            TextView chosenDateTextViewStatisticDetailedActivity = (TextView) findViewById(R.id.chosenDateStatisticDetailedActivity);
+            chosenDateTextViewStatisticDetailedActivity.setText(actionBarTitleString);
 
-        String chosenMonthString = chosenDateString.substring(0, chosenDateString.indexOf(" "));
-        final int chosenMonth = Arrays.asList(StatisticMainScreenActivity.monthNames).indexOf(chosenMonthString);
+            TextView overallCostsTextViewStatisticDetailedActivity = (TextView) findViewById(R.id.overallCostsStatisticDetailedActivity);
+            overallCostsTextViewStatisticDetailedActivity.setText(overallCostValueForChosenPeriodString + " руб.");
 
-        CostsDataBase cdb = new CostsDataBase(this, null, null, 1);
+            // Получаем массив статей расходов и суммарные значения по ним за выбранный месяц
+            CostsDB cdb = new CostsDB(this, null, null, 1);
+            String[] costsArray = cdb.getCostValuesArrayOnDate(chosenMonthNumber, chosenYear);
 
-//        List<String> costNamesList = cdb.getCostNames();
-//        List<String> costsList = new ArrayList<>();
-//        for (String costName : costNamesList)
-//            costsList.add(costName + "$" + cdb.getCostValue(-1, chosenMonth, chosenYear, costName));
+            // Инициализируем ListView полученным массивом
+            ListAdapter costsListViewStatisticDetailedActivityAdapter = new CostsListViewAdapter(this, costsArray);
+            ListView costsListViewStatisticDetailedActivity = (ListView) findViewById(R.id.costsListViewStatisticDetailedActivity);
+            costsListViewStatisticDetailedActivity.setAdapter(costsListViewStatisticDetailedActivityAdapter);
 
-        String[] costsArray = cdb.getCostValuesOnSpecifiedDate(chosenMonth, chosenYear);
+            // При нажатии на элемент списка статей расходов происходит переход на экран
+            // детального просмотра затрат по выбранной статье за выбранный месяц
+            final String finalDataString = dataString;
+            costsListViewStatisticDetailedActivity.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent statisticCostTypeDetailedIntent = new Intent(StatisticDetailedActivity.this, StatisticCostTypeDetailedActivity.class);
 
-        ListAdapter costsListViewStatisticDetailedActivityAdapter = new CostsListViewAdapter(this, costsArray);
+                    String textLine = String.valueOf(parent.getItemAtPosition(position));
+                    String costName = textLine.substring(0, textLine.indexOf("$"));
+                    String costValue = textLine.substring(textLine.indexOf("$") + 1);
 
-        ListView costsListViewStatisticDetailedActivity = (ListView) findViewById(R.id.costsListViewStatisticDetailedActivity);
-        costsListViewStatisticDetailedActivity.setAdapter(costsListViewStatisticDetailedActivityAdapter);
-        costsListViewStatisticDetailedActivity.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent statisticCostTypeDetailedIntent = new Intent(StatisticDetailedActivity.this, StatisticCostTypeDetailedActivity.class);
+                    statisticCostTypeDetailedIntent.putExtra("costName", costName);
+                    statisticCostTypeDetailedIntent.putExtra("costValue", costValue);
+                    statisticCostTypeDetailedIntent.putExtra("chosenMonth", chosenMonthNumber);
+                    statisticCostTypeDetailedIntent.putExtra("chosenYear", chosenYear);
+                    statisticCostTypeDetailedIntent.putExtra("dataForStatisticDetailedActivity", finalDataString);
 
-                String textLine = String.valueOf(parent.getItemAtPosition(position));
-                String costName = textLine.substring(0, textLine.indexOf("$"));
-                String costValue = textLine.substring(textLine.indexOf("$") + 1);
-
-                statisticCostTypeDetailedIntent.putExtra("chosenDate", chosenDateStringFinal);
-                statisticCostTypeDetailedIntent.putExtra("overallCosts", overallCostsStringFinal);
-                statisticCostTypeDetailedIntent.putExtra("costName", costName);
-                statisticCostTypeDetailedIntent.putExtra("costValue", costValue);
-                statisticCostTypeDetailedIntent.putExtra("chosenMonth", chosenMonth);
-                statisticCostTypeDetailedIntent.putExtra("chosenYear", chosenYear);
-
-
-                startActivity(statisticCostTypeDetailedIntent);
-            }
-        });
+                    startActivity(statisticCostTypeDetailedIntent);
+                }
+            });
+        }
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

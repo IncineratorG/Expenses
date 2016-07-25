@@ -81,6 +81,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Задать период"
+                android:textColor="@drawable/button_text_color"
                 android:id="@+id/setPeriodButton"
                 android:background="@drawable/keyboard_buttons_custom"
                 android:layout_below="@+id/linearLayout"

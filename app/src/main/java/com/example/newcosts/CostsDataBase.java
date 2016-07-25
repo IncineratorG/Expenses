@@ -101,32 +101,6 @@ public class CostsDataBase extends SQLiteOpenHelper {
     }
 
 
-
-
-    // КОСТЫЛЬ!!!!!!!!!!!!!
-    public void addCostsOnSpecifiedDate(double costValue, String costName, int month, int year) {
-        SQLiteDatabase db = getWritableDatabase();
-
-
-        Date initialDate = null;
-        try {
-            initialDate = new SimpleDateFormat("dd.MM.yyyy", Locale.UK).parse("1." + month + "." + year);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        long dateInMilliseconds = initialDate.getTime();
-
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_DAY, 28);
-        values.put(COLUMN_MONTH, month);
-        values.put(COLUMN_YEAR, year);
-        values.put(COLUMN_DATE_IN_MILLISECONDS, dateInMilliseconds);
-        values.put(COLUMN_COST_NAME, costName);
-        values.put(COLUMN_COST_VALUE, costValue);
-        db.insert(TABLE_COST_VALUES, null, values);
-
-        db.close();
-    }
     // Добавляет новую запись по статье расходов 'costName' в базу данных
     public void addCosts(double costValue, String costName) {
         Calendar calendar = Calendar.getInstance();
@@ -402,41 +376,6 @@ public class CostsDataBase extends SQLiteOpenHelper {
 
         return total;
     }
-
-    public double getTotalCostsForSpecifiedCostTypeAndSpecifiedPeriodInMilliseconds(long startPeriodMillis, long endPeriodMillis, String costName) {
-        String query = "SELECT " + COLUMN_COST_VALUE +
-                " FROM " + TABLE_COST_VALUES +
-                " WHERE " + COLUMN_COST_NAME + " LIKE '" + costName + "'" +
-                " AND " + COLUMN_DATE_IN_MILLISECONDS + " BETWEEN " + startPeriodMillis + " AND " + endPeriodMillis;
-//                " >= " + startPeriodMillis +
-//                " AND " + COLUMN_DATE_IN_MILLISECONDS +
-//                " <= " + endPeriodMillis;
-
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor c = null;
-        double total = 0.0;
-
-        try {
-            c = db.rawQuery(query, null);
-            c.moveToFirst();
-            while (!c.isAfterLast()) {
-                total = total + c.getDouble(c.getColumnIndex(COLUMN_COST_VALUE));
-                c.moveToNext();
-            }
-        } catch (Exception e) {
-            System.err.println("EXCEPTION IN 'getTotalCostsForSpecifiedCostTypeAndSpecifiedPeriodInMilliseconds()'.");
-            e.printStackTrace();
-        } finally {
-            if (c != null)
-                c.close();
-            if (db != null)
-                db.close();
-        }
-
-        return total;
-    }
-
-
     // ----------------------------------------------------------------------------
 
 
@@ -946,6 +885,26 @@ public class CostsDataBase extends SQLiteOpenHelper {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //================== НЕДОДЕЛАНО ===================//
     // Копирует значения, которые старше двух месяцев от текущей даты,
     // из таблицы 'TABLE_COST_VALUES' в таблицу 'TABLE_COST_VALUES_OLD'
@@ -1041,5 +1000,4 @@ public class CostsDataBase extends SQLiteOpenHelper {
         db.execSQL(removeQuery);
         db.close();
     }
-
 }

@@ -19,4 +19,6 @@
         android:width="1dp"
         android:color="#FFFFFF"
         />
+    <item
+        android:textSize="25sp"></item>
 </shape>
