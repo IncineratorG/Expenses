@@ -39,11 +39,6 @@
         <activity
             android:name=".StatisticChosenPeriodActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".TestMainActivity">
-
-
-
-        </activity>
     </application>
 
 </manifest>

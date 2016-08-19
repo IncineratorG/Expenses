@@ -162,6 +162,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
 
+            case "Take photo":
+                System.out.println("Take photo");
+                break;
+
         }
     }
 

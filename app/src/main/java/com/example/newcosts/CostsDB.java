@@ -35,6 +35,8 @@ public class CostsDB extends SQLiteOpenHelper {
     private static final String YEAR = "year";
     private static final String DATE_IN_MILLISECONDS = "dateinmilliseconds";
     private static final String COST_VALUE = "costvalue";
+    private static final String IMAGE = "image";
+    private static final String TEXT = "text";
     // **********************************************************
 
 
@@ -59,7 +61,9 @@ public class CostsDB extends SQLiteOpenHelper {
                 MONTH + " INTEGER, " +
                 YEAR + " INTEGER, " +
                 DATE_IN_MILLISECONDS + " INTEGER, " +
-                COST_VALUE + " REAL)";
+                COST_VALUE + " REAL, " +
+                IMAGE + " BLOB, " +
+                TEXT + " TEXT)";
 
         db.execSQL(createTableCostsNames);
         db.execSQL(createTableCostsValues);

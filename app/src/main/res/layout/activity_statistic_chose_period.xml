@@ -42,7 +42,8 @@
                 android:id="@+id/initialDateTextView"
                 android:layout_gravity="bottom|right"
                 android:gravity="center"
-                android:textSize="25sp"/>
+                android:textSize="25sp"
+                android:inputType="date" />
         </LinearLayout>
 
         <LinearLayout
@@ -66,7 +67,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/endingDateTextView"
                 android:gravity="center"
-                android:textSize="25sp"/>
+                android:textSize="25sp"
+                android:inputType="date" />
         </LinearLayout>
 
         <LinearLayout
