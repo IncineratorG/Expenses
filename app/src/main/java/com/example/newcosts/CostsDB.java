@@ -492,9 +492,9 @@ public class CostsDB extends SQLiteOpenHelper {
     }
 
     // Возвращает массив строк, состоящих из дня (даты) и сумм расходов за этот день в
-    // формате: 3.5.1989$2500. Группировка по дням не производится
+    // формате: 3.5.1989$2500%milliseconds. Группировка по дням не производится
     public String[] getCostValuesArrayOnDateAndCostName(int month, int year, String costName) {
-        String query = "SELECT " + COST_VALUE + ", " + DAY +
+        String query = "SELECT " + COST_VALUE + ", " + DAY + ", " + DATE_IN_MILLISECONDS +
                 " FROM " + TABLE_COST_VALUES +
                 " WHERE " + MONTH + " = " + month +
                 " AND " + YEAR + " = " + year +
@@ -522,6 +522,9 @@ public class CostsDB extends SQLiteOpenHelper {
                 sb.append("$");
 
                 sb.append(c.getString(c.getColumnIndex(COST_VALUE)));
+                sb.append("%");
+
+                sb.append(c.getString(c.getColumnIndex(DATE_IN_MILLISECONDS)));
 
                 listOfEntries.add(sb.toString());
                 sb.setLength(0);

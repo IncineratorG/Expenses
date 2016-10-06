@@ -33,6 +33,8 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
 
             CostsDB cdb = new CostsDB(this, null, null, 1);
             String[] dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
+            for (String s : dataArray)
+                System.out.println(s);
 
             TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
             TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
@@ -41,7 +43,7 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
             costNameAndCostValueTextView.setText(costName + ": " + costValue + " руб.");
             actionBar.setTitle(StatisticMainScreenActivity.monthNames[chosenMonth] + " " + chosenYear + ": " + costName);
 
-            ListAdapter costsListAdapter = new CostsListViewAdapter(this, dataArray);
+            ListAdapter costsListAdapter = new CostTypeDetailedAdapter(this, dataArray);
             ListView detailedCostsListView = (ListView) findViewById(R.id.listViewInCostTypeDetailed);
             detailedCostsListView.setAdapter(costsListAdapter);
             detailedCostsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -49,9 +51,10 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                     System.out.println(parent.getItemAtPosition(position).toString());
-
                     Intent editCostsIntent = new Intent(StatisticCostTypeDetailedActivity.this, EditCostsActivity.class);
+                    editCostsIntent.putExtra("data", parent.getItemAtPosition(position).toString());
                     startActivity(editCostsIntent);
+                    
                 }
             });
         }
