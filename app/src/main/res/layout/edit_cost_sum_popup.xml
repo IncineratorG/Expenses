@@ -4,25 +4,11 @@
     android:layout_height="match_parent">
 
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Промтовары"
-
-        android:background="#FFFFFF"
-        android:textSize="35sp"
-
-        android:id="@+id/costTypeTextViewInInputDataPopup"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal" />
-
-
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:id="@+id/inputTextFieldEditTextInInputDataPopup"
+        android:id="@+id/editCostsPopup_inputTextField"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:background="@drawable/edit_text_custom"
@@ -59,30 +45,30 @@
                     android:layout_height="wrap_content"
                     android:text="7"
                     android:textColor="@drawable/button_text_color"
-                    android:id="@+id/seven"
+                    android:id="@+id/editCostsPopup_seven"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
-                    android:onClick="OnInputDataPopupClickListener" />
+                    android:onClick="OnEditCostSumPopupClickListener" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="8"
                     android:textColor="@drawable/button_text_color"
-                    android:id="@+id/eight"
+                    android:id="@+id/editCostsPopup_eight"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
-                    android:onClick="OnInputDataPopupClickListener" />
+                    android:onClick="OnEditCostSumPopupClickListener" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="9"
                     android:textColor="@drawable/button_text_color"
-                    android:id="@+id/nine"
+                    android:id="@+id/editCostsPopup_nine"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
-                    android:onClick="OnInputDataPopupClickListener" />
+                    android:onClick="OnEditCostSumPopupClickListener" />
             </LinearLayout>
 
             <LinearLayout
@@ -97,30 +83,30 @@
                     android:layout_height="wrap_content"
                     android:text="4"
                     android:textColor="@drawable/button_text_color"
-                    android:id="@+id/four"
+                    android:id="@+id/editCostsPopup_four"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
-                    android:onClick="OnInputDataPopupClickListener" />
+                    android:onClick="OnEditCostSumPopupClickListener" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5"
                     android:textColor="@drawable/button_text_color"
-                    android:id="@+id/five"
+                    android:id="@+id/editCostsPopup_five"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
-                    android:onClick="OnInputDataPopupClickListener" />
+                    android:onClick="OnEditCostSumPopupClickListener" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="6"
                     android:textColor="@drawable/button_text_color"
-                    android:id="@+id/six"
+                    android:id="@+id/editCostsPopup_six"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
-                    android:onClick="OnInputDataPopupClickListener" />
+                    android:onClick="OnEditCostSumPopupClickListener" />
             </LinearLayout>
 
             <LinearLayout
@@ -135,30 +121,30 @@
                     android:layout_height="wrap_content"
                     android:text="1"
                     android:textColor="@drawable/button_text_color"
-                    android:id="@+id/one"
+                    android:id="@+id/editCostsPopup_one"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
-                    android:onClick="OnInputDataPopupClickListener" />
+                    android:onClick="OnEditCostSumPopupClickListener" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2"
                     android:textColor="@drawable/button_text_color"
-                    android:id="@+id/two"
+                    android:id="@+id/editCostsPopup_two"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
-                    android:onClick="OnInputDataPopupClickListener" />
+                    android:onClick="OnEditCostSumPopupClickListener" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="3"
                     android:textColor="@drawable/button_text_color"
-                    android:id="@+id/three"
+                    android:id="@+id/editCostsPopup_three"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
-                    android:onClick="OnInputDataPopupClickListener" />
+                    android:onClick="OnEditCostSumPopupClickListener" />
             </LinearLayout>
 
             <LinearLayout
@@ -173,20 +159,20 @@
                     android:layout_height="match_parent"
                     android:text="0"
                     android:textColor="@drawable/button_text_color"
-                    android:id="@+id/zero"
+                    android:id="@+id/editCostsPopup_zero"
                     android:layout_weight="1"
                     android:background="@drawable/keyboard_buttons_custom"
-                    android:onClick="OnInputDataPopupClickListener" />
+                    android:onClick="OnEditCostSumPopupClickListener" />
 
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="."
                     android:textColor="@drawable/button_text_color"
-                    android:id="@+id/dot"
+                    android:id="@+id/editCostsPopup_dot"
                     android:layout_weight="2"
                     android:background="@drawable/keyboard_buttons_custom"
-                    android:onClick="OnInputDataPopupClickListener" />
+                    android:onClick="OnEditCostSumPopupClickListener" />
             </LinearLayout>
         </LinearLayout>
 
@@ -202,60 +188,39 @@
                 android:layout_height="match_parent"
                 android:text="@string/input_data_popup_delete_btn"
                 android:textColor="@drawable/button_text_color"
-                android:id="@+id/del"
+                android:id="@+id/editCostsPopup_del"
                 android:layout_weight="3"
                 android:background="@drawable/del_button_custom"
-                android:onClick="OnInputDataPopupClickListener" />
+                android:onClick="OnEditCostSumPopupClickListener" />
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/input_data_popup_ok_btn"
                 android:textColor="@drawable/button_text_color"
-                android:id="@+id/ok"
+                android:id="@+id/editCostsPopup_ok"
                 android:layout_weight="1"
                 android:background="@drawable/ok_button_custom"
-                android:onClick="OnInputDataPopupClickListener" />
+                android:onClick="OnEditCostSumPopupClickListener" />
         </LinearLayout>
+
+
+
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
-        android:weightSum="3">
-
+        android:layout_marginTop="0dp">
         <Button
-            android:layout_width="wrap_content"
+            android:text="@string/edit_costs_cancel"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/input_data_popup_add_text_btn"
-            android:id="@+id/addTextButton"
-            android:background="@drawable/takephoto_button_custom"
-            android:onClick="OnInputDataPopupClickListener"
+            android:id="@+id/editCostsPopup_cancelButton"
+            android:background="@drawable/keyboard_buttons_custom"
             android:textColor="@drawable/button_text_color"
-            android:layout_weight="1"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/input_data_popup_add_photo_btn"
-            android:id="@+id/takePhotoButton"
-            android:background="@drawable/takephoto_button_custom"
-            android:onClick="OnInputDataPopupClickListener"
-            android:textColor="@drawable/button_text_color"
-            android:layout_weight="1"/>
-
-        <Button
-            android:text="@string/input_data_popup_close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/cancelButton"
-            android:layout_weight="1"
-            android:background="@drawable/takephoto_button_custom"
-            android:onClick="OnInputDataPopupClickListener"
-            android:textColor="@drawable/button_text_color"/>
-
+            android:onClick="OnEditCostSumPopupClickListener"/>
     </LinearLayout>
 
 

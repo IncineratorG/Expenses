@@ -9,4 +9,22 @@
     <string name="year">Year</string>
     <string name="title_activity_periods">periods</string>
     <string name="title_activity_statistic_main_screen">StatisticMainScreenActivity</string>
+
+    <string name="cancel_btn">Отмена</string>
+    <string name="delete_btn">Удалить</string>
+    <string name="edit_btn">Редактировать</string>
+
+    <string name="input_data_popup_delete_btn">Del</string>
+    <string name="input_data_popup_ok_btn">OK</string>
+    <string name="input_data_popup_add_photo_btn">Фото</string>
+    <string name="input_data_popup_add_text_btn">Заметка</string>
+    <string name="input_data_popup_close">Закрыть</string>
+
+    <string name="edit_costs_name">Категория</string>
+    <string name="edit_costs_value">Сумма</string>
+    <string name="edit_costs_date">Дата</string>
+    <string name="edit_costs_text">Заметка</string>
+    <string name="edit_costs_photo">Фото</string>
+    <string name="edit_costs_save">Сохранить</string>
+    <string name="edit_costs_cancel">Закрыть</string>
 </resources>

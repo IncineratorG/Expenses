@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:minWidth="1000dp">
+    android:layout_height="wrap_content"
+    android:minWidth="1000dp"
+    android:background="#2CC1F2">
 
 
     <EditText
@@ -26,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="4"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="1dp">
 
         <LinearLayout
             android:orientation="vertical"

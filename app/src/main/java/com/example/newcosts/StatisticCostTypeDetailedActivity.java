@@ -5,6 +5,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,6 +44,16 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
             ListAdapter costsListAdapter = new CostsListViewAdapter(this, dataArray);
             ListView detailedCostsListView = (ListView) findViewById(R.id.listViewInCostTypeDetailed);
             detailedCostsListView.setAdapter(costsListAdapter);
+            detailedCostsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    System.out.println(parent.getItemAtPosition(position).toString());
+
+                    Intent editCostsIntent = new Intent(StatisticCostTypeDetailedActivity.this, EditCostsActivity.class);
+                    startActivity(editCostsIntent);
+                }
+            });
         }
 
 //        Bundle statisticDetailedActivityBundle = getIntent().getExtras();

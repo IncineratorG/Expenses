@@ -345,9 +345,9 @@ public class CostsDB extends SQLiteOpenHelper {
                 sb.append(".");
 
                 sb.append(c.getInt(c.getColumnIndex(MONTH)) + 1);
-                sb.append(".");
+                sb.append(" ");
 
-                sb.append(c.getString(c.getColumnIndex(YEAR)));
+                sb.append(c.getString(c.getColumnIndex(COST_NAME)));
                 sb.append(": ");
 
                 sb.append(c.getString(c.getColumnIndex(COST_VALUE)));
@@ -588,6 +588,101 @@ public class CostsDB extends SQLiteOpenHelper {
 
         return arrayOfEntries;
     }
+
+
+
+    public String getCostByDateInMillis(long milliseconds) {
+        String query = "SELECT " + TABLE_COST_NAMES + "." + COST_NAME + ", " +
+                TABLE_COST_VALUES + "." + COST_VALUE + ", " +
+                TABLE_COST_VALUES + "." + DAY + ", " +
+                TABLE_COST_VALUES + "." + MONTH + ", " +
+                TABLE_COST_VALUES + "." + YEAR + ", " +
+                TABLE_COST_VALUES + "." + DATE_IN_MILLISECONDS +
+                " FROM " + TABLE_COST_VALUES +
+                " INNER JOIN " + TABLE_COST_NAMES +
+                " ON " + TABLE_COST_VALUES + "." + ID_N_FK + " = " + TABLE_COST_NAMES + "." + ID_N +
+                " WHERE " + DATE_IN_MILLISECONDS + " = " + milliseconds;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        StringBuilder sb = new StringBuilder();
+        String result = null;
+
+        try {
+            c = db.rawQuery(query, null);
+            c.moveToFirst();
+
+            if (!c.isAfterLast()) {
+                sb.append(c.getString(c.getColumnIndex(COST_NAME)));
+                sb.append(" ");
+
+                sb.append(c.getString(c.getColumnIndex(COST_VALUE)));
+                sb.append(" ");
+
+                sb.append(c.getString(c.getColumnIndex(DAY)));
+                sb.append(" ");
+
+                sb.append(c.getInt(c.getColumnIndex(MONTH)) + 1);
+                sb.append(" ");
+
+                sb.append(c.getString(c.getColumnIndex(YEAR)));
+                sb.append(" ");
+
+                sb.append(c.getString(c.getColumnIndex(DATE_IN_MILLISECONDS)));
+
+                result = sb.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+
+        return result;
+    }
+
+    public void addCostInMilliseconds(int id_n, String costValue, long milliseconds) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliseconds);
+
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH);
+        int year = calendar.get(Calendar.YEAR);
+
+        SQLiteDatabase db = getWritableDatabase();
+        while (true) {
+            String query = "SELECT " + DATE_IN_MILLISECONDS +
+                    " FROM " + TABLE_COST_VALUES +
+                    " WHERE " + DATE_IN_MILLISECONDS + " = " + milliseconds;
+
+            try {
+                if (db.rawQuery(query, null).moveToFirst())
+                    ++milliseconds;
+                else break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(DAY, day);
+        values.put(MONTH, month);
+        values.put(YEAR, year);
+        values.put(DATE_IN_MILLISECONDS, milliseconds);
+        values.put(ID_N_FK, id_n);
+        values.put(COST_VALUE, costValue);
+        db.insert(TABLE_COST_VALUES, null, values);
+
+        db.close();
+    }
+
+
+
+
 
 
 

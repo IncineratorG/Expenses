@@ -34,6 +34,8 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+/*================================== Переменные ==================================================*/
+
     static final String[] declensionMonthNames = {"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"};
 
     CostsDB cdb;
@@ -59,13 +61,16 @@ public class MainActivity extends AppCompatActivity {
 
     NumberFormat format;
 
-
-
-
     String[] costsArray;
     ListAdapter costsListViewMainActivityAdapter;
     ListView costsListViewMainActivity;
     Dialog currentDialog;
+
+/*================================================================================================*/
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,32 +109,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // Обработчик нажатий кнопок в input_data_popup
+
+
+
+/*================================== Слушатели ===================================================*/
+
+    // Обработчик нажатий кнопок в input_data_popup (диалог ввода значений расходов)
     public void OnInputDataPopupClickListener(View view) {
         Button pressedButton = (Button) view;
         String buttonLabel = (String)pressedButton.getText();
 
-        TextView costTypeTextView = (TextView) currentDialog.findViewById(R.id.costTypeTextViewInInputDataPopup);
+//        TextView costTypeTextView = (TextView) currentDialog.findViewById(R.id.costTypeTextViewInInputDataPopup);
 
         EditText inputDataEditText = (EditText) currentDialog.findViewById(R.id.inputTextFieldEditTextInInputDataPopup);
         inputDataEditText.setFilters(new DecimalDigitsInputFilter[] {new DecimalDigitsInputFilter()});
         inputDataEditText.setCursorVisible(false);
 
-        switch (buttonLabel){
-            case "1":
-            case "2":
-            case "3":
-            case "4":
-            case "5":
-            case "6":
-            case "7":
-            case "8":
-            case "9":
-            case "0":
+        switch (view.getId()){
+            case R.id.zero:
+            case R.id.one:
+            case R.id.two:
+            case R.id.three:
+            case R.id.four:
+            case R.id.five:
+            case R.id.six:
+            case R.id.seven:
+            case R.id.eight:
+            case R.id.nine:
                 inputDataEditText.append(buttonLabel);
                 break;
 
-            case ".": {
+            case R.id.dot: {
                 String inputText = String.valueOf(inputDataEditText.getText());
                 if (!inputText.contains(".")) {
                     inputDataEditText.append(".");
@@ -137,16 +147,16 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
 
-            case "Del": {
+            case R.id.del: {
                 String inputText = String.valueOf(inputDataEditText.getText());
                 if (inputText != null && inputText.length() != 0) {
-                    inputText = inputText.substring(0, inputText.length() -1);
+                    inputText = inputText.substring(0, inputText.length() - 1);
                     inputDataEditText.setText(inputText);
                 }
                 break;
             }
 
-            case "OK": {
+            case R.id.ok: {
                 String inputText = String.valueOf(inputDataEditText.getText());
                 if (inputText != null && inputText.length() != 0 && !".".equals(inputText)) {
                     Double enteredCostValue = Double.parseDouble(inputText);
@@ -162,8 +172,16 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
 
-            case "Take photo":
-                System.out.println("Take photo");
+//            case R.id.takePhotoButton:
+//                System.out.println("Take photo");
+//                break;
+//
+//            case R.id.addTextButton:
+//                System.out.println("Add text");
+//                break;
+
+            case R.id.cancelButton:
+                currentDialog.cancel();
                 break;
 
         }
@@ -395,7 +413,9 @@ public class MainActivity extends AppCompatActivity {
     // содержащий последние тридцать введённых значений. При нажатии на элемент этого
     // списка появляется всплывающее окно, предлагающее удалить выбранную запись из программы
     public void OnOverallCostsValueClick(View view) {
-        final String[] lastEnteredValues = cdb.getLastEntries(30);
+        int numberOfLastEntriesToShow = 30;
+
+        final String[] lastEnteredValues = cdb.getLastEntries(numberOfLastEntriesToShow);
 //        for (String s : lastEnteredValues)
 //            System.out.println(s);
 
@@ -406,37 +426,54 @@ public class MainActivity extends AppCompatActivity {
         lastEntriesPopupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-//                System.out.println(item.getTitle().toString());
-//                System.out.println(lastEnteredValues[item.getItemId() - 1]);
 
                 final int itemPositionInLastEnteredValuesArray = item.getItemId() - 1;
 
-                // Диалоговое окно, запрашивающее подтверждение на удаление выбранного
-                // элемента из списка последних внесённых значений. При нажатии на кнопку "Удалить"
-                // происходит удаление выбранного элемента из базы данных и обновление
-                // текущей суммы расходов по данной категории
-                AlertDialog.Builder adBuilder = new AlertDialog.Builder(MainActivity.this);
-                adBuilder.setNegativeButton("Отмена", null);
-                adBuilder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
+                CustomDialogClass customDialog = new CustomDialogClass(MainActivity.this, lastEnteredValues[itemPositionInLastEnteredValuesArray]);
+                customDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String dateString = lastEnteredValues[itemPositionInLastEnteredValuesArray].substring(lastEnteredValues[itemPositionInLastEnteredValuesArray].indexOf("%") + 1);
-                        Long chosenItemDateInMilliseconds = Long.parseLong(dateString);
-
-                        boolean result = cdb.removeCostValue(chosenItemDateInMilliseconds);
-
+                    public void onDismiss(DialogInterface dialog) {
                         // Обновляем главный экран приложения (MainActivity)
                         SetCurrentOverallCosts();
                         CreateListViewContent();
                     }
                 });
-                adBuilder.setMessage(item.getTitle().toString());
+                customDialog.show();
 
-                AlertDialog dialog = adBuilder.create();
-                dialog.show();
 
-                TextView dialogText = (TextView) dialog.findViewById(android.R.id.message);
-                dialogText.setGravity(Gravity.CENTER);
+
+                // Диалоговое окно, запрашивающее подтверждение на удаление выбранного
+                // элемента из списка последних внесённых значений. При нажатии на кнопку "Удалить"
+                // происходит удаление выбранного элемента из базы данных и обновление
+                // текущей суммы расходов по данной категории
+//                AlertDialog.Builder adBuilder = new AlertDialog.Builder(MainActivity.this);
+//                adBuilder.setNegativeButton("Отмена", null);
+//                adBuilder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        String dateString = lastEnteredValues[itemPositionInLastEnteredValuesArray].substring(lastEnteredValues[itemPositionInLastEnteredValuesArray].indexOf("%") + 1);
+//                        Long chosenItemDateInMilliseconds = Long.parseLong(dateString);
+//
+//                        boolean result = cdb.removeCostValue(chosenItemDateInMilliseconds);
+//
+//                        // Обновляем главный экран приложения (MainActivity)
+//                        SetCurrentOverallCosts();
+//                        CreateListViewContent();
+//                    }
+//                });
+////                adBuilder.setNeutralButton("Редактировать", new DialogInterface.OnClickListener() {
+////                    @Override
+////                    public void onClick(DialogInterface dialog, int which) {
+////                        System.out.println("Neutral button clicked");
+////                    }
+////                });
+//                adBuilder.setMessage(item.getTitle().toString());
+//
+//                AlertDialog dialog = adBuilder.create();
+//                dialog.show();
+//
+//                TextView dialogText = (TextView) dialog.findViewById(android.R.id.message);
+//                dialogText.setGravity(Gravity.CENTER);
 
                 return true;
             }
@@ -446,6 +483,13 @@ public class MainActivity extends AppCompatActivity {
         lastEntriesPopupMenu.show();
     }
 
+/*================================================================================================*/
+
+
+
+
+
+/*==================================== Функции ===================================================*/
 
     // Инициализирует costsListViewMainActivity и заполняет его
     // данными (названия статей расходов и значения по этим статьям
@@ -529,85 +573,15 @@ public class MainActivity extends AppCompatActivity {
 
         return costsArray;
     }
-//
-//
-//    // Сортировка статей расходов по частоте внесения записей
-//    public void OrderCostsArray(String[] costsArray) {
-//        // Получаем массив последних введённых значений
-//        String[] lastEnteredValues = cdb.getLastThirtyEntries();
-//        if (lastEnteredValues.length == 0)
-//            return;
-//
-//        // Выделяем из каждой строки массива только название категории расходов
-//        for (int i = 0; i < lastEnteredValues.length; ++i) {
-//            lastEnteredValues[i] = lastEnteredValues[i].substring(lastEnteredValues[i].indexOf(":") + 2);
-//            lastEnteredValues[i] = lastEnteredValues[i].substring(0, lastEnteredValues[i].indexOf(" "));
-//        }
-//
-//        Arrays.sort(lastEnteredValues);
-//
-//        // В список будем заносить частоту использование
-//        // статьи расходов и её наименование
-//        List<String> listOfItemFrequence = new ArrayList<>(10);
-//
-//        int frequence = 1;
-//        for (int i = 1; i < lastEnteredValues.length; ++i) {
-//            if (lastEnteredValues[i - 1].equals(lastEnteredValues[i])) {
-//                ++frequence;
-//            } else {
-//                String item = String.valueOf(frequence) + "$" + lastEnteredValues[i - 1];
-//                listOfItemFrequence.add(item);
-//
-//                frequence = 1;
-//            }
-//
-//            if ((i + 1) >= lastEnteredValues.length) {
-//                String item = String.valueOf(frequence) + "$" + lastEnteredValues[i];
-//                listOfItemFrequence.add(item);
-//            }
-//        }
-//
-//        // В массиве содержится частота использования
-//        // категории расходов и её наименование (через "$")
-//        String[] finalOrder = new String[listOfItemFrequence.size()];
-//        listOfItemFrequence.toArray(finalOrder);
-//
-//        // Сортируем массив "finalOrder" по частоте использования категорий расходов
-//        Arrays.sort(finalOrder, new Comparator<String>() {
-//            @Override
-//            public int compare(String lhs, String rhs) {
-//                return Double.compare(Double.valueOf(lhs.substring(0, lhs.indexOf("$"))), Double.valueOf(rhs.substring(0, rhs.indexOf("$"))));
-//            }
-//        });
-//
-//        // Изменяем порядок следование элементов в массиве costsArray
-//        // в соответствие с массивом finalOrder
-//        for (int i = 0; i < finalOrder.length; ++i) {
-//            String costName = finalOrder[i].substring(finalOrder[i].indexOf("$") + 1);
-//
-//            for (int j = 0; j < costsArray.length; ++j) {
-//                String costsArrayLine = costsArray[j].substring(0, costsArray[j].indexOf("$"));
-//
-//                if (costsArrayLine.equals(costName)) {
-//                    if (j == 0)
-//                        break;
-//                    else {
-//                        String temp = costsArray[j];
-//
-//                        for (int k = j - 1; k >= 0; --k) {
-//                            costsArray[k + 1] = costsArray[k];
-//                        }
-//                        costsArray[0] = temp;
-//                        break;
-//                    }
-//                }
-//
-//            }
-//        }
-//
-//    }
-//
-//
+
+/*================================================================================================*/
+
+
+
+
+
+/*============================== Переопределённые слушатели ======================================*/
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -655,46 +629,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+/*================================================================================================*/
 
-
-
-
-
-
-
-
-
-
-
-//    // Ищет записи в базе данных о ближайших (менее двух недель) событиях.
-//    // Если находит - выводит сообщение на экран
-//    public void SearchForNearestEvents() {
-//        String todayDateString = String.valueOf(todayDay) + "." + String.valueOf(todayMonth + 1) + "." + String.valueOf(todayYear);
-//        long todayDateInMilliseconds = 0;
-//        long nearestEventDateInMilliseconds = 0;
-//        String[] eventsArray = cdb.getEvents();
-//
-//        if (eventsArray.length == 0)
-//            return;
-//
-//        try {
-//            todayDateInMilliseconds = new SimpleDateFormat("dd.MM.yyyy").parse(todayDateString).getTime();
-//            nearestEventDateInMilliseconds = new SimpleDateFormat("dd.MM.yyyy").
-//                    parse(eventsArray[0].substring(0, eventsArray[0].indexOf("$"))).getTime();
-//        } catch (Exception e) {
-//            Toast errorInDateParsingToast = Toast.makeText(this, "ERROR PARSING DATE ON MAIN SCREEN", Toast.LENGTH_LONG);
-//            errorInDateParsingToast.show();
-//        }
-//
-//        if ((nearestEventDateInMilliseconds - todayDateInMilliseconds) < 1209600000) {
-//            String nearestEventToastText = "До события '" + eventsArray[0].substring(eventsArray[0].indexOf("$") + 1) +
-//                    "' осталось меньше двух недель.";
-//
-//            Toast nearestEventToast = Toast.makeText(this, nearestEventToastText, Toast.LENGTH_LONG);
-//            nearestEventToast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER, 0, 0);
-//            nearestEventToast.show();
-//
-//            nearestEventShown = "";
-//        }
-//    }
 }
