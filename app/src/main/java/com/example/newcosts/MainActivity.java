@@ -424,6 +424,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         // Обновляем главный экран приложения (MainActivity)
+                        System.out.println("DISMISS");
                         SetCurrentOverallCosts();
                         CreateListViewContent();
                     }
