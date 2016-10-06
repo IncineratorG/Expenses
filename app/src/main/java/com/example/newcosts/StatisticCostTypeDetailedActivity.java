@@ -54,7 +54,7 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
                     Intent editCostsIntent = new Intent(StatisticCostTypeDetailedActivity.this, EditCostsActivity.class);
                     editCostsIntent.putExtra("data", parent.getItemAtPosition(position).toString());
                     startActivity(editCostsIntent);
-                    
+
                 }
             });
         }

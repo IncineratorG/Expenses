@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -420,7 +421,7 @@ public class CostsDB extends SQLiteOpenHelper {
                 sb.append(c.getString(c.getColumnIndex(YEAR)));
                 sb.append("$");
 
-                sb.append(c.getString(c.getColumnIndex("SUM")));
+                sb.append(c.getDouble(c.getColumnIndex("SUM")));
 
                 listOfEntries.add(sb.toString());
                 sb.setLength(0);
@@ -462,6 +463,9 @@ public class CostsDB extends SQLiteOpenHelper {
         StringBuilder sb = new StringBuilder();
         List<String> listOfEntries = new ArrayList<>();
 
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        numberFormat.setGroupingUsed(false);
+
         try {
             c = db.rawQuery(query, null);
             c.moveToFirst();
@@ -470,7 +474,7 @@ public class CostsDB extends SQLiteOpenHelper {
                 sb.append(c.getString(c.getColumnIndex(COST_NAME)));
                 sb.append("$");
 
-                sb.append(c.getString(c.getColumnIndex("SUM")));
+                sb.append(numberFormat.format(c.getDouble(c.getColumnIndex("SUM"))));
 
                 listOfEntries.add(sb.toString());
                 sb.setLength(0);
@@ -509,6 +513,9 @@ public class CostsDB extends SQLiteOpenHelper {
         StringBuilder sb = new StringBuilder();
         List<String> listOfEntries = new ArrayList<>();
 
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        numberFormat.setGroupingUsed(false);
+
         try {
             c = db.rawQuery(query, null);
             c.moveToFirst();
@@ -521,7 +528,7 @@ public class CostsDB extends SQLiteOpenHelper {
                 sb.append(year);
                 sb.append("$");
 
-                sb.append(c.getString(c.getColumnIndex(COST_VALUE)));
+                sb.append(numberFormat.format(c.getDouble(c.getColumnIndex(COST_VALUE))));
                 sb.append("%");
 
                 sb.append(c.getString(c.getColumnIndex(DATE_IN_MILLISECONDS)));
@@ -610,6 +617,8 @@ public class CostsDB extends SQLiteOpenHelper {
         Cursor c = null;
         StringBuilder sb = new StringBuilder();
         String result = null;
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        numberFormat.setGroupingUsed(false);
 
         try {
             c = db.rawQuery(query, null);
@@ -619,7 +628,7 @@ public class CostsDB extends SQLiteOpenHelper {
                 sb.append(c.getString(c.getColumnIndex(COST_NAME)));
                 sb.append(" ");
 
-                sb.append(c.getString(c.getColumnIndex(COST_VALUE)));
+                sb.append(numberFormat.format(c.getDouble(c.getColumnIndex(COST_VALUE))));
                 sb.append(" ");
 
                 sb.append(c.getString(c.getColumnIndex(DAY)));

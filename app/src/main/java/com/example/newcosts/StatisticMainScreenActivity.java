@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,9 @@ public class StatisticMainScreenActivity extends AppCompatActivity {
 
         CostsDB cdb = new CostsDB(this, null, null, 1);
 
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        numberFormat.setGroupingUsed(false);
+
         // Получаем суммарные значения за месяц и год в формате: "5$1989$575"
         String[] periodsArrayRaw = cdb.getSumByMonthsEntries();
         List<String> listOfPeriods = new ArrayList<>();
@@ -36,7 +40,9 @@ public class StatisticMainScreenActivity extends AppCompatActivity {
         for (String entry : periodsArrayRaw) {
             String[] arrayOfEntries = entry.split("\\$");
             int month = Integer.parseInt(arrayOfEntries[0]);
-            String periodString = month + "$" + monthNames[month] + " " + arrayOfEntries[1] + "$" + arrayOfEntries[2];
+            String periodString = month + "$" + monthNames[month] + " " + arrayOfEntries[1] + "$" + numberFormat.format(
+                                                                                                           Double.parseDouble(arrayOfEntries[2])
+                                                                                                                                                );
             listOfPeriods.add(periodString);
         }
         String[] periodsArray = new String[listOfPeriods.size()];

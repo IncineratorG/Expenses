@@ -119,8 +119,6 @@ public class MainActivity extends AppCompatActivity {
         Button pressedButton = (Button) view;
         String buttonLabel = (String)pressedButton.getText();
 
-//        TextView costTypeTextView = (TextView) currentDialog.findViewById(R.id.costTypeTextViewInInputDataPopup);
-
         EditText inputDataEditText = (EditText) currentDialog.findViewById(R.id.inputTextFieldEditTextInInputDataPopup);
         inputDataEditText.setFilters(new DecimalDigitsInputFilter[] {new DecimalDigitsInputFilter()});
         inputDataEditText.setCursorVisible(false);
@@ -171,14 +169,6 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             }
-
-//            case R.id.takePhotoButton:
-//                System.out.println("Take photo");
-//                break;
-//
-//            case R.id.addTextButton:
-//                System.out.println("Add text");
-//                break;
 
             case R.id.cancelButton:
                 currentDialog.cancel();
