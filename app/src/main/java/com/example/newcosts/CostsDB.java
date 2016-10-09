@@ -629,19 +629,19 @@ public class CostsDB extends SQLiteOpenHelper {
 
             if (!c.isAfterLast()) {
                 sb.append(c.getString(c.getColumnIndex(COST_NAME)));
-                sb.append(" ");
+                sb.append("%");
 
                 sb.append(numberFormat.format(c.getDouble(c.getColumnIndex(COST_VALUE))));
-                sb.append(" ");
+                sb.append("%");
 
                 sb.append(c.getString(c.getColumnIndex(DAY)));
-                sb.append(" ");
+                sb.append("%");
 
                 sb.append(c.getInt(c.getColumnIndex(MONTH)) + 1);
-                sb.append(" ");
+                sb.append("%");
 
                 sb.append(c.getString(c.getColumnIndex(YEAR)));
-                sb.append(" ");
+                sb.append("%");
 
                 sb.append(c.getString(c.getColumnIndex(DATE_IN_MILLISECONDS)));
 

@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class EditCostsActivity extends AppCompatActivity {
+public class EditCostsActivity extends AppCompatActivity implements MyDatePicker.MyDataPickerCallback {
 
     String date;
     String categoryName;
@@ -68,7 +68,7 @@ public class EditCostsActivity extends AppCompatActivity {
         db = new CostsDB(this, null, null, 1);
         long milliseconds = Long.parseLong(dataString.substring(dataString.indexOf("%") + 1));
         String dbData = db.getCostByDateInMillis(milliseconds);
-        String[] dataArr = dbData.split(" ");
+        String[] dataArr = dbData.split("%");
 
         if (dataArr != null && dataArr.length == 6) {
             categoryName = dataArr[0];
@@ -77,7 +77,7 @@ public class EditCostsActivity extends AppCompatActivity {
             dateInMilliseconds = dataArr[5];
         } else finish();
 
-        System.out.println(dateInMilliseconds);
+//        System.out.println(dateInMilliseconds);
 
         // Получаем список всех используемых категорий расходов и их id_n
         availableCostNamesList = db.getActiveCostNames();
@@ -116,7 +116,8 @@ public class EditCostsActivity extends AppCompatActivity {
         dateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                MyDatePicker datePicker = new MyDatePicker(EditCostsActivity.this);
+                datePicker.show();
             }
         });
 
@@ -263,11 +264,10 @@ public class EditCostsActivity extends AppCompatActivity {
 
 
 
-
-
-
-
-
+    @Override
+    public void getPickedDate(String pickedDate) {
+        dateEditText.setText(pickedDate);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

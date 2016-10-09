@@ -27,4 +27,7 @@
     <string name="edit_costs_photo">Фото</string>
     <string name="edit_costs_save">Сохранить</string>
     <string name="edit_costs_cancel">Закрыть</string>
+
+    <string name="calendar_ok">OK</string>
+    <string name="calendar_cancel">Отмена</string>
 </resources>
