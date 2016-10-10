@@ -3,6 +3,7 @@ package com.example.newcosts;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -47,11 +48,13 @@ public class MainActivity extends AppCompatActivity {
     int todayYear;
     int todayDay;
     int chosenCostNameId;
+    double chosenCostTypeValue;
 
     static String nearestEventShown;
 
     TextView currentDateTextViewMainActivity;
     TextView currentOverallCostsTextViewMainActivity;
+    TextView currentDialogCostSumTextView;
 
     String currentOverallCosts;
 
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
 
         format = NumberFormat.getInstance();
         format.setGroupingUsed(false);
@@ -158,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
                 String inputText = String.valueOf(inputDataEditText.getText());
                 if (inputText != null && inputText.length() != 0 && !".".equals(inputText)) {
                     Double enteredCostValue = Double.parseDouble(inputText);
+                    chosenCostTypeValue = chosenCostTypeValue + enteredCostValue;
 
                     cdb.addCosts(enteredCostValue, chosenCostNameId);
 
@@ -165,12 +170,13 @@ public class MainActivity extends AppCompatActivity {
                     SetCurrentOverallCosts();
                     CreateListViewContent();
 
+                    currentDialogCostSumTextView.setText(format.format(chosenCostTypeValue) + " руб.");
                     inputDataEditText.setText("");
                 }
                 break;
             }
 
-            case R.id.cancelButton:
+            case R.id.inputDataPopup_cancelButton:
                 currentDialog.cancel();
                 break;
 
@@ -237,9 +243,10 @@ public class MainActivity extends AppCompatActivity {
         }
         // Нажатие на название категроии расходов
         else {
-            // Получаем название выбранной статьи расходов
+            // Получаем название и значение расходов по выбранной статье расходов
             String[] textLineData = textLine.split("\\$");
             String costName = textLineData[1];
+            chosenCostTypeValue = Double.parseDouble(textLineData[2]);
 
             // Устанавливаем ID выбранной статьи расходов
             chosenCostNameId = Integer.parseInt(textLineData[0]);
@@ -252,6 +259,8 @@ public class MainActivity extends AppCompatActivity {
 
             // Инициализируем поле с названием выбранной статьи расходов
             TextView chosenCostTypeNameTextView = (TextView) dialog.findViewById(R.id.costTypeTextViewInInputDataPopup);
+            currentDialogCostSumTextView = (TextView) dialog.findViewById(R.id.inputDataPopup_costSum);
+            currentDialogCostSumTextView.setText(textLineData[2] + " руб.");
             chosenCostTypeNameTextView.setText(costName);
 
             dialog.show();

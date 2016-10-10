@@ -1,21 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
 
-    <TextView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Промтовары"
+        android:layout_height="match_parent"
+        android:background="#FF9800">
 
-        android:background="#FFFFFF"
-        android:textSize="35sp"
+        <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:layout_marginLeft="5dp"
+            android:id="@+id/inputDataPopup_costSum" />
+    </LinearLayout>
 
-        android:id="@+id/costTypeTextViewInInputDataPopup"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FF9800">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Промтовары"
+
+            android:background="#FF9800"
+            android:textSize="35sp"
+            android:textColor="#FFFFFF"
+
+            android:id="@+id/costTypeTextViewInInputDataPopup"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:layout_marginLeft="5dp" />
+    </LinearLayout>
 
 
     <EditText
@@ -33,6 +57,12 @@
         android:textAlignment="center"
         android:textSize="50sp"
         android:gravity="center" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#FF9800"></LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -222,40 +252,25 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
-        android:weightSum="3">
+        android:layout_height="1dp"
+        android:background="#FF9800">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/input_data_popup_add_text_btn"
-            android:id="@+id/addTextButton"
-            android:background="@drawable/takephoto_button_custom"
-            android:onClick="OnInputDataPopupClickListener"
-            android:textColor="@drawable/button_text_color"
-            android:layout_weight="1"/>
+    </LinearLayout>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/input_data_popup_add_photo_btn"
-            android:id="@+id/takePhotoButton"
-            android:background="@drawable/takephoto_button_custom"
-            android:onClick="OnInputDataPopupClickListener"
-            android:textColor="@drawable/button_text_color"
-            android:layout_weight="1"/>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <Button
             android:text="@string/input_data_popup_close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/cancelButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/takephoto_button_custom"
-            android:onClick="OnInputDataPopupClickListener"
-            android:textColor="@drawable/button_text_color"/>
-
+            android:id="@+id/inputDataPopup_cancelButton"
+            android:background="@drawable/keyboard_buttons_custom"
+            android:textColor="@drawable/button_text_color"
+            android:onClick="OnInputDataPopupClickListener" />
     </LinearLayout>
 
 

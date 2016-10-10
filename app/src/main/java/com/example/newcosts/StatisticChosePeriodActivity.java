@@ -1,6 +1,8 @@
 package com.example.newcosts;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,12 +17,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class StatisticChosePeriodActivity extends AppCompatActivity {
+public class StatisticChosePeriodActivity extends AppCompatActivity implements MyDatePicker.MyDatePickerCallback {
 
-//    EditText currentlyFocusedEditText;
     EditText initialDateEditText;
     EditText endingDateEditText;
     String selectedDateString;
+    boolean datePickerCalledFromInitialDateEditText = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,50 +32,35 @@ public class StatisticChosePeriodActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Задать период");
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF9800")));
+
 
         initialDateEditText = (EditText) findViewById(R.id.initialDateTextView);
-        //initialDateEditText.setInputType(0);
+        initialDateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerCalledFromInitialDateEditText = true;
+                MyDatePicker datePicker = new MyDatePicker(StatisticChosePeriodActivity.this);
+                datePicker.show();
+            }
+        });
 
         endingDateEditText = (EditText) findViewById(R.id.endingDateTextView);
-        //endingDateEditText.setInputType(0);
-
-//        final CalendarView calendarView = (CalendarView) findViewById(R.id.calendarView);
+        endingDateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerCalledFromInitialDateEditText = false;
+                MyDatePicker datePicker = new MyDatePicker(StatisticChosePeriodActivity.this);
+                datePicker.show();
+            }
+        });
 
         Calendar calendar = Calendar.getInstance();
 
-        //System.out.println(calendar.getTimeInMillis());
-
-//        calendar.setTimeInMillis(calendarView.getDate());
         selectedDateString = calendar.get(Calendar.DAY_OF_MONTH) + "." + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR);
 
         initialDateEditText.setText(selectedDateString);
         endingDateEditText.setText(selectedDateString);
-
-//        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-//            @Override
-//            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-//                month = month + 1;
-//                selectedDateString = dayOfMonth + "." + month + "." + year;
-//                currentlyFocusedEditText.setText(selectedDateString);
-//            }
-//        });
-
-//        initialDateEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View v, boolean hasFocus) {
-//                if (hasFocus) {
-//                    currentlyFocusedEditText = initialDateEditText;
-//                }
-//            }
-//        });
-//        endingDateEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View v, boolean hasFocus) {
-//                if (hasFocus) {
-//                    currentlyFocusedEditText = endingDateEditText;
-//                }
-//            }
-//        });
     }
 
     public void OnSetPeriodButtonClick(View view) {
@@ -133,5 +120,13 @@ public class StatisticChosePeriodActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void getPickedDate(String pickedDate) {
+        if (datePickerCalledFromInitialDateEditText)
+            initialDateEditText.setText(pickedDate);
+        else
+            endingDateEditText.setText(pickedDate);
     }
 }

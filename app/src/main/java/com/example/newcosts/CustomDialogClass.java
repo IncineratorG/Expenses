@@ -13,13 +13,21 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 public class CustomDialogClass extends Dialog implements
         android.view.View.OnClickListener {
 
-    public Activity activity;
-    public Dialog d;
-    public Button edit, delete, cancel;
-    public String dataString;
+    private static String[] DeclensionMonthNames = {"Января", "Февраля", "Мара", "Апреля",
+            "Мая", "Июня", "Июля", "Августа",
+            "Сентября", "Октября", "Ноября", "Декабря"};
+    private static String[] DayNames = {"", "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"};
+
+    private Activity activity;
+    private Button editButton, deleteButton, cancelButton;
+    private String dataString;
 
     public CustomDialogClass(Activity activity, String dataString) {
         super(activity);
@@ -32,30 +40,48 @@ public class CustomDialogClass extends Dialog implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.custom_dialog);
+        setContentView(R.layout.edit_cost_value_dialog);
 
-        edit = (Button) findViewById(R.id.edit_btn);
-        delete = (Button) findViewById(R.id.delete_btn);
-        cancel = (Button) findViewById(R.id.cancel_btn);
+        Long milliseconds = Long.parseLong(dataString.substring(dataString.indexOf("%") + 1));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.UK);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliseconds);
+//        String dateString = dateFormat.format(calendar.getTime());
 
-        TextView textView = (TextView) findViewById(R.id.dialog_txtView);
-        textView.setText(dataString.substring(0, dataString.indexOf("%")));
+        editButton = (Button) findViewById(R.id.edit_cost_value_dialog_editButton);
+        editButton.setOnClickListener(this);
+        deleteButton = (Button) findViewById(R.id.edit_cost_value_dialog_deleteButton);
+        deleteButton.setOnClickListener(this);
+        cancelButton = (Button) findViewById(R.id.edit_cost_value_dialog_cancelButton);
+        cancelButton.setOnClickListener(this);
 
-        edit.setOnClickListener(this);
-        delete.setOnClickListener(this);
-        cancel.setOnClickListener(this);
+        String costName = dataString.substring(dataString.indexOf(" ") + 1, dataString.lastIndexOf(":"));
+        String costValue = dataString.substring(dataString.indexOf(":") + 2, dataString.indexOf("%"));
+        System.out.println(dataString);
+        System.out.println(costName);
+        System.out.println(costValue);
+
+        TextView costValueTextView = (TextView) findViewById(R.id.edit_cost_value_dialog_costValue);
+        costValueTextView.setText(costValue);
+        TextView costNameTextView = (TextView) findViewById(R.id.edit_cost_value_dialog_costName);
+        costNameTextView.setText(costName);
+        TextView costDateTextView = (TextView) findViewById(R.id.edit_cost_value_dialog_costDate);
+        costDateTextView.setText(DayNames[calendar.get(Calendar.DAY_OF_WEEK)] + ", " +
+                                 String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) + " " +
+                                 DeclensionMonthNames[calendar.get(Calendar.MONTH)] + ", " +
+                                 String.valueOf(calendar.get(Calendar.YEAR)));
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.edit_btn:
+            case R.id.edit_cost_value_dialog_editButton:
                 Intent editCostsIntent = new Intent(activity, EditCostsActivity.class);
                 editCostsIntent.putExtra("data", dataString);
                 activity.startActivity(editCostsIntent);
 
                 break;
-            case R.id.delete_btn:
+            case R.id.edit_cost_value_dialog_deleteButton:
                 AlertDialog.Builder aBuilder = new AlertDialog.Builder(activity);
                 aBuilder.setNegativeButton("Отмена", null);
                 aBuilder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
@@ -75,7 +101,7 @@ public class CustomDialogClass extends Dialog implements
                 dialogText.setGravity(Gravity.CENTER);
 
                 break;
-            case R.id.cancel_btn:
+            case R.id.edit_cost_value_dialog_cancelButton:
                 dismiss();
                 break;
             default:

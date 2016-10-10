@@ -43,7 +43,9 @@
                 android:layout_gravity="bottom|right"
                 android:gravity="center"
                 android:textSize="25sp"
-                android:inputType="date" />
+                android:inputType="date"
+                android:editable="false"
+                android:focusable="false"/>
         </LinearLayout>
 
         <LinearLayout
@@ -68,7 +70,9 @@
                 android:id="@+id/endingDateTextView"
                 android:gravity="center"
                 android:textSize="25sp"
-                android:inputType="date" />
+                android:inputType="date"
+                android:editable="false"
+                android:focusable="false"/>
         </LinearLayout>
 
         <LinearLayout

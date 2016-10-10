@@ -2,6 +2,8 @@ package com.example.newcosts;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,12 +19,11 @@ import android.widget.Toast;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class EditCostsActivity extends AppCompatActivity implements MyDatePicker.MyDataPickerCallback {
+public class EditCostsActivity extends AppCompatActivity implements MyDatePicker.MyDatePickerCallback {
 
     String date;
     String categoryName;
@@ -44,6 +45,7 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Редактирование");
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF9800")));
 
 //        date = "3.05.1989";
 //        categoryName = "First";

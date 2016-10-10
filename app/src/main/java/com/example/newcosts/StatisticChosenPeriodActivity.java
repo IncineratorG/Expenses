@@ -1,6 +1,8 @@
 package com.example.newcosts;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,6 +31,7 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(initialDateString + " - " + endingDateString);
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF9800")));
 
         TextView chosenPeriodTextView = (TextView) findViewById(R.id.chosenPeriodTextView);
         chosenPeriodTextView.setText(initialDateString + " - " + endingDateString);

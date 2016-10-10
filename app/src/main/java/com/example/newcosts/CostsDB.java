@@ -703,8 +703,6 @@ public class CostsDB extends SQLiteOpenHelper {
 
 
 
-
-
     public List<String> getAllTableCostNames() {
         String query = "SELECT * FROM " + TABLE_COST_NAMES;
 

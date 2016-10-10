@@ -92,7 +92,7 @@ public class AddNewEvent extends AppCompatActivity {
     }
 
     public void addEventButtonOnClick(View view) {
-//        Calendar calendar = Calendar.getInstance();
+//        Calendar datepicker = Calendar.getInstance();
 //
 //        // Получаем и проверяем входные данные
 //        int eventDay = 3;
@@ -104,7 +104,7 @@ public class AddNewEvent extends AppCompatActivity {
 //            eventMonth = Integer.parseInt(eventMonthTextView.getText().toString());
 //            eventYear = Integer.parseInt(eventYearTextView.getText().toString());
 //
-//            if ((eventDay < 1 && eventDay > 31) || (eventMonth < 1 && eventMonth > 12) || (eventYear < calendar.get(Calendar.YEAR))) {
+//            if ((eventDay < 1 && eventDay > 31) || (eventMonth < 1 && eventMonth > 12) || (eventYear < datepicker.get(Calendar.YEAR))) {
 //                isInputIncorrect = true;
 //                Toast errorDayToast = Toast.makeText(this, eventDateError, Toast.LENGTH_LONG);
 //                errorDayToast.show();

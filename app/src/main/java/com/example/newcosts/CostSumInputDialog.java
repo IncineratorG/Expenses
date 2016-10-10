@@ -60,10 +60,10 @@ public class CostSumInputDialog extends Dialog implements
 //        addText.setOnClickListener(this);
 //        ok = (Button) findViewById(R.id.ok);
 //        ok.setOnClickListener(this);
-//        delete = (Button) findViewById(R.id.del);
-//        delete.setOnClickListener(this);
-//        cancel = (Button) findViewById(R.id.cancelButton);
-//        cancel.setOnClickListener(this);
+//        deleteButton = (Button) findViewById(R.id.del);
+//        deleteButton.setOnClickListener(this);
+//        cancelButton = (Button) findViewById(R.id.cancelButton);
+//        cancelButton.setOnClickListener(this);
 //
 //        inputTextField = (EditText) findViewById(R.id.inputTextFieldEditTextInInputDataPopup);
 //        inputTextField.setFilters(new DecimalDigitsInputFilter[] {new DecimalDigitsInputFilter()});
@@ -131,7 +131,7 @@ public class CostSumInputDialog extends Dialog implements
 //                break;
 //
 //            case R.id.cancelButton:
-//                this.cancel();
+//                this.cancelButton();
 //                break;
 //        }
     }

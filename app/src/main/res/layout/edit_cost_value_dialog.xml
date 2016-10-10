@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FF9800">
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_cost_value_dialog_costDate"
+            android:textColor="#FFFFFF"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#FFFFFF"></LinearLayout>
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_cost_value_dialog_costName"
+            android:textColor="#FFFFFF"
+            android:layout_marginLeft="5dp"
+            android:minHeight="25dp"
+            android:textSize="30sp"
+            android:layout_marginRight="5dp"
+            android:gravity="center" />
+
+        <TextView
+            android:text="TextView"
+            android:background="#FF9800"
+            android:textColor="#FFFFFF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_cost_value_dialog_costValue"
+            android:gravity="center"
+            android:minHeight="25dp"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textSize="30sp"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#FF9800"></LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="3"
+        android:layout_marginTop="1dp">
+
+        <Button
+            android:text="@string/edit_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_cost_value_dialog_editButton"
+            android:background="@drawable/keyboard_buttons_custom"
+            android:textColor="@drawable/button_text_color"
+            android:layout_weight="1"
+            android:padding="4dp" />
+
+        <Button
+            android:text="@string/delete_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_cost_value_dialog_deleteButton"
+            android:background="@drawable/keyboard_buttons_custom"
+            android:textColor="@drawable/button_text_color"
+            android:layout_weight="1" />
+
+        <Button
+            android:text="@string/cancel_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_cost_value_dialog_cancelButton"
+            android:background="@drawable/keyboard_buttons_custom"
+            android:textColor="@drawable/button_text_color"
+            android:layout_weight="1"
+            android:elevation="0dp" />
+    </LinearLayout>
+</LinearLayout>
