@@ -23,6 +23,12 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#FF9800"></LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="4">
 
@@ -207,6 +213,12 @@
 
 
     </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#FF9800"></LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"

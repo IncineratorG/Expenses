@@ -132,7 +132,7 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
         costSumEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(EditCostsActivity.this);
+                Dialog dialog = new Dialog(EditCostsActivity.this);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.edit_cost_sum_popup);
                 currentDialog = dialog;
