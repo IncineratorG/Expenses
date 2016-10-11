@@ -49,25 +49,24 @@ public class MainActivity extends AppCompatActivity {
     int todayDay;
     int chosenCostNameId;
     double chosenCostTypeValue;
-
+    String currentOverallCosts;
+    String[] costsArray;
+    String[] nonActiveCostNames;
+    Map<String, Double> costsMap;
+    NumberFormat format;
     static String nearestEventShown;
 
     TextView currentDateTextViewMainActivity;
     TextView currentOverallCostsTextViewMainActivity;
     TextView currentDialogCostSumTextView;
-
-    String currentOverallCosts;
-
-    String[] nonActiveCostNames;
-
-    Map<String, Double> costsMap;
-
-    NumberFormat format;
-
-    String[] costsArray;
     ListAdapter costsListViewMainActivityAdapter;
     ListView costsListViewMainActivity;
     Dialog currentDialog;
+
+
+
+
+
 
 /*================================================================================================*/
 
@@ -182,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
 
     // При нажатии на пункт списка статей расходов появляется всплывающее окно,
     // в котором можно ввести значение расходов по выбранной статье. При нажатии
@@ -352,9 +352,6 @@ public class MainActivity extends AppCompatActivity {
                     inputTextField.setCursorVisible(true);
                     inputTextField.setText(textLineData[1]);
 
-//                    ArrayAdapter<String> autoCompleteTextViewAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_dropdown_item_1line, nonActiveCostNames);
-//                    inputTextField.setAdapter(autoCompleteTextViewAdapter);
-
                     // Инициализируем кнопки всплывающего окна
                     Button renameButton = (Button) dialog.findViewById(R.id.addNewCostTypeButton);
                     renameButton.setText("Переименовать");
@@ -415,8 +412,6 @@ public class MainActivity extends AppCompatActivity {
         int numberOfLastEntriesToShow = 30;
 
         final String[] lastEnteredValues = cdb.getLastEntries(numberOfLastEntriesToShow);
-//        for (String s : lastEnteredValues)
-//            System.out.println(s);
 
         PopupMenu lastEntriesPopupMenu = new PopupMenu(this, currentOverallCostsTextViewMainActivity);
         for (int i = 0; i < lastEnteredValues.length; ++i)
@@ -428,6 +423,7 @@ public class MainActivity extends AppCompatActivity {
 
                 final int itemPositionInLastEnteredValuesArray = item.getItemId() - 1;
 
+                // Диалоговое окно, позволяющее удалить или изменить выбранную запись
                 CustomDialogClass customDialog = new CustomDialogClass(MainActivity.this, lastEnteredValues[itemPositionInLastEnteredValuesArray]);
                 customDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -438,41 +434,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 customDialog.show();
-
-
-
-                // Диалоговое окно, запрашивающее подтверждение на удаление выбранного
-                // элемента из списка последних внесённых значений. При нажатии на кнопку "Удалить"
-                // происходит удаление выбранного элемента из базы данных и обновление
-                // текущей суммы расходов по данной категории
-//                AlertDialog.Builder adBuilder = new AlertDialog.Builder(MainActivity.this);
-//                adBuilder.setNegativeButton("Отмена", null);
-//                adBuilder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        String dateString = lastEnteredValues[itemPositionInLastEnteredValuesArray].substring(lastEnteredValues[itemPositionInLastEnteredValuesArray].indexOf("%") + 1);
-//                        Long chosenItemDateInMilliseconds = Long.parseLong(dateString);
-//
-//                        boolean result = cdb.removeCostValue(chosenItemDateInMilliseconds);
-//
-//                        // Обновляем главный экран приложения (MainActivity)
-//                        SetCurrentOverallCosts();
-//                        CreateListViewContent();
-//                    }
-//                });
-////                adBuilder.setNeutralButton("Редактировать", new DialogInterface.OnClickListener() {
-////                    @Override
-////                    public void onClick(DialogInterface dialog, int which) {
-////                        System.out.println("Neutral button clicked");
-////                    }
-////                });
-//                adBuilder.setMessage(item.getTitle().toString());
-//
-//                AlertDialog dialog = adBuilder.create();
-//                dialog.show();
-//
-//                TextView dialogText = (TextView) dialog.findViewById(android.R.id.message);
-//                dialogText.setGravity(Gravity.CENTER);
 
                 return true;
             }

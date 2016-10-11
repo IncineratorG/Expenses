@@ -79,6 +79,7 @@ public class CustomDialogClass extends Dialog implements
                 Intent editCostsIntent = new Intent(activity, EditCostsActivity.class);
                 editCostsIntent.putExtra("data", dataString);
                 activity.startActivity(editCostsIntent);
+                dismiss();
 
                 break;
             case R.id.edit_cost_value_dialog_deleteButton:
