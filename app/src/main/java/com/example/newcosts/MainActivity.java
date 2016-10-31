@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import java.text.NumberFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
 
-        format = NumberFormat.getInstance();
+        format = NumberFormat.getInstance(Locale.FRANCE);
         format.setGroupingUsed(false);
 
         // Получаем доступ к базе данных
@@ -242,10 +243,12 @@ public class MainActivity extends AppCompatActivity {
         else {
             // Получаем название и значение расходов по выбранной статье расходов
             String costName = textLine.substring(0, textLine.lastIndexOf(Constants.SEPARATOR_VALUE));
-            chosenCostTypeValue = Double.parseDouble(textLine.substring(
+            String chosenCostTypeValueString = textLine.substring(
                     textLine.lastIndexOf(Constants.SEPARATOR_VALUE) + 1,
                     textLine.lastIndexOf(Constants.SEPARATOR_ID)
-            ));
+            );
+            chosenCostTypeValueString = chosenCostTypeValueString.replaceAll(",", ".");
+            chosenCostTypeValue = Double.parseDouble(chosenCostTypeValueString);
 
             // Устанавливаем ID выбранной статьи расходов
             chosenCostNameId = Integer.parseInt(textLine.substring(
@@ -279,10 +282,12 @@ public class MainActivity extends AppCompatActivity {
             final int chosenCostTypeId = Integer.parseInt(textLine.substring(
                     textLine.lastIndexOf(Constants.SEPARATOR_ID) + 1
             ));
-            final Double chosenCostTypeValue = Double.parseDouble(textLine.substring(
+            String chosenCostTypeValueString = textLine.substring(
                     textLine.lastIndexOf(Constants.SEPARATOR_VALUE) + 1,
                     textLine.lastIndexOf(Constants.SEPARATOR_ID)
-            ));
+            );
+            chosenCostTypeValueString = chosenCostTypeValueString.replaceAll(",", ".");
+            final Double chosenCostTypeValue = Double.parseDouble(chosenCostTypeValueString);
 
             final Dialog mainEditDialog = new Dialog(MainActivity.this);
             mainEditDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -451,6 +456,7 @@ public class MainActivity extends AppCompatActivity {
             sb.append(Constants.SEPARATOR_MILLISECONDS);
             sb.append(lastEnteredValuesRaw[i + 4]);
             lastEnteredValuesFinal[indexCounter++] = sb.toString();
+
             lastEntriesPopupMenu.getMenu().add(1, indexCounter, indexCounter,
                     lastEnteredValuesFinal[indexCounter - 1].substring(
                     0, lastEnteredValuesFinal[indexCounter - 1].lastIndexOf(Constants.SEPARATOR_MILLISECONDS)

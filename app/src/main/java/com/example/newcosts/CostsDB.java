@@ -11,6 +11,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 
 public class CostsDB extends SQLiteOpenHelper {
@@ -392,7 +393,7 @@ public class CostsDB extends SQLiteOpenHelper {
         List<String> listOfEntries = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
-        NumberFormat numberFormat = NumberFormat.getInstance();
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
         numberFormat.setGroupingUsed(false);
 
         try {
@@ -452,7 +453,7 @@ public class CostsDB extends SQLiteOpenHelper {
         Cursor c = null;
         String[] array = null;
 
-        NumberFormat numberFormat = NumberFormat.getInstance();
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
         numberFormat.setGroupingUsed(false);
 
         try {
@@ -570,7 +571,7 @@ public class CostsDB extends SQLiteOpenHelper {
         StringBuilder sb = new StringBuilder();
         List<String> listOfEntries = new ArrayList<>();
 
-        NumberFormat numberFormat = NumberFormat.getInstance();
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
         numberFormat.setGroupingUsed(false);
 
         try {
@@ -620,7 +621,7 @@ public class CostsDB extends SQLiteOpenHelper {
         StringBuilder sb = new StringBuilder();
         List<String> listOfEntries = new ArrayList<>();
 
-        NumberFormat numberFormat = NumberFormat.getInstance();
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
         numberFormat.setGroupingUsed(false);
 
         try {
@@ -724,7 +725,7 @@ public class CostsDB extends SQLiteOpenHelper {
         Cursor c = null;
         StringBuilder sb = new StringBuilder();
         String result = null;
-        NumberFormat numberFormat = NumberFormat.getInstance();
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
         numberFormat.setGroupingUsed(false);
 
         try {

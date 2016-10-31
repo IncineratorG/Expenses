@@ -37,8 +37,6 @@ public class CustomDialogClass extends Dialog implements
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.edit_cost_value_dialog);
 
-        System.out.println(dataString);
-
         Long milliseconds = Long.parseLong(dataString.substring(dataString.lastIndexOf(Constants.SEPARATOR_MILLISECONDS) + 1));
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milliseconds);
@@ -82,7 +80,7 @@ public class CustomDialogClass extends Dialog implements
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         CostsDB db = CostsDB.getInstance(activity);
-                        db.removeCostValue(Long.parseLong(dataString.substring(dataString.indexOf("%") + 1)));
+                        db.removeCostValue(Long.parseLong(dataString.substring(dataString.lastIndexOf(Constants.SEPARATOR_MILLISECONDS) + 1)));
                         dismiss();
                     }
                 });

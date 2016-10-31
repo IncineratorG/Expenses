@@ -68,7 +68,7 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
             dataString = data.getString("data");
 
         db = CostsDB.getInstance(this);
-        long milliseconds = Long.parseLong(dataString.substring(dataString.indexOf("%") + 1));
+        long milliseconds = Long.parseLong(dataString.substring(dataString.lastIndexOf(Constants.SEPARATOR_MILLISECONDS) + 1));
         String dbData = db.getCostByDateInMillis(milliseconds);
         String[] dataArr = dbData.split("%");
 
