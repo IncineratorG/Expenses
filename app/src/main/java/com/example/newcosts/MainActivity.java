@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
 
-        format = NumberFormat.getInstance(Locale.FRANCE);
+        format = NumberFormat.getInstance(Locale.UK);
         format.setGroupingUsed(false);
 
         // Получаем доступ к базе данных

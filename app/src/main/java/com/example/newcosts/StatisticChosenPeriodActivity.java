@@ -13,12 +13,20 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class StatisticChosenPeriodActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_chosen_period);
+
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
+        numberFormat.setGroupingUsed(false);
+        numberFormat.setMaximumFractionDigits(2);
+
 
         Bundle chosenPeriodBundle = getIntent().getExtras();
 
@@ -46,7 +54,7 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
             totalForPeriod = totalForPeriod + d;
         }
 
-        overallCostsForChosenPeriodTextView.setText(String.valueOf(totalForPeriod) + " руб.");
+        overallCostsForChosenPeriodTextView.setText(numberFormat.format(totalForPeriod) + " руб.");
 
         ListAdapter listViewAdapter = new CostsListViewAdapter(this, dataArray);
         chosenPeriodListView.setAdapter(listViewAdapter);

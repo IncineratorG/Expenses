@@ -393,7 +393,7 @@ public class CostsDB extends SQLiteOpenHelper {
         List<String> listOfEntries = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
-        NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
         numberFormat.setGroupingUsed(false);
 
         try {
@@ -453,7 +453,7 @@ public class CostsDB extends SQLiteOpenHelper {
         Cursor c = null;
         String[] array = null;
 
-        NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
         numberFormat.setGroupingUsed(false);
 
         try {
@@ -517,6 +517,8 @@ public class CostsDB extends SQLiteOpenHelper {
         Cursor c = null;
         List<String> listOfEntries = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
+        numberFormat.setGroupingUsed(false);
 
         try {
             c = db.rawQuery(query, null);
@@ -529,7 +531,7 @@ public class CostsDB extends SQLiteOpenHelper {
                 sb.append(c.getString(c.getColumnIndex(YEAR)));
                 sb.append("$");
 
-                sb.append(c.getDouble(c.getColumnIndex("SUM")));
+                sb.append(numberFormat.format(c.getDouble(c.getColumnIndex("SUM"))));
 
                 listOfEntries.add(sb.toString());
                 sb.setLength(0);
@@ -571,7 +573,7 @@ public class CostsDB extends SQLiteOpenHelper {
         StringBuilder sb = new StringBuilder();
         List<String> listOfEntries = new ArrayList<>();
 
-        NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
         numberFormat.setGroupingUsed(false);
 
         try {
@@ -621,7 +623,7 @@ public class CostsDB extends SQLiteOpenHelper {
         StringBuilder sb = new StringBuilder();
         List<String> listOfEntries = new ArrayList<>();
 
-        NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
         numberFormat.setGroupingUsed(false);
 
         try {
@@ -677,6 +679,9 @@ public class CostsDB extends SQLiteOpenHelper {
         Cursor c = null;
         StringBuilder sb = new StringBuilder();
         List<String> listOfEntries = new ArrayList<>();
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
+        numberFormat.setGroupingUsed(false);
+        numberFormat.setMaximumFractionDigits(2);
 
         try {
             c = db.rawQuery(query, null);
@@ -686,7 +691,7 @@ public class CostsDB extends SQLiteOpenHelper {
                 sb.append(c.getString(c.getColumnIndex(COST_NAME)));
                 sb.append("$");
 
-                sb.append(c.getString(c.getColumnIndex("SUM")));
+                sb.append(numberFormat.format(c.getDouble(c.getColumnIndex("SUM"))));
 
                 listOfEntries.add(sb.toString());
                 sb.setLength(0);
@@ -725,7 +730,7 @@ public class CostsDB extends SQLiteOpenHelper {
         Cursor c = null;
         StringBuilder sb = new StringBuilder();
         String result = null;
-        NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
         numberFormat.setGroupingUsed(false);
 
         try {
