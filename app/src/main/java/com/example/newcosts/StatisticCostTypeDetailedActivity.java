@@ -34,7 +34,7 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
             int chosenYear = dataFromStatisticDetailedActivity.getInt("chosenYear");
             dataForStatisticDetailedActivity = dataFromStatisticDetailedActivity.getString("dataForStatisticDetailedActivity");
 
-            CostsDB cdb = new CostsDB(this, null, null, 1);
+            CostsDB cdb = CostsDB.getInstance(this);
             String[] dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
             for (String s : dataArray)
                 System.out.println(s);

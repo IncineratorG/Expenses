@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -15,6 +16,9 @@ import java.util.List;
 public class CostsDB extends SQLiteOpenHelper {
 
     /*  В базе данных месяца начинаются с 0  */
+    private static final String tag = "CostsDbTag";
+
+    private static CostsDB dbInstance;
 
 
     private static final int DATABASE_VERSION = 1;
@@ -41,8 +45,17 @@ public class CostsDB extends SQLiteOpenHelper {
     // **********************************************************
 
 
-    public CostsDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    private CostsDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
+    }
+
+    public static CostsDB getInstance(Context context) {
+        if (dbInstance != null)
+            return dbInstance;
+        else {
+            dbInstance = new CostsDB(context.getApplicationContext(), null, null, 1);
+            return dbInstance;
+        }
     }
 
     @Override
@@ -106,6 +119,48 @@ public class CostsDB extends SQLiteOpenHelper {
         }
 
         return costNamesList;
+    }
+    public String[] getActiveCostNames_V2() {
+        String query = "SELECT COUNT(" + ID_N_FK + ") AS quantity," +
+                COST_NAME + ", " +
+                ID_N +
+                " FROM " + TABLE_COST_NAMES +
+                " LEFT OUTER JOIN " + TABLE_COST_VALUES +
+                " ON " + ID_N + " = " + ID_N_FK +
+                " WHERE " + IS_ACTIVE + " = " + 1 +
+                " GROUP BY " + ID_N +
+                " ORDER BY quantity DESC";
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+//        List<String> list = new ArrayList<>();
+        String[] array = null;
+
+        try {
+            c = db.rawQuery(query, null);
+            c.moveToFirst();
+            array = new String[c.getCount() * 2];
+            int arrayIndexCounter = 0;
+
+            while (!c.isAfterLast()) {
+                array[arrayIndexCounter++] = c.getString(c.getColumnIndex(COST_NAME));
+                array[arrayIndexCounter++] = c.getString(c.getColumnIndex(ID_N));
+//                list.add(c.getString(c.getColumnIndex(COST_NAME)));
+//                list.add(c.getString(c.getColumnIndex(ID_N)));
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+//        array = new String[list.size()];
+//        list.toArray(array);
+
+        return array;
     }
 
     // Добавляет новую статью расходов. В случае успеха возвращает "true".
@@ -355,7 +410,8 @@ public class CostsDB extends SQLiteOpenHelper {
                 sb.append(": ");
 
                 sb.append(numberFormat.format(c.getDouble(c.getColumnIndex(COST_VALUE))));
-                sb.append(" руб.%");
+                sb.append(" руб.");
+                sb.append(Constants.SEPARATOR_MILLISECONDS);
 
                 sb.append(c.getString(c.getColumnIndex(DATE_IN_MILLISECONDS)));
 
@@ -375,8 +431,56 @@ public class CostsDB extends SQLiteOpenHelper {
         String[] array = new String[listOfEntries.size()];
         listOfEntries.toArray(array);
 
+        getLastEntries_V2(numberOfEntries);
+
         return array;
     }
+    public String[] getLastEntries_V2(int numberOfEntries) {
+        String getLastEntriesQuery = "SELECT " +
+                DAY + ", " +
+                MONTH + ", " +
+                COST_NAME + ", " +
+                COST_VALUE + ", " +
+                DATE_IN_MILLISECONDS +
+                " FROM " + TABLE_COST_VALUES +
+                " INNER JOIN " + TABLE_COST_NAMES +
+                " ON " + TABLE_COST_VALUES + "." + ID_N_FK + " = " + TABLE_COST_NAMES + "." + ID_N +
+                " ORDER BY " + DATE_IN_MILLISECONDS + " DESC " +
+                " LIMIT " + numberOfEntries;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        String[] array = null;
+
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        numberFormat.setGroupingUsed(false);
+
+        try {
+            c = db.rawQuery(getLastEntriesQuery, null);
+            c.moveToFirst();
+            array = new String[c.getCount() * 5];
+            int arrayIndexCounter = 0;
+
+            while (!c.isAfterLast()) {
+                array[arrayIndexCounter++] = c.getString(c.getColumnIndex(DAY));
+                array[arrayIndexCounter++] = String.valueOf(c.getInt(c.getColumnIndex(MONTH)) + 1);
+                array[arrayIndexCounter++] = c.getString(c.getColumnIndex(COST_NAME));
+                array[arrayIndexCounter++] = numberFormat.format(c.getDouble(c.getColumnIndex(COST_VALUE)));
+                array[arrayIndexCounter++] = c.getString(c.getColumnIndex(DATE_IN_MILLISECONDS));
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return array;
+    }
+
 
     // Удаляет запись из таблицы TABLE_COST_VALUES, дата в миллисекундах
     // для которой равна "dateInMilliseconds"

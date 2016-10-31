@@ -25,13 +25,13 @@ import java.util.Locale;
 
 public class EditCostsActivity extends AppCompatActivity implements MyDatePicker.MyDatePickerCallback {
 
-    String date;
-    String categoryName;
-    String costSum;
-    String dateInMilliseconds;
-    List<String> availableCostNamesList;
-    NumberFormat numberFormat;
-    CostsDB db;
+    private String date;
+    private String categoryName;
+    private String costSum;
+    private String dateInMilliseconds;
+    private List<String> availableCostNamesList;
+    private NumberFormat numberFormat;
+    private CostsDB db;
 
     Spinner availableCostNamesSpinner;
     Dialog currentDialog;
@@ -67,7 +67,7 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
         if (data != null)
             dataString = data.getString("data");
 
-        db = new CostsDB(this, null, null, 1);
+        db = CostsDB.getInstance(this);
         long milliseconds = Long.parseLong(dataString.substring(dataString.indexOf("%") + 1));
         String dbData = db.getCostByDateInMillis(milliseconds);
         String[] dataArr = dbData.split("%");
@@ -83,6 +83,9 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
 
         // Получаем список всех используемых категорий расходов и их id_n
         availableCostNamesList = db.getActiveCostNames();
+        String[] availableCostNames = db.getActiveCostNames_V2();
+//        for (String s : availableCostNames)
+//            System.out.println(s);
 
         // Формируем массив, состоящий только из названий используемых
         // категорий расходов

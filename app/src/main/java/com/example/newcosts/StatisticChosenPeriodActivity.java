@@ -38,7 +38,7 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
         TextView overallCostsForChosenPeriodTextView = (TextView) findViewById(R.id.overallCostsForChosenPeriodTextView);
         ListView chosenPeriodListView = (ListView) findViewById(R.id.chosenPeriodListView);
 
-        CostsDB cdb = new CostsDB(this, null, null, 1);
+        CostsDB cdb = CostsDB.getInstance(this);
         String[] dataArray = cdb.test(initialDateInMilliseconds, endingDateInMilliseconds);
         double totalForPeriod = 0.0;
         for (String s : dataArray) {

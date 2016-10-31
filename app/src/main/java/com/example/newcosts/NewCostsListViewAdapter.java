@@ -7,9 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-/**
- * Created by Alexander on 23.07.2016.
- */
+
 public class NewCostsListViewAdapter extends ArrayAdapter<String> {
     public NewCostsListViewAdapter(Context context, String[] costs) {
         super(context, R.layout.single_costs_row, costs);

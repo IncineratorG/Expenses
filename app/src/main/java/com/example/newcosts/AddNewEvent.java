@@ -46,7 +46,7 @@ public class AddNewEvent extends AppCompatActivity {
         eventsListView = (ListView) findViewById(R.id.eventsList);
 
         // Получаем доступ к базе данных
-        db = new CostsDB(this, null, null, 1);
+        db = CostsDB.getInstance(this);
 
         // Инициализируем список предстоящих событий
         SetEventsListView();

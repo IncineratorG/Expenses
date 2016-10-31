@@ -47,7 +47,7 @@ public class StatisticDetailedActivity extends AppCompatActivity {
             overallCostsTextViewStatisticDetailedActivity.setText(overallCostValueForChosenPeriodString + " руб.");
 
             // Получаем массив статей расходов и суммарные значения по ним за выбранный месяц
-            CostsDB cdb = new CostsDB(this, null, null, 1);
+            CostsDB cdb = CostsDB.getInstance(this);
             String[] costsArray = cdb.getCostValuesArrayOnDate(chosenMonthNumber, chosenYear);
 
             // Инициализируем ListView полученным массивом

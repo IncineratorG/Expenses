@@ -30,7 +30,7 @@ public class StatisticMainScreenActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF9800")));
 
-        CostsDB cdb = new CostsDB(this, null, null, 1);
+        CostsDB cdb = CostsDB.getInstance(this);
 
         NumberFormat numberFormat = NumberFormat.getInstance();
         numberFormat.setGroupingUsed(false);

@@ -20,11 +20,6 @@ import java.util.Locale;
 public class CustomDialogClass extends Dialog implements
         android.view.View.OnClickListener {
 
-    private static String[] DeclensionMonthNames = {"Января", "Февраля", "Мара", "Апреля",
-            "Мая", "Июня", "Июля", "Августа",
-            "Сентября", "Октября", "Ноября", "Декабря"};
-    private static String[] DayNames = {"", "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"};
-
     private Activity activity;
     private Button editButton, deleteButton, cancelButton;
     private String dataString;
@@ -42,8 +37,9 @@ public class CustomDialogClass extends Dialog implements
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.edit_cost_value_dialog);
 
-        Long milliseconds = Long.parseLong(dataString.substring(dataString.indexOf("%") + 1));
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.UK);
+        System.out.println(dataString);
+
+        Long milliseconds = Long.parseLong(dataString.substring(dataString.lastIndexOf(Constants.SEPARATOR_MILLISECONDS) + 1));
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milliseconds);
 //        String dateString = dateFormat.format(calendar.getTime());
@@ -56,19 +52,16 @@ public class CustomDialogClass extends Dialog implements
         cancelButton.setOnClickListener(this);
 
         String costName = dataString.substring(dataString.indexOf(" ") + 1, dataString.lastIndexOf(":"));
-        String costValue = dataString.substring(dataString.indexOf(":") + 2, dataString.indexOf("%"));
-        System.out.println(dataString);
-        System.out.println(costName);
-        System.out.println(costValue);
+        String costValue = dataString.substring(dataString.indexOf(":") + 2, dataString.lastIndexOf(Constants.SEPARATOR_MILLISECONDS));
 
         TextView costValueTextView = (TextView) findViewById(R.id.edit_cost_value_dialog_costValue);
         costValueTextView.setText(costValue);
         TextView costNameTextView = (TextView) findViewById(R.id.edit_cost_value_dialog_costName);
         costNameTextView.setText(costName);
         TextView costDateTextView = (TextView) findViewById(R.id.edit_cost_value_dialog_costDate);
-        costDateTextView.setText(DayNames[calendar.get(Calendar.DAY_OF_WEEK)] + ", " +
+        costDateTextView.setText(Constants.DAY_NAMES[calendar.get(Calendar.DAY_OF_WEEK)] + ", " +
                                  String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) + " " +
-                                 DeclensionMonthNames[calendar.get(Calendar.MONTH)] + ", " +
+                                 Constants.DECLENSION_MONTH_NAMES[calendar.get(Calendar.MONTH)] + ", " +
                                  String.valueOf(calendar.get(Calendar.YEAR)));
     }
 
@@ -88,7 +81,7 @@ public class CustomDialogClass extends Dialog implements
                 aBuilder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        CostsDB db = new CostsDB(activity, null, null, 1);
+                        CostsDB db = CostsDB.getInstance(activity);
                         db.removeCostValue(Long.parseLong(dataString.substring(dataString.indexOf("%") + 1)));
                         dismiss();
                     }

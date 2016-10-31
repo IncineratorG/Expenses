@@ -114,8 +114,8 @@ public class CostSumInputDialog extends Dialog implements
 ////                    cdb.addCosts(enteredCostValue, chosenCostNameId);
 ////
 ////                    // Обновляем главный экран приложения (MainActivity)
-////                    SetCurrentOverallCosts();
-////                    CreateListViewContent();
+////                    setCurrentOverallCosts();
+////                    createListViewContent();
 ////
 ////                    inputDataEditText.setText("");
 ////                }
