@@ -15,6 +15,7 @@ import android.widget.ListView;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class StatisticMainScreenActivity extends AppCompatActivity {
 
@@ -32,7 +33,7 @@ public class StatisticMainScreenActivity extends AppCompatActivity {
 
         CostsDB cdb = CostsDB.getInstance(this);
 
-        NumberFormat numberFormat = NumberFormat.getInstance();
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
         numberFormat.setGroupingUsed(false);
 
         // Получаем суммарные значения за месяц и год в формате: "5$1989$575"
