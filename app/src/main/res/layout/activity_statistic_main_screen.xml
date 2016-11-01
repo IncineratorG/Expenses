@@ -24,7 +24,13 @@
             android:id="@+id/chosePeriodButton"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/keyboard_buttons_custom"
-            android:onClick="OnChoseStatisticPeriodButtonClick" />
+            android:onClick="onChoseStatisticPeriodButtonClick" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#FF9800"></LinearLayout>
 
         <ListView
             android:layout_width="match_parent"

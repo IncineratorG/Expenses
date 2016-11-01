@@ -21,7 +21,7 @@ class CostsListViewAdapter extends ArrayAdapter<String> {
 
         String textLine = getItem(position);
 
-        String costType = textLine.substring(0, textLine.indexOf("$"));
+        String costType = textLine.substring(0, textLine.lastIndexOf(Constants.SEPARATOR_VALUE));
         String costValue = textLine.substring(textLine.indexOf("$") + 1);
 
         if (!"+".equals(costValue))

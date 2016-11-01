@@ -22,7 +22,7 @@ public class StatisticDetailedActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF9800")));
+        actionBar.setBackgroundDrawable(new ColorDrawable(Constants.HEADER_SYSTEM_COLOR));
 
         // Получаем строку с информацией о выбранной дате и суммарных затратах за выбранный месяц
         String dataString = "none";
@@ -33,10 +33,10 @@ public class StatisticDetailedActivity extends AppCompatActivity {
         if (dataString != null && !dataString.equals("none")) {
             // Вытаскиваем нужную нам информацию (месяц, год, суммарные затараты за этот месяц) из переданной строки
             String[] dataStringContent = dataString.split(" ");
-            final int chosenMonthNumber = Integer.parseInt(dataStringContent[0].substring(0, dataStringContent[0].indexOf("$")));
-            final int chosenYear = Integer.parseInt(dataStringContent[1].substring(0, dataStringContent[1].indexOf("$")));
-            String overallCostValueForChosenPeriodString = dataStringContent[1].substring(dataStringContent[1].indexOf("$") + 1);
-            String actionBarTitleString = dataStringContent[0].substring(dataStringContent[0].indexOf("$") + 1) +  " " + chosenYear;
+            final int chosenMonthNumber = Integer.parseInt(dataStringContent[0].substring(0, dataStringContent[0].indexOf(Constants.SEPARATOR_VALUE)));
+            final int chosenYear = Integer.parseInt(dataStringContent[1].substring(0, dataStringContent[1].indexOf(Constants.SEPARATOR_VALUE)));
+            String overallCostValueForChosenPeriodString = dataStringContent[1].substring(dataStringContent[1].indexOf(Constants.SEPARATOR_VALUE) + 1);
+            String actionBarTitleString = dataStringContent[0].substring(dataStringContent[0].indexOf(Constants.SEPARATOR_VALUE) + 1) +  " " + chosenYear;
 
             actionBar.setTitle(actionBarTitleString);
 
@@ -48,7 +48,7 @@ public class StatisticDetailedActivity extends AppCompatActivity {
 
             // Получаем массив статей расходов и суммарные значения по ним за выбранный месяц
             CostsDB cdb = CostsDB.getInstance(this);
-            String[] costsArray = cdb.getCostValuesArrayOnDate(chosenMonthNumber, chosenYear);
+            String[] costsArray = cdb.getCostValuesArrayOnDate_V2(chosenMonthNumber, chosenYear);
 
             // Инициализируем ListView полученным массивом
             ListAdapter costsListViewStatisticDetailedActivityAdapter = new CostsListViewAdapter(this, costsArray);
@@ -64,8 +64,8 @@ public class StatisticDetailedActivity extends AppCompatActivity {
                     Intent statisticCostTypeDetailedIntent = new Intent(StatisticDetailedActivity.this, StatisticCostTypeDetailedActivity.class);
 
                     String textLine = String.valueOf(parent.getItemAtPosition(position));
-                    String costName = textLine.substring(0, textLine.indexOf("$"));
-                    String costValue = textLine.substring(textLine.indexOf("$") + 1);
+                    String costName = textLine.substring(0, textLine.lastIndexOf(Constants.SEPARATOR_VALUE));
+                    String costValue = textLine.substring(textLine.lastIndexOf(Constants.SEPARATOR_VALUE) + 1);
 
                     statisticCostTypeDetailedIntent.putExtra("costName", costName);
                     statisticCostTypeDetailedIntent.putExtra("costValue", costValue);

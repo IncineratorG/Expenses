@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,7 +16,9 @@ import android.widget.TextView;
 
 public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
 
-    String dataForStatisticDetailedActivity;
+    private static final String tag = "ctDetailedTag";
+
+    private String dataForStatisticDetailedActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +27,7 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF9800")));
+        actionBar.setBackgroundDrawable(new ColorDrawable(Constants.HEADER_SYSTEM_COLOR));
 
         Bundle dataFromStatisticDetailedActivity = getIntent().getExtras();
         if (dataFromStatisticDetailedActivity != null) {
@@ -36,15 +39,15 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
 
             CostsDB cdb = CostsDB.getInstance(this);
             String[] dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
-            for (String s : dataArray)
-                System.out.println(s);
+//            for (String s : dataArray)
+//                Log.i(tag, s);
 
             TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
             TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
 
-            dateTextView.setText(StatisticMainScreenActivity.monthNames[chosenMonth] + " " + chosenYear);
+            dateTextView.setText(Constants.MONTH_NAMES[chosenMonth] + " " + chosenYear);
             costNameAndCostValueTextView.setText(costName + ": " + costValue + " руб.");
-            actionBar.setTitle(StatisticMainScreenActivity.monthNames[chosenMonth] + " " + chosenYear + ": " + costName);
+            actionBar.setTitle(Constants.MONTH_NAMES[chosenMonth] + " " + chosenYear + ": " + costName);
 
             ListAdapter costsListAdapter = new CostTypeDetailedAdapter(this, dataArray);
             ListView detailedCostsListView = (ListView) findViewById(R.id.listViewInCostTypeDetailed);
@@ -52,8 +55,7 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
             detailedCostsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    System.out.println(parent.getItemAtPosition(position).toString());
+//                    System.out.println(parent.getItemAtPosition(position).toString());
                     Intent editCostsIntent = new Intent(StatisticCostTypeDetailedActivity.this, EditCostsActivity.class);
                     editCostsIntent.putExtra("data", parent.getItemAtPosition(position).toString());
                     startActivity(editCostsIntent);

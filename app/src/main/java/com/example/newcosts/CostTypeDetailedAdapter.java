@@ -21,8 +21,9 @@ public class CostTypeDetailedAdapter extends ArrayAdapter<String> {
 
         String textLine = getItem(position);
 
-        String costType = textLine.substring(0, textLine.indexOf("$"));
-        String costValue = textLine.substring(textLine.indexOf("$") + 1, textLine.indexOf("%"));
+        String costType = textLine.substring(0, textLine.lastIndexOf(Constants.SEPARATOR_VALUE));
+        String costValue = textLine.substring(textLine.lastIndexOf(Constants.SEPARATOR_VALUE) + 1,
+                                              textLine.lastIndexOf(Constants.SEPARATOR_MILLISECONDS));
 
         if (!"+".equals(costValue))
             costValue = costValue + " руб.";

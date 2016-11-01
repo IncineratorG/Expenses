@@ -19,7 +19,6 @@ import java.util.Locale;
 
 public class StatisticMainScreenActivity extends AppCompatActivity {
 
-    static final String[] monthNames = {"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,28 +28,30 @@ public class StatisticMainScreenActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Просмотр статистики");
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF9800")));
+        actionBar.setBackgroundDrawable(new ColorDrawable(Constants.HEADER_SYSTEM_COLOR));
 
         CostsDB cdb = CostsDB.getInstance(this);
 
-//        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
-//        numberFormat.setGroupingUsed(false);
-
-        // Получаем суммарные значения за месяц и год в формате: "5$1989$575"
-        String[] periodsArrayRaw = cdb.getSumByMonthsEntries();
-        List<String> listOfPeriods = new ArrayList<>();
+        // Получаем суммарные значения за месяц и год в формате: "[1]месяц [2]год [3]сумма"
+        String[] periodsArrayRaw = cdb.getSumByMonthsEntries_V2();
+        String[] periodsArray = new String[periodsArrayRaw.length / 3];
+        int periodsArrayIndexCounter = 0;
+        StringBuilder sb = new StringBuilder();
 
         // Приводим полученные значения к виду: "Май 1989$575"
-        for (String entry : periodsArrayRaw) {
-            String[] arrayOfEntries = entry.split("\\$");
-            int month = Integer.parseInt(arrayOfEntries[0]);
-            String periodString = month + "$" + monthNames[month] + " " + arrayOfEntries[1] + "$" + Constants.formatDigit(
-                                                                                                           Double.parseDouble(arrayOfEntries[2])
-                                                                                                                                                );
-            listOfPeriods.add(periodString);
+        for (int i = 0; i < periodsArrayRaw.length; i = i + 3) {
+            int month = Integer.parseInt(periodsArrayRaw[i]);
+            sb.append(periodsArrayRaw[i]);
+            sb.append(Constants.SEPARATOR_VALUE);
+            sb.append(Constants.MONTH_NAMES[month]);
+            sb.append(" ");
+            sb.append(periodsArrayRaw[i + 1]);
+            sb.append(Constants.SEPARATOR_VALUE);
+            sb.append(Constants.formatDigit(Double.parseDouble(periodsArrayRaw[i + 2])));
+
+            periodsArray[periodsArrayIndexCounter++] = sb.toString();
+            sb.setLength(0);
         }
-        String[] periodsArray = new String[listOfPeriods.size()];
-        listOfPeriods.toArray(periodsArray);
 
         // Инициализируем listView
         ListView periodsListView = (ListView) findViewById(R.id.monthlyCostsListViewStatisticActivity);
@@ -72,7 +73,8 @@ public class StatisticMainScreenActivity extends AppCompatActivity {
         });
     }
 
-    public void OnChoseStatisticPeriodButtonClick(View view) {
+    // Переход на экран ручного задания периода просмотра статистики расходов
+    public void onChoseStatisticPeriodButtonClick(View view) {
         Intent statisticChosePeriodActivityIntent = new Intent(StatisticMainScreenActivity.this, StatisticChosePeriodActivity.class);
         startActivity(statisticChosePeriodActivityIntent);
     }

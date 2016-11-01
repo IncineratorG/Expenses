@@ -1,6 +1,8 @@
 package com.example.newcosts;
 
 
+import android.graphics.Color;
+
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -13,9 +15,12 @@ public class Constants {
             "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
     public static final String[] DAY_NAMES = {"", "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"};
     public static final String SEPARATOR_VALUE = "$";
+    public static final String SEPARATOR_DATE = "#";
     public static final String SEPARATOR_ID = "&";
     public static final String SEPARATOR_MILLISECONDS = "%";
     public static final String SEPARATOR_PRIMARY = " ";
+    public static final int HEADER_SYSTEM_COLOR = Color.parseColor("#FF9800");
+
     public static String formatDigit(double d) {
         NumberFormat format = NumberFormat.getInstance(Locale.UK);
         format.setGroupingUsed(false);
