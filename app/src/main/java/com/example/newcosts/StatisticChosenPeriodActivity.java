@@ -23,9 +23,9 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_chosen_period);
 
-        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
-        numberFormat.setGroupingUsed(false);
-        numberFormat.setMaximumFractionDigits(2);
+//        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
+//        numberFormat.setGroupingUsed(false);
+//        numberFormat.setMaximumFractionDigits(2);
 
 
         Bundle chosenPeriodBundle = getIntent().getExtras();
@@ -54,7 +54,7 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
             totalForPeriod = totalForPeriod + d;
         }
 
-        overallCostsForChosenPeriodTextView.setText(numberFormat.format(totalForPeriod) + " руб.");
+        overallCostsForChosenPeriodTextView.setText(Constants.formatDigit(totalForPeriod) + " руб.");
 
         ListAdapter listViewAdapter = new CostsListViewAdapter(this, dataArray);
         chosenPeriodListView.setAdapter(listViewAdapter);

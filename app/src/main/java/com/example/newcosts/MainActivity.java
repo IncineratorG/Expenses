@@ -10,14 +10,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -29,9 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.NumberFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -53,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 //    String[] costsArray;
     private String[] nonActiveCostNames;
 //    Map<String, Double> costsMap;
-    NumberFormat format;
+//    NumberFormat format;
     private static String nearestEventShown;
 
     TextView currentDateTextViewMainActivity;
@@ -84,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(Color.parseColor("#FF9800"));
 
-        format = NumberFormat.getInstance(Locale.UK);
-        format.setGroupingUsed(false);
+//        format = NumberFormat.getInstance(Locale.UK);
+//        format.setGroupingUsed(false);
 
         // Получаем доступ к базе данных
         if (cdb == null)
@@ -171,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                     // Обновляем главный экран приложения (MainActivity)
                     setCurrentOverallCosts_V2();
 
-                    currentDialogCostSumTextView.setText(format.format(chosenCostTypeValue) + " руб.");
+                    currentDialogCostSumTextView.setText(Constants.formatDigit(chosenCostTypeValue) + " руб.");
                     inputDataEditText.setText("");
                 }
                 break;
@@ -271,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
             // Инициализируем поле с названием выбранной статьи расходов
             TextView chosenCostTypeNameTextView = (TextView) dialog.findViewById(R.id.costTypeTextViewInInputDataPopup);
             currentDialogCostSumTextView = (TextView) dialog.findViewById(R.id.inputDataPopup_costSum);
-            currentDialogCostSumTextView.setText(format.format(chosenCostTypeValue) + " руб.");
+            currentDialogCostSumTextView.setText(Constants.formatDigit(chosenCostTypeValue) + " руб.");
             chosenCostTypeNameTextView.setText(costName);
 
             dialog.show();
@@ -534,7 +530,7 @@ public class MainActivity extends AppCompatActivity {
             Double costValue = cdb.getCostValue(-1, currentMonth, currentYear, id_n);
             sb.append(tableCostNamesContent[i]);
             sb.append(Constants.SEPARATOR_VALUE);
-            sb.append(format.format(costValue));
+            sb.append(Constants.formatDigit(costValue));
             sb.append(Constants.SEPARATOR_ID);
             sb.append(id_n);
 
@@ -565,7 +561,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Устанавливаем суммарное значение расходов за текущий месяц
-        currentOverallCosts = format.format(totalCostsValue);
+        currentOverallCosts = Constants.formatDigit(totalCostsValue);
         currentOverallCostsTextViewMainActivity.setText(currentOverallCosts + " руб.");
     }
 

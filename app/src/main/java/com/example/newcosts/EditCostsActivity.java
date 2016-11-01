@@ -30,7 +30,7 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
     private String costSum;
     private String dateInMilliseconds;
     private List<String> availableCostNamesList;
-    private NumberFormat numberFormat;
+//    private NumberFormat numberFormat;
     private CostsDB db;
 
     Spinner availableCostNamesSpinner;
@@ -59,8 +59,8 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
 //        }
 
 
-        numberFormat = NumberFormat.getInstance();
-        numberFormat.setGroupingUsed(false);
+//        numberFormat = NumberFormat.getInstance();
+//        numberFormat.setGroupingUsed(false);
 
         String dataString = "none";
         Bundle data = getIntent().getExtras();
@@ -199,7 +199,7 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
                 String inputText = String.valueOf(inputDataEditText.getText());
                 if (inputText != null && inputText.length() != 0 && !".".equals(inputText)) {
                     Double enteredCostValue = Double.parseDouble(inputText);
-                    costSumEditText.setText(numberFormat.format(enteredCostValue) + " руб.");
+                    costSumEditText.setText(Constants.formatDigit(enteredCostValue) + " руб.");
                     currentDialog.cancel();
                 }
                 break;

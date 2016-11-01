@@ -33,8 +33,8 @@ public class StatisticMainScreenActivity extends AppCompatActivity {
 
         CostsDB cdb = CostsDB.getInstance(this);
 
-        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
-        numberFormat.setGroupingUsed(false);
+//        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
+//        numberFormat.setGroupingUsed(false);
 
         // Получаем суммарные значения за месяц и год в формате: "5$1989$575"
         String[] periodsArrayRaw = cdb.getSumByMonthsEntries();
@@ -44,7 +44,7 @@ public class StatisticMainScreenActivity extends AppCompatActivity {
         for (String entry : periodsArrayRaw) {
             String[] arrayOfEntries = entry.split("\\$");
             int month = Integer.parseInt(arrayOfEntries[0]);
-            String periodString = month + "$" + monthNames[month] + " " + arrayOfEntries[1] + "$" + numberFormat.format(
+            String periodString = month + "$" + monthNames[month] + " " + arrayOfEntries[1] + "$" + Constants.formatDigit(
                                                                                                            Double.parseDouble(arrayOfEntries[2])
                                                                                                                                                 );
             listOfPeriods.add(periodString);
