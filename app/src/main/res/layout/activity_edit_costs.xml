@@ -106,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/editCosts_saveButton"
                 android:layout_weight="1"
-                android:onClick="OnSaveCancelButtonsClick" />
+                android:onClick="onSaveCancelButtonsClick" />
 
             <Button
                 android:text="@string/edit_costs_cancel"
@@ -119,7 +119,7 @@
                 android:layout_marginStart="64dp"
                 android:id="@+id/editCosts_cancelButton"
                 android:layout_weight="1"
-                android:onClick="OnSaveCancelButtonsClick" />
+                android:onClick="onSaveCancelButtonsClick" />
         </LinearLayout>
 
     </LinearLayout>

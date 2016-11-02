@@ -16,11 +16,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class EditCostsActivity extends AppCompatActivity implements MyDatePicker.MyDatePickerCallback {
@@ -29,8 +28,8 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
     private String categoryName;
     private String costSum;
     private String dateInMilliseconds;
-    private List<String> availableCostNamesList;
-//    private NumberFormat numberFormat;
+//    private List<String> availableCostNamesList;
+    private String[] availableCostNamesArrayWithID;
     private CostsDB db;
 
     Spinner availableCostNamesSpinner;
@@ -58,10 +57,6 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
 //            e.printStackTrace();
 //        }
 
-
-//        numberFormat = NumberFormat.getInstance();
-//        numberFormat.setGroupingUsed(false);
-
         String dataString = "none";
         Bundle data = getIntent().getExtras();
         if (data != null)
@@ -69,32 +64,22 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
 
         db = CostsDB.getInstance(this);
         long milliseconds = Long.parseLong(dataString.substring(dataString.lastIndexOf(Constants.SEPARATOR_MILLISECONDS) + 1));
-        String dbData = db.getCostByDateInMillis(milliseconds);
-        String[] dataArr = dbData.split("%");
+        String[] dataArr = db.getCostByDateInMillis_V2(milliseconds);
 
-        if (dataArr != null && dataArr.length == 6) {
-            categoryName = dataArr[0];
-            costSum = dataArr[1] + " руб.";
-            date = dataArr[2] + "." + dataArr[3] + "." + dataArr[4];
-            dateInMilliseconds = dataArr[5];
-        } else finish();
-
-//        System.out.println(dateInMilliseconds);
+        categoryName = dataArr[0];
+        costSum = dataArr[1] + " руб.";
+        date = dataArr[2] + "." + dataArr[3] + "." + dataArr[4];
+        dateInMilliseconds = dataArr[5];
 
         // Получаем список всех используемых категорий расходов и их id_n
-        availableCostNamesList = db.getActiveCostNames();
-        String[] availableCostNames = db.getActiveCostNames_V2();
-//        for (String s : availableCostNames)
-//            System.out.println(s);
+        availableCostNamesArrayWithID = db.getActiveCostNames_V2();
 
         // Формируем массив, состоящий только из названий используемых
         // категорий расходов
-        String[] availableCostNamesArray = new String[availableCostNamesList.size()];
-        int k = 0;
-        for (String s : availableCostNamesList) {
-            availableCostNamesArray[k] = s.substring(s.indexOf("$") + 1);
-            ++k;
-        }
+        int availableCostNamesArrayCounter = 0;
+        String[] availableCostNamesArray = new String[availableCostNamesArrayWithID.length / 2];
+        for (int i = 0; i < availableCostNamesArrayWithID.length; i = i + 2)
+            availableCostNamesArray[availableCostNamesArrayCounter++] = availableCostNamesArrayWithID[i];
 
         // Помещаем выбранную категрию расходов на первое место
         // в масисве названий используемых категорий расходов
@@ -121,7 +106,7 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
         dateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyDatePicker datePicker = new MyDatePicker(EditCostsActivity.this);
+                MyDatePicker datePicker = new MyDatePicker(EditCostsActivity.this, Long.valueOf(dateInMilliseconds));
                 datePicker.show();
             }
         });
@@ -154,7 +139,7 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
 /*================================== Слушатели ==============================================*/
 
     // Обработчик нажатий кнопок в edit_cost_sum_popup (диалог редактирования значений расходов)
-    public void OnEditCostSumPopupClickListener(View view) {
+    public void onEditCostSumPopupClickListener(View view) {
         Button pressedButton = (Button) view;
         String buttonLabel = (String)pressedButton.getText();
 
@@ -213,21 +198,21 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
     }
 
     // Обработчик нажатий кнопок сохранения введённых значений и отмены редактирования
-    public void OnSaveCancelButtonsClick(View view) {
+    public void onSaveCancelButtonsClick(View view) {
         switch (view.getId()) {
             case R.id.editCosts_saveButton:
                 String chosenCategoryName = availableCostNamesSpinner.getSelectedItem().toString();
 
                 // Получаем id_n по названию выбранной категории расходов
                 int id_n = -1;
-                for (String s : availableCostNamesList) {
-                    if (s.contains(chosenCategoryName)) {
-                        id_n = Integer.parseInt(s.substring(0, s.indexOf("$")));
-                        break;
-                    }
+                for (int i = 0; i < availableCostNamesArrayWithID.length; ++i) {
+                    if (chosenCategoryName.equals(availableCostNamesArrayWithID[i]))
+                        id_n = Integer.parseInt(availableCostNamesArrayWithID[i + 1]);
                 }
                 if (id_n == -1) {
-                    Toast idErrorToast = Toast.makeText(this, "ERROR RETRIEVING ID_N", Toast.LENGTH_LONG);
+                    Toast idErrorToast = Toast.makeText(this,
+                            "ERROR RETRIEVING ID_N",
+                            Toast.LENGTH_LONG);
                     idErrorToast.show();
                     return;
                 }
@@ -238,22 +223,34 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
                 // Получаем выбранную дату
                 String enteredDate = dateEditText.getText().toString();
 
+                Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
                 long enteredDateInMilliseconds = -1;
                 try {
                     Date d = simpleDateFormat.parse(enteredDate);
                     enteredDateInMilliseconds = d.getTime();
                 } catch (ParseException e) {
-                    Toast invalidDataErrorToast = Toast.makeText(this, "Неправильная дата", Toast.LENGTH_LONG);
+                    Toast invalidDataErrorToast = Toast.makeText(this,
+                            "Неправильная дата",
+                            Toast.LENGTH_LONG);
                     invalidDataErrorToast.show();
                     return;
                 }
 
-                db.removeCostValue(Long.valueOf(dateInMilliseconds));
-                db.addCostInMilliseconds(id_n, enteredCostSum, enteredDateInMilliseconds);
+                if (!(enteredDateInMilliseconds > calendar.getTimeInMillis())) {
+                    db.removeCostValue(Long.valueOf(dateInMilliseconds));
+                    db.addCostInMilliseconds(id_n, enteredCostSum, enteredDateInMilliseconds);
 
-                Toast recordEditedSuccessfulToast = Toast.makeText(this, "Запись изменена", Toast.LENGTH_LONG);
-                recordEditedSuccessfulToast.show();
+                    Toast recordEditedSuccessfulToast = Toast.makeText(this,
+                            "Запись изменена",
+                            Toast.LENGTH_LONG);
+                    recordEditedSuccessfulToast.show();
+                } else {
+                    Toast wrongDateToast = Toast.makeText(this,
+                            "Введённая дата ещё не наступила",
+                            Toast.LENGTH_LONG);
+                    wrongDateToast.show();
+                }
 
                 break;
 

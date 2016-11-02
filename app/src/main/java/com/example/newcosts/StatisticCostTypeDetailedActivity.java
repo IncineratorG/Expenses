@@ -39,8 +39,6 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
 
             CostsDB cdb = CostsDB.getInstance(this);
             String[] dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
-//            for (String s : dataArray)
-//                Log.i(tag, s);
 
             TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
             TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
@@ -55,7 +53,6 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
             detailedCostsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                    System.out.println(parent.getItemAtPosition(position).toString());
                     Intent editCostsIntent = new Intent(StatisticCostTypeDetailedActivity.this, EditCostsActivity.class);
                     editCostsIntent.putExtra("data", parent.getItemAtPosition(position).toString());
                     startActivity(editCostsIntent);

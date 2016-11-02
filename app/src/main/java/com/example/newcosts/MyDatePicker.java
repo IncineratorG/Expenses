@@ -13,13 +13,16 @@ import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class MyDatePicker extends Dialog implements
         android.view.View.OnClickListener, ViewSwitcher.ViewFactory {
 
-    private int PickedDay, PickedMonth, PickedYear;
+    private int pickedDay, pickedMonth, pickedYear;
     private int MaxTextViewWidth;
+    private long dateInMilliseconds = 0;
     private Calendar calendar;
 
     private Activity activity;
@@ -48,6 +51,14 @@ public class MyDatePicker extends Dialog implements
         Callback = (MyDatePickerCallback) activity;
     }
 
+    public MyDatePicker(Activity activity, long dateInMilliseconds) {
+        super(activity);
+        this.activity = activity;
+        this.dateInMilliseconds = dateInMilliseconds;
+
+        Callback = (MyDatePickerCallback) activity;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,11 +71,19 @@ public class MyDatePicker extends Dialog implements
 
 //        findMaxTextViewWidth();
 
+        if (dateInMilliseconds == 0) {
+            calendar = Calendar.getInstance();
+            pickedDay = calendar.get(Calendar.DAY_OF_MONTH);
+            pickedMonth = calendar.get(Calendar.MONTH);
+            pickedYear = calendar.get(Calendar.YEAR);
+        } else {
+            calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(dateInMilliseconds);
 
-        calendar = Calendar.getInstance();
-        PickedDay = calendar.get(Calendar.DAY_OF_MONTH);
-        PickedMonth = calendar.get(Calendar.MONTH);
-        PickedYear = calendar.get(Calendar.YEAR);
+            pickedDay = calendar.get(Calendar.DAY_OF_MONTH);
+            pickedMonth = calendar.get(Calendar.MONTH);
+            pickedYear = calendar.get(Calendar.YEAR);
+        }
 
 
 //        Animation in = AnimationUtils.loadAnimation(activity,
@@ -95,17 +114,17 @@ public class MyDatePicker extends Dialog implements
 //        DayTextSwitcher.setInAnimation(in);
 //        DayTextSwitcher.setOutAnimation(out);
         DayTextSwitcher.setFactory(this);
-        DayTextSwitcher.setText(String.valueOf(PickedDay));
+        DayTextSwitcher.setText(String.valueOf(pickedDay));
         MonthTextSwitcher = (TextSwitcher) findViewById(R.id.calendar_month);
 //        MonthTextSwitcher.setInAnimation(in);
 //        MonthTextSwitcher.setOutAnimation(out);
         MonthTextSwitcher.setFactory(this);
-        MonthTextSwitcher.setText(Constants.MONTH_NAMES[PickedMonth]);
+        MonthTextSwitcher.setText(Constants.MONTH_NAMES[pickedMonth]);
         YearTextSwitcher = (TextSwitcher) findViewById(R.id.calendar_year);
 //        YearTextSwitcher.setInAnimation(in);
 //        YearTextSwitcher.setOutAnimation(out);
         YearTextSwitcher.setFactory(this);
-        YearTextSwitcher.setText(String.valueOf(PickedYear));
+        YearTextSwitcher.setText(String.valueOf(pickedYear));
 
 
         ChosenDayMonthTextView = (TextView) findViewById(R.id.calendar_chosenDayMonth);
@@ -114,7 +133,7 @@ public class MyDatePicker extends Dialog implements
                                        Constants.DECLENSION_MONTH_NAMES[calendar.get(Calendar.MONTH)]);
 
         ChosenYearTextView = (TextView) findViewById(R.id.calendar_chosenYear);
-        ChosenYearTextView.setText(String.valueOf(PickedYear));
+        ChosenYearTextView.setText(String.valueOf(pickedYear));
     }
 
 
@@ -124,24 +143,24 @@ public class MyDatePicker extends Dialog implements
 
 
             case R.id.calendar_dayDown:
-                --PickedDay;
-                if (PickedDay <= 0)
-                    PickedDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                --pickedDay;
+                if (pickedDay <= 0)
+                    pickedDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-                DayTextSwitcher.setText(String.valueOf(PickedDay));
-                calendar.set(Calendar.DAY_OF_MONTH, PickedDay);
+                DayTextSwitcher.setText(String.valueOf(pickedDay));
+                calendar.set(Calendar.DAY_OF_MONTH, pickedDay);
 
                 ChosenDayMonthTextView.setText(Constants.DAY_NAMES[calendar.get(Calendar.DAY_OF_WEEK)] + ", " +
                                                String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) + " " +
                                                Constants.DECLENSION_MONTH_NAMES[calendar.get(Calendar.MONTH)]);
                 break;
             case R.id.calendar_dayUp:
-                ++PickedDay;
-                if (PickedDay > calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
-                    PickedDay = 1;
+                ++pickedDay;
+                if (pickedDay > calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+                    pickedDay = 1;
 
-                DayTextSwitcher.setText(String.valueOf(PickedDay));
-                calendar.set(Calendar.DAY_OF_MONTH, PickedDay);
+                DayTextSwitcher.setText(String.valueOf(pickedDay));
+                calendar.set(Calendar.DAY_OF_MONTH, pickedDay);
 
                 ChosenDayMonthTextView.setText(Constants.DAY_NAMES[calendar.get(Calendar.DAY_OF_WEEK)] + ", " +
                                                String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) + " " +
@@ -150,16 +169,16 @@ public class MyDatePicker extends Dialog implements
 
 
             case R.id.calendar_monthDown:
-                --PickedMonth;
-                if (PickedMonth < 0)
-                    PickedMonth = 11;
+                --pickedMonth;
+                if (pickedMonth < 0)
+                    pickedMonth = 11;
 
-                MonthTextSwitcher.setText(Constants.MONTH_NAMES[PickedMonth]);
-                calendar.set(Calendar.MONTH, PickedMonth);
+                MonthTextSwitcher.setText(Constants.MONTH_NAMES[pickedMonth]);
+                calendar.set(Calendar.MONTH, pickedMonth);
 
-                if (PickedDay > calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                    PickedDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-                    DayTextSwitcher.setText(String.valueOf(PickedDay));
+                if (pickedDay > calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+                    pickedDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                    DayTextSwitcher.setText(String.valueOf(pickedDay));
                 }
 
                 ChosenDayMonthTextView.setText(Constants.DAY_NAMES[calendar.get(Calendar.DAY_OF_WEEK)] + ", " +
@@ -167,16 +186,16 @@ public class MyDatePicker extends Dialog implements
                                                Constants.DECLENSION_MONTH_NAMES[calendar.get(Calendar.MONTH)]);
                 break;
             case R.id.calendar_monthUp:
-                ++PickedMonth;
-                if (PickedMonth > 11)
-                    PickedMonth = 0;
+                ++pickedMonth;
+                if (pickedMonth > 11)
+                    pickedMonth = 0;
 
-                MonthTextSwitcher.setText(Constants.MONTH_NAMES[PickedMonth]);
-                calendar.set(Calendar.MONTH, PickedMonth);
+                MonthTextSwitcher.setText(Constants.MONTH_NAMES[pickedMonth]);
+                calendar.set(Calendar.MONTH, pickedMonth);
 
-                if (PickedDay > calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                    PickedDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-                    DayTextSwitcher.setText(String.valueOf(PickedDay));
+                if (pickedDay > calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+                    pickedDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                    DayTextSwitcher.setText(String.valueOf(pickedDay));
                 };
 
                 ChosenDayMonthTextView.setText(Constants.DAY_NAMES[calendar.get(Calendar.DAY_OF_WEEK)] + ", " +
@@ -186,43 +205,43 @@ public class MyDatePicker extends Dialog implements
 
 
             case R.id.calendar_yearDown:
-                --PickedYear;
+                --pickedYear;
 
-                YearTextSwitcher.setText(String.valueOf(PickedYear));
-                calendar.set(Calendar.YEAR, PickedYear);
+                YearTextSwitcher.setText(String.valueOf(pickedYear));
+                calendar.set(Calendar.YEAR, pickedYear);
 
-                if (PickedDay > calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                    PickedDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-                    DayTextSwitcher.setText(String.valueOf(PickedDay));
+                if (pickedDay > calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+                    pickedDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                    DayTextSwitcher.setText(String.valueOf(pickedDay));
                 }
 
                 ChosenDayMonthTextView.setText(Constants.DAY_NAMES[calendar.get(Calendar.DAY_OF_WEEK)] + ", " +
                                                String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) + " " +
                                                Constants.DECLENSION_MONTH_NAMES[calendar.get(Calendar.MONTH)]);
-                ChosenYearTextView.setText(String.valueOf(PickedYear));
+                ChosenYearTextView.setText(String.valueOf(pickedYear));
                 break;
             case R.id.calendar_yearUp:
-                ++PickedYear;
+                ++pickedYear;
 
-                YearTextSwitcher.setText(String.valueOf(PickedYear));
-                calendar.set(Calendar.YEAR, PickedYear);
+                YearTextSwitcher.setText(String.valueOf(pickedYear));
+                calendar.set(Calendar.YEAR, pickedYear);
 
-                if (PickedDay > calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                    PickedDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-                    DayTextSwitcher.setText(String.valueOf(PickedDay));
+                if (pickedDay > calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+                    pickedDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                    DayTextSwitcher.setText(String.valueOf(pickedDay));
                 }
 
                 ChosenDayMonthTextView.setText(Constants.DAY_NAMES[calendar.get(Calendar.DAY_OF_WEEK)] + ", " +
                                                String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) + " " +
                                                Constants.DECLENSION_MONTH_NAMES[calendar.get(Calendar.MONTH)]);
-                ChosenYearTextView.setText(String.valueOf(PickedYear));
+                ChosenYearTextView.setText(String.valueOf(pickedYear));
                 break;
 
 
             case R.id.calendar_ok:
-                String pickedDate = String.valueOf(PickedDay) + "." +
-                                    String.valueOf(PickedMonth + 1) + "." +
-                                    String.valueOf(PickedYear);
+                String pickedDate = String.valueOf(pickedDay) + "." +
+                                    String.valueOf(pickedMonth + 1) + "." +
+                                    String.valueOf(pickedYear);
                 Callback.getPickedDate(pickedDate);
                 dismiss();
                 break;

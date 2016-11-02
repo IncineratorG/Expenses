@@ -23,11 +23,6 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_chosen_period);
 
-//        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
-//        numberFormat.setGroupingUsed(false);
-//        numberFormat.setMaximumFractionDigits(2);
-
-
         Bundle chosenPeriodBundle = getIntent().getExtras();
 
         long initialDateInMilliseconds = chosenPeriodBundle.getLong("initialDateInMilliseconds");
@@ -50,7 +45,7 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
         String[] dataArray = cdb.test(initialDateInMilliseconds, endingDateInMilliseconds);
         double totalForPeriod = 0.0;
         for (String s : dataArray) {
-            double d = Double.parseDouble(s.substring(s.indexOf("$") + 1));
+            double d = Double.parseDouble(s.substring(s.lastIndexOf(Constants.SEPARATOR_VALUE) + 1));
             totalForPeriod = totalForPeriod + d;
         }
 
