@@ -5,7 +5,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,11 +28,14 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
         if (chosenPeriodBundle == null)
             return;
 
-        final long initialDateInMilliseconds = chosenPeriodBundle.getLong("initialDateInMilliseconds");
-        final long endingDateInMilliseconds = chosenPeriodBundle.getLong("endingDateInMilliseconds");
+        final String[] bundleDataArray = chosenPeriodBundle.getStringArray(Constants.DATA_ARRAY_LABEL);
+        if (bundleDataArray == null || bundleDataArray.length < 4)
+            return;
 
-        initialDateString = chosenPeriodBundle.getString("initialDateString");
-        endingDateString = chosenPeriodBundle.getString("endingDateString");
+        final long initialDateInMilliseconds = Long.parseLong(bundleDataArray[Constants.INITIAL_DATE_IN_MILLISECONDS_INDEX]);
+        final long endingDateInMilliseconds = Long.parseLong(bundleDataArray[Constants.ENDING_DATE_IN_MILLISECONDS_INDEX]);
+        initialDateString = bundleDataArray[Constants.INITIAL_DATE_STRING_INDEX];
+        endingDateString = bundleDataArray[Constants.ENDING_DATE_STRING_INDEX];
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(initialDateString + " - " + endingDateString);
@@ -46,16 +48,16 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
         ListView chosenPeriodListView = (ListView) findViewById(R.id.chosenPeriodListView);
 
         CostsDB cdb = CostsDB.getInstance(this);
-        String[] dataArray_V2 = cdb.getCostsBetweenDates_V2(initialDateInMilliseconds, endingDateInMilliseconds);
+        String[] costNamesAndSumsArray = cdb.getCostsBetweenDates_V2(initialDateInMilliseconds, endingDateInMilliseconds);
 
         double totalForPeriod = 0.0;
-        for (String s : dataArray_V2) {
+        for (String s : costNamesAndSumsArray) {
             double d = Double.parseDouble(s.substring(s.lastIndexOf(Constants.SEPARATOR_VALUE) + 1));
             totalForPeriod = totalForPeriod + d;
         }
         overallCostsForChosenPeriodTextView.setText(Constants.formatDigit(totalForPeriod) + " руб.");
 
-        ListAdapter listViewAdapter = new ChosenPeriodActivityAdapter(this, dataArray_V2);
+        ListAdapter listViewAdapter = new ChosenPeriodActivityAdapter(this, costNamesAndSumsArray);
         chosenPeriodListView.setAdapter(listViewAdapter);
 
         chosenPeriodListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -72,14 +74,25 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
 
                 Intent statisticCostTypeDetailedIntent = new Intent(StatisticChosenPeriodActivity.this, StatisticCostTypeDetailedActivity.class);
 
-                statisticCostTypeDetailedIntent.putExtra("costName", costName);
-                statisticCostTypeDetailedIntent.putExtra("costValue", costValue);
-                statisticCostTypeDetailedIntent.putExtra("chosenMonth", month);
-                statisticCostTypeDetailedIntent.putExtra("chosenYear", year);
-                statisticCostTypeDetailedIntent.putExtra("initialDateInMilliseconds", initialDateInMilliseconds);
-                statisticCostTypeDetailedIntent.putExtra("endingDateInMilliseconds", endingDateInMilliseconds);
-                statisticCostTypeDetailedIntent.putExtra("initialDateString", initialDateString);
-                statisticCostTypeDetailedIntent.putExtra("endingDateString", endingDateString);
+                String[] dataArray = new String[8];
+                for (int i = 0; i < 4; ++i)
+                    dataArray[i] = bundleDataArray[i];
+
+                dataArray[Constants.COST_NAME_INDEX] = costName;
+                dataArray[Constants.COST_VALUE_INDEX] = costValue;
+                dataArray[Constants.CHOSEN_MONTH_INDEX] = String.valueOf(month);
+                dataArray[Constants.CHOSEN_YEAR_INDEX] = String.valueOf(year);
+
+                statisticCostTypeDetailedIntent.putExtra(Constants.DATA_ARRAY_LABEL, dataArray);
+
+//                statisticCostTypeDetailedIntent.putExtra("costName", costName);
+//                statisticCostTypeDetailedIntent.putExtra("costValue", costValue);
+//                statisticCostTypeDetailedIntent.putExtra("chosenMonth", month);
+//                statisticCostTypeDetailedIntent.putExtra("chosenYear", year);
+//                statisticCostTypeDetailedIntent.putExtra("initialDateInMilliseconds", initialDateInMilliseconds);
+//                statisticCostTypeDetailedIntent.putExtra("endingDateInMilliseconds", endingDateInMilliseconds);
+//                statisticCostTypeDetailedIntent.putExtra("initialDateString", initialDateString);
+//                statisticCostTypeDetailedIntent.putExtra("endingDateString", endingDateString);
 
                 startActivity(statisticCostTypeDetailedIntent);
             }

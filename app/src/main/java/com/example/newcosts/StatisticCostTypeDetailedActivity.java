@@ -18,10 +18,7 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
     private static final String tag = "ctDetailedTag";
 
     private String dataForPreviousActivity = null;
-    private String initialDateString;
-    private String endingDateString;
-    private long initialDateInMilliseconds;
-    private long endingDateInMilliseconds;
+    private String[] bundleDataArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,15 +31,16 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
 
         Bundle dataFromPreviousActivity = getIntent().getExtras();
         if (dataFromPreviousActivity != null) {
-            String costName = dataFromPreviousActivity.getString("costName");
-            String costValue = dataFromPreviousActivity.getString("costValue");
-            int chosenMonth = dataFromPreviousActivity.getInt("chosenMonth");
-            int chosenYear = dataFromPreviousActivity.getInt("chosenYear");
+            bundleDataArray = dataFromPreviousActivity.getStringArray(Constants.DATA_ARRAY_LABEL);
+            if (bundleDataArray == null || bundleDataArray.length < 8)
+                return;
+
+            String costName = bundleDataArray[Constants.COST_NAME_INDEX];
+            String costValue = bundleDataArray[Constants.COST_VALUE_INDEX];
+            int chosenMonth = Integer.parseInt(bundleDataArray[Constants.CHOSEN_MONTH_INDEX]);
+            int chosenYear = Integer.parseInt(bundleDataArray[Constants.CHOSEN_YEAR_INDEX]);
             dataForPreviousActivity = dataFromPreviousActivity.getString("dataForPreviousActivity");
-            initialDateString = dataFromPreviousActivity.getString("initialDateString");
-            endingDateString = dataFromPreviousActivity.getString("endingDateString");
-            initialDateInMilliseconds = dataFromPreviousActivity.getLong("initialDateInMilliseconds");
-            endingDateInMilliseconds = dataFromPreviousActivity.getLong("endingDateInMilliseconds");
+            Log.i(Constants.tag, String.valueOf(dataForPreviousActivity));
 
             CostsDB cdb = CostsDB.getInstance(this);
             String[] dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
@@ -76,10 +74,12 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
                 Intent intent = null;
                 if (dataForPreviousActivity == null) {
                     intent = new Intent(this, StatisticChosenPeriodActivity.class);
-                    intent.putExtra("initialDateInMilliseconds", initialDateInMilliseconds);
-                    intent.putExtra("endingDateInMilliseconds", endingDateInMilliseconds);
-                    intent.putExtra("initialDateString", initialDateString);
-                    intent.putExtra("endingDateString", endingDateString);
+
+                    String[] dataArray = new String[4];
+                    for (int i = 0; i < dataArray.length; ++i)
+                        dataArray[i] = bundleDataArray[i];
+
+                    intent.putExtra(Constants.DATA_ARRAY_LABEL, dataArray);
                 } else {
                     intent = new Intent(this, StatisticDetailedActivity.class);
                     intent.putExtra("data", dataForPreviousActivity);

@@ -67,10 +67,13 @@ public class StatisticDetailedActivity extends AppCompatActivity {
                     String costName = textLine.substring(0, textLine.lastIndexOf(Constants.SEPARATOR_VALUE));
                     String costValue = textLine.substring(textLine.lastIndexOf(Constants.SEPARATOR_VALUE) + 1);
 
-                    statisticCostTypeDetailedIntent.putExtra("costName", costName);
-                    statisticCostTypeDetailedIntent.putExtra("costValue", costValue);
-                    statisticCostTypeDetailedIntent.putExtra("chosenMonth", chosenMonthNumber);
-                    statisticCostTypeDetailedIntent.putExtra("chosenYear", chosenYear);
+                    String[] dataArray = new String[8];
+                    dataArray[Constants.COST_NAME_INDEX] = costName;
+                    dataArray[Constants.COST_VALUE_INDEX] = costValue;
+                    dataArray[Constants.CHOSEN_MONTH_INDEX] = String.valueOf(chosenMonthNumber);
+                    dataArray[Constants.CHOSEN_YEAR_INDEX] = String.valueOf(chosenYear);
+
+                    statisticCostTypeDetailedIntent.putExtra(Constants.DATA_ARRAY_LABEL, dataArray);
                     statisticCostTypeDetailedIntent.putExtra("dataForPreviousActivity", finalDataString);
 
                     startActivity(statisticCostTypeDetailedIntent);

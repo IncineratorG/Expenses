@@ -1,7 +1,6 @@
 package com.example.newcosts;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -123,10 +122,18 @@ public class StatisticChosePeriodActivity extends AppCompatActivity implements M
         if ((initialDateInMilliseconds <= endingDateInMilliseconds) && endingDateInMilliseconds != 0 && initialDateInMilliseconds != 0) {
             Intent chosenPeriodActivityIntent = new Intent(StatisticChosePeriodActivity.this, StatisticChosenPeriodActivity.class);
 
-            chosenPeriodActivityIntent.putExtra("initialDateInMilliseconds", initialDateInMilliseconds);
-            chosenPeriodActivityIntent.putExtra("endingDateInMilliseconds", endingDateInMilliseconds);
-            chosenPeriodActivityIntent.putExtra("initialDateString", initialSelectedDateString);
-            chosenPeriodActivityIntent.putExtra("endingDateString", endingSelectedDateString);
+            String[] dataArray = new String[4];
+            dataArray[Constants.INITIAL_DATE_IN_MILLISECONDS_INDEX] = String.valueOf(initialDateInMilliseconds);
+            dataArray[Constants.ENDING_DATE_IN_MILLISECONDS_INDEX] = String.valueOf(endingDateInMilliseconds);
+            dataArray[Constants.INITIAL_DATE_STRING_INDEX] = initialSelectedDateString;
+            dataArray[Constants.ENDING_DATE_STRING_INDEX] = endingSelectedDateString;
+
+            chosenPeriodActivityIntent.putExtra(Constants.DATA_ARRAY_LABEL, dataArray);
+
+//            chosenPeriodActivityIntent.putExtra("initialDateInMilliseconds", initialDateInMilliseconds);
+//            chosenPeriodActivityIntent.putExtra("endingDateInMilliseconds", endingDateInMilliseconds);
+//            chosenPeriodActivityIntent.putExtra("initialDateString", initialSelectedDateString);
+//            chosenPeriodActivityIntent.putExtra("endingDateString", endingSelectedDateString);
 
             startActivity(chosenPeriodActivityIntent);
         } else {
