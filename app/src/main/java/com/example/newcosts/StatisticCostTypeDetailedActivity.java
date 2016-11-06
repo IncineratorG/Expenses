@@ -15,8 +15,6 @@ import android.widget.TextView;
 
 public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
 
-    private static final String tag = "ctDetailedTag";
-
     private String dataForPreviousActivity = null;
     private String[] bundleDataArray;
 
@@ -40,7 +38,6 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
             int chosenMonth = Integer.parseInt(bundleDataArray[Constants.CHOSEN_MONTH_INDEX]);
             int chosenYear = Integer.parseInt(bundleDataArray[Constants.CHOSEN_YEAR_INDEX]);
             dataForPreviousActivity = dataFromPreviousActivity.getString("dataForPreviousActivity");
-            Log.i(Constants.tag, String.valueOf(dataForPreviousActivity));
 
             CostsDB cdb = CostsDB.getInstance(this);
             String[] dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
@@ -59,6 +56,8 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent editCostsIntent = new Intent(StatisticCostTypeDetailedActivity.this, EditCostsActivity.class);
+                    editCostsIntent.putExtra(Constants.DATA_ARRAY_LABEL, bundleDataArray);
+                    editCostsIntent.putExtra("dataForPreviousActivity", dataForPreviousActivity);
                     editCostsIntent.putExtra("data", parent.getItemAtPosition(position).toString());
                     startActivity(editCostsIntent);
                 }

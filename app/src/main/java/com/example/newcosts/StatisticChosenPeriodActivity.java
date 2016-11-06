@@ -17,8 +17,6 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
     private String initialDateString;
     private String endingDateString;
 
-    private static final String tag = "ChosenPeriodActivity";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

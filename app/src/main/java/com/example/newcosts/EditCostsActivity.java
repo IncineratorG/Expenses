@@ -32,10 +32,10 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
     private String costSum;
     private String note;
     private String dateInMilliseconds;
-//    private List<String> availableCostNamesList;
     private String[] availableCostNamesArrayWithID;
     private CostsDB db;
-    private static final String tag = "EditCostsTag";
+    private String[] bundleDataArray;
+    private String dataForPreviousActivity;
 
     Spinner availableCostNamesSpinner;
     Dialog currentDialog;
@@ -64,9 +64,12 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
 //        }
 
         String dataString = "none";
-        Bundle data = getIntent().getExtras();
-        if (data != null)
-            dataString = data.getString("data");
+        Bundle bundleData = getIntent().getExtras();
+        if (bundleData != null)
+            dataString = bundleData.getString("data");
+
+        bundleDataArray = bundleData.getStringArray(Constants.DATA_ARRAY_LABEL);
+        dataForPreviousActivity = bundleData.getString("dataForPreviousActivity");
 
         db = CostsDB.getInstance(this);
         long milliseconds = Long.parseLong(dataString.substring(dataString.lastIndexOf(Constants.SEPARATOR_MILLISECONDS) + 1));
@@ -344,7 +347,15 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
                 break;
 
             case R.id.editCosts_cancelButton:
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = null;
+//                if (bundleDataArray != null) {
+//                    intent = new Intent(this, StatisticCostTypeDetailedActivity.class);
+//                    intent.putExtra(Constants.DATA_ARRAY_LABEL, bundleDataArray);
+//                    intent.putExtra("dataForPreviousActivity", dataForPreviousActivity);
+//                } else
+//                    intent = new Intent(this, MainActivity.class);
+
+                intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
@@ -364,7 +375,15 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = null;
+//                if (bundleDataArray != null) {
+//                    intent = new Intent(this, StatisticCostTypeDetailedActivity.class);
+//                    intent.putExtra(Constants.DATA_ARRAY_LABEL, bundleDataArray);
+//                    intent.putExtra("dataForPreviousActivity", dataForPreviousActivity);
+//                } else
+//                    intent = new Intent(this, MainActivity.class);
+
+                intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;
