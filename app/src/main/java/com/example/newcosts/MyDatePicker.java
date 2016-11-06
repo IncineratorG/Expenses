@@ -140,8 +140,6 @@ public class MyDatePicker extends Dialog implements
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-
-
             case R.id.calendar_dayDown:
                 --pickedDay;
                 if (pickedDay <= 0)
@@ -248,7 +246,6 @@ public class MyDatePicker extends Dialog implements
             case R.id.calendar_cancel:
                 dismiss();
                 break;
-
 
             default:
                 break;

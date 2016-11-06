@@ -8,9 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 
-class CostsListViewAdapter extends ArrayAdapter<String> {
+class ChosenPeriodActivityAdapter extends ArrayAdapter<String> {
 
-    public CostsListViewAdapter(Context context, String[] costs) {
+    public ChosenPeriodActivityAdapter(Context context, String[] costs) {
         super(context, R.layout.single_costs_row, costs);
     }
 
@@ -21,11 +21,9 @@ class CostsListViewAdapter extends ArrayAdapter<String> {
 
         String textLine = getItem(position);
 
-        String costType = textLine.substring(0, textLine.lastIndexOf(Constants.SEPARATOR_VALUE));
+        String costType = textLine.substring(0, textLine.lastIndexOf(Constants.SEPARATOR_DATE));
         String costValue = textLine.substring(textLine.lastIndexOf(Constants.SEPARATOR_VALUE) + 1);
-
-        if (!"+".equals(costValue))
-            costValue = costValue + " руб.";
+        costValue = costValue + " руб.";
 
         TextView costTypeText = (TextView) singleCostsRow.findViewById(R.id.costType);
         TextView costValueText = (TextView) singleCostsRow.findViewById(R.id.costValue);

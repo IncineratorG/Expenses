@@ -27,7 +27,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/editCosts_CostNameLabel"
                 android:layout_weight="1"
-                android:lines="1" />
+                android:lines="1"
+                android:ems="10" />
 
             <Spinner
                 android:layout_width="wrap_content"
@@ -51,7 +52,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/editCosts_costSumLabel"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:ems="10" />
 
             <EditText
                 android:layout_width="wrap_content"
@@ -62,7 +64,7 @@
                 android:layout_weight="1"
                 android:textAlignment="center"
                 android:editable="false"
-                android:minHeight="30dp"/>
+                android:minHeight="30dp" />
 
         </LinearLayout>
 
@@ -70,14 +72,16 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="2dp">
+            android:paddingLeft="2dp"
+            android:layout_marginTop="2dp">
 
             <TextView
                 android:text="@string/edit_costs_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textView6"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:ems="10" />
 
             <EditText
                 android:layout_width="wrap_content"
@@ -96,6 +100,41 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="2dp"
+            android:layout_marginTop="2dp">
+
+            <TextView
+                android:text="@string/edit_costs_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView3"
+                android:layout_weight="1"
+                android:ems="10" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/editCosts_cost_note"
+                android:layout_weight="1"
+                android:editable="false"
+                android:focusable="false"
+                android:textAlignment="center" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#FF9800"
+            android:layout_marginTop="5dp"></LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom"
             android:foregroundGravity="bottom">
@@ -106,21 +145,33 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/editCosts_saveButton"
                 android:layout_weight="1"
+                android:background="@drawable/keyboard_buttons_custom"
+                android:textColor="@drawable/button_text_color"
                 android:onClick="onSaveCancelButtonsClick" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="#FF9800"></LinearLayout>
 
             <Button
                 android:text="@string/edit_costs_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/linearLayout2"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="64dp"
-                android:layout_marginStart="64dp"
                 android:id="@+id/editCosts_cancelButton"
+                android:background="@drawable/keyboard_buttons_custom"
+                android:textColor="@drawable/button_text_color"
                 android:layout_weight="1"
                 android:onClick="onSaveCancelButtonsClick" />
+
         </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#FF9800"></LinearLayout>
 
     </LinearLayout>
 

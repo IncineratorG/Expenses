@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -32,15 +33,31 @@ public class StatisticChosePeriodActivity extends AppCompatActivity implements M
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Задать период");
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FF9800")));
+        actionBar.setBackgroundDrawable(new ColorDrawable(Constants.HEADER_SYSTEM_COLOR));
 
+        String initialDatePrev = null;
+        String endingDatePrev = null;
+        Bundle dataFromStatisticChosenPeriodActivity = getIntent().getExtras();
+        if (dataFromStatisticChosenPeriodActivity != null) {
+            initialDatePrev = dataFromStatisticChosenPeriodActivity.getString("initialDatePrev");
+            endingDatePrev = dataFromStatisticChosenPeriodActivity.getString("endingDatePrev");
+        }
 
         initialDateEditText = (EditText) findViewById(R.id.initialDateTextView);
         initialDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 datePickerCalledFromInitialDateEditText = true;
-                MyDatePicker datePicker = new MyDatePicker(StatisticChosePeriodActivity.this);
+                long initialDateInMilliseconds = 0;
+
+                try {
+                    Date initialDate = new SimpleDateFormat("dd.MM.yyyy", Locale.UK).parse(initialDateEditText.getText().toString());
+                    initialDateInMilliseconds = initialDate.getTime();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                MyDatePicker datePicker = new MyDatePicker(StatisticChosePeriodActivity.this, initialDateInMilliseconds);
                 datePicker.show();
             }
         });
@@ -50,30 +67,45 @@ public class StatisticChosePeriodActivity extends AppCompatActivity implements M
             @Override
             public void onClick(View v) {
                 datePickerCalledFromInitialDateEditText = false;
-                MyDatePicker datePicker = new MyDatePicker(StatisticChosePeriodActivity.this);
+                long endingDateInMilliseconds = 0;
+
+                try {
+                    Date endingDate = new SimpleDateFormat("dd.MM.yyyy", Locale.UK).parse(endingDateEditText.getText().toString());
+                    endingDateInMilliseconds = endingDate.getTime();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                MyDatePicker datePicker = new MyDatePicker(StatisticChosePeriodActivity.this, endingDateInMilliseconds);
                 datePicker.show();
             }
         });
 
-        Calendar calendar = Calendar.getInstance();
+        if (initialDatePrev != null && endingDatePrev != null) {
+            initialDateEditText.setText(initialDatePrev);
+            endingDateEditText.setText(endingDatePrev);
+        } else {
+            Calendar calendar = Calendar.getInstance();
+            selectedDateString = calendar.get(Calendar.DAY_OF_MONTH) + "." + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR);
 
-        selectedDateString = calendar.get(Calendar.DAY_OF_MONTH) + "." + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR);
+            initialDateEditText.setText(selectedDateString);
+            endingDateEditText.setText(selectedDateString);
+        }
 
-        initialDateEditText.setText(selectedDateString);
-        endingDateEditText.setText(selectedDateString);
+        Button cancelButton = (Button) findViewById(R.id.chosePeriodActivity_cancel_btn);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StatisticChosePeriodActivity.this, StatisticMainScreenActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
     }
 
-    public void OnSetPeriodButtonClick(View view) {
+    public void onSetPeriodButtonClick(View view) {
         String initialSelectedDateString = initialDateEditText.getText().toString();
         String endingSelectedDateString = endingDateEditText.getText().toString();
-
-//        int initialDay = Integer.valueOf(initialSelectedDateString.substring(0, initialSelectedDateString.indexOf(".")));
-//        int initialMonth = Integer.valueOf(initialSelectedDateString.substring(initialSelectedDateString.indexOf(".") + 1, initialSelectedDateString.lastIndexOf(".")));
-//        int initialYear = Integer.valueOf(initialSelectedDateString.substring(initialSelectedDateString.lastIndexOf(".") + 1));
-//
-//        int endingDay = Integer.valueOf(endingSelectedDateString.substring(0, endingSelectedDateString.indexOf(".")));
-//        int endingMonth = Integer.valueOf(initialSelectedDateString.substring(initialSelectedDateString.indexOf(".") + 1, initialSelectedDateString.lastIndexOf(".")));
-//        int endingYear = Integer.valueOf(initialSelectedDateString.substring(initialSelectedDateString.lastIndexOf(".") + 1));
 
         long initialDateInMilliseconds = 0;
         long endingDateInMilliseconds = 0;
@@ -87,9 +119,6 @@ public class StatisticChosePeriodActivity extends AppCompatActivity implements M
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-//        System.out.println(initialDateInMilliseconds);
-//        System.out.println(selectedDateString);
 
         if ((initialDateInMilliseconds <= endingDateInMilliseconds) && endingDateInMilliseconds != 0 && initialDateInMilliseconds != 0) {
             Intent chosenPeriodActivityIntent = new Intent(StatisticChosePeriodActivity.this, StatisticChosenPeriodActivity.class);

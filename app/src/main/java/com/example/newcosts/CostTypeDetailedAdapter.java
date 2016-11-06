@@ -17,24 +17,30 @@ public class CostTypeDetailedAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        View singleCostsRow = inflater.inflate(R.layout.single_costs_row, parent, false);
+        View singleCostsRowDetailed = inflater.inflate(R.layout.single_costs_row_detailed, parent, false);
 
         String textLine = getItem(position);
 
-        String costType = textLine.substring(0, textLine.lastIndexOf(Constants.SEPARATOR_VALUE));
+        String costNote = textLine.substring(0, textLine.lastIndexOf(Constants.SEPARATOR_NOTE));
+        String costDate = textLine.substring(textLine.lastIndexOf(Constants.SEPARATOR_NOTE) + 1,
+                                             textLine.lastIndexOf(Constants.SEPARATOR_VALUE));
         String costValue = textLine.substring(textLine.lastIndexOf(Constants.SEPARATOR_VALUE) + 1,
                                               textLine.lastIndexOf(Constants.SEPARATOR_MILLISECONDS));
 
-        if (!"+".equals(costValue))
-            costValue = costValue + " руб.";
+        costValue = costValue + " руб.";
 
-        TextView costTypeText = (TextView) singleCostsRow.findViewById(R.id.costType);
-        TextView costValueText = (TextView) singleCostsRow.findViewById(R.id.costValue);
+        TextView costDateTextView = (TextView) singleCostsRowDetailed.findViewById(R.id.singleCostRowDetailed_cost_date);
+        TextView costValueTextView = (TextView) singleCostsRowDetailed.findViewById(R.id.singleCostRowDetailed_cost_value);
+        TextView costNoteTextView = (TextView) singleCostsRowDetailed.findViewById(R.id.singleCostRowDetailed_cost_note);
 
-        costTypeText.setText(costType);
-        costValueText.setText(costValue);
+        costDateTextView.setText(costDate);
+        costValueTextView.setText(costValue);
+        if (!"null".equals(costNote))
+            costNoteTextView.setText(costNote);
+        else
+            costNoteTextView.setText("");
 
-        return singleCostsRow;
+        return singleCostsRowDetailed;
     }
 
 }

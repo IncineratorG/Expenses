@@ -71,7 +71,7 @@ public class StatisticDetailedActivity extends AppCompatActivity {
                     statisticCostTypeDetailedIntent.putExtra("costValue", costValue);
                     statisticCostTypeDetailedIntent.putExtra("chosenMonth", chosenMonthNumber);
                     statisticCostTypeDetailedIntent.putExtra("chosenYear", chosenYear);
-                    statisticCostTypeDetailedIntent.putExtra("dataForStatisticDetailedActivity", finalDataString);
+                    statisticCostTypeDetailedIntent.putExtra("dataForPreviousActivity", finalDataString);
 
                     startActivity(statisticCostTypeDetailedIntent);
                 }

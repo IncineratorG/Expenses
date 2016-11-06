@@ -23,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -47,11 +48,12 @@ public class MainActivity extends AppCompatActivity {
     private int chosenCostNameId;
     private double chosenCostTypeValue;
     private String currentOverallCosts;
+    private String note;
 //    String[] costsArray;
     private String[] nonActiveCostNames;
 //    Map<String, Double> costsMap;
 //    NumberFormat format;
-    private static String nearestEventShown;
+//    private static String nearestEventShown;
 
     TextView currentDateTextViewMainActivity;
     TextView currentOverallCostsTextViewMainActivity;
@@ -59,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
     ListAdapter costsListViewMainActivityAdapter;
     ListView costsListViewMainActivity;
     Dialog currentDialog;
+
+//    LinearLayout inputDataDialogNoteLayout;
+    TextView inputDataPopupNoteTextView;
 
 
 
@@ -122,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         Button pressedButton = (Button) view;
         String buttonLabel = (String)pressedButton.getText();
 
-        EditText inputDataEditText = (EditText) currentDialog.findViewById(R.id.inputTextFieldEditTextInInputDataPopup);
+        final EditText inputDataEditText = (EditText) currentDialog.findViewById(R.id.inputTextFieldEditTextInInputDataPopup);
         inputDataEditText.setFilters(new DecimalDigitsInputFilter[] {new DecimalDigitsInputFilter()});
         inputDataEditText.setCursorVisible(false);
 
@@ -163,19 +168,71 @@ public class MainActivity extends AppCompatActivity {
                     Double enteredCostValue = Double.parseDouble(inputText);
                     chosenCostTypeValue = chosenCostTypeValue + enteredCostValue;
 
-                    cdb.addCosts(enteredCostValue, chosenCostNameId);
+                    cdb.addCosts(enteredCostValue, chosenCostNameId, note);
 
                     // Обновляем главный экран приложения (MainActivity)
                     setCurrentOverallCosts_V2();
 
                     currentDialogCostSumTextView.setText(Constants.formatDigit(chosenCostTypeValue) + " руб.");
                     inputDataEditText.setText("");
+                    inputDataPopupNoteTextView.setText("");
+                    note = null;
                 }
                 break;
             }
 
             case R.id.inputDataPopup_cancelButton:
+                note = null;
                 currentDialog.cancel();
+                break;
+
+            case R.id.inputDataPopup_add_text_btn:
+                final Dialog dialog = new Dialog(MainActivity.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.add_text_popup);
+
+                final EditText inputTextField = (EditText) dialog.findViewById(R.id.addTextPopup_edit_text);
+                inputTextField.setCursorVisible(false);
+                inputTextField.requestFocus();
+                if (note != null) {
+                    inputTextField.setText(note);
+                    inputTextField.setSelection(inputTextField.getText().length());
+                }
+
+                // Отображаем клавиатуру
+                ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+
+                Button addTextButton = (Button) dialog.findViewById(R.id.addTextPopup_add_text_btn);
+                Button cancelButton = (Button) dialog.findViewById(R.id.addTextPopup_cancel_btn);
+
+                addTextButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String noteRaw = inputTextField.getText().toString();
+                        if (noteRaw != null) {
+                            if ("".equals(noteRaw)) {
+                                if (inputDataPopupNoteTextView != null)
+                                    inputDataPopupNoteTextView.setText("");
+                                note = null;
+                            } else {
+                                note = noteRaw;
+                                if (inputDataPopupNoteTextView != null) {
+                                    inputDataPopupNoteTextView.setText(note);
+                                }
+                            }
+                        }
+                        dialog.cancel();
+                    }
+                });
+
+                cancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.cancel();
+                    }
+                });
+
+                dialog.show();
                 break;
 
         }
@@ -264,6 +321,12 @@ public class MainActivity extends AppCompatActivity {
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.input_data_popup);
             currentDialog = dialog;
+
+//            inputDataDialogNoteLayout = (LinearLayout) dialog.findViewById(R.id.inputDataPopup_note_layout);
+//            inputDataDialogNoteLayout.setVisibility(View.GONE);
+            inputDataPopupNoteTextView = (TextView) dialog.findViewById(R.id.inputDataPopup_note_text_view);
+            note = null;
+//            inputDataPopupNoteTextView.setVisibility(View.GONE);
 
             // Инициализируем поле с названием выбранной статьи расходов
             TextView chosenCostTypeNameTextView = (TextView) dialog.findViewById(R.id.costTypeTextViewInInputDataPopup);
@@ -443,12 +506,12 @@ public class MainActivity extends AppCompatActivity {
         int numberOfLastEntriesToShow = 30;
 
         String[] lastEnteredValuesRaw = cdb.getLastEntries_V2(numberOfLastEntriesToShow);
-        final String[] lastEnteredValuesFinal = new String[lastEnteredValuesRaw.length / 5];
+        final String[] lastEnteredValuesFinal = new String[lastEnteredValuesRaw.length / 6];
         StringBuilder sb = new StringBuilder();
 
         PopupMenu lastEntriesPopupMenu = new PopupMenu(this, currentOverallCostsTextViewMainActivity);
         int indexCounter = 0;
-        for (int i = 0; i < lastEnteredValuesRaw.length; i = i + 5) {
+        for (int i = 0; i < lastEnteredValuesRaw.length; i = i + 6) {
             sb.append(lastEnteredValuesRaw[i]);         // день
             sb.append(".");
             sb.append(lastEnteredValuesRaw[i + 1]);     // месяц
@@ -457,13 +520,15 @@ public class MainActivity extends AppCompatActivity {
             sb.append(": ");
             sb.append(lastEnteredValuesRaw[i + 3]);     // сумма
             sb.append(" руб.");
+            sb.append(Constants.SEPARATOR_NOTE);
+            sb.append(lastEnteredValuesRaw[i + 5]);
             sb.append(Constants.SEPARATOR_MILLISECONDS);
             sb.append(lastEnteredValuesRaw[i + 4]);
             lastEnteredValuesFinal[indexCounter++] = sb.toString();
 
             lastEntriesPopupMenu.getMenu().add(1, indexCounter, indexCounter,
                     lastEnteredValuesFinal[indexCounter - 1].substring(
-                    0, lastEnteredValuesFinal[indexCounter - 1].lastIndexOf(Constants.SEPARATOR_MILLISECONDS)
+                    0, lastEnteredValuesFinal[indexCounter - 1].lastIndexOf(Constants.SEPARATOR_NOTE)
             ));
             sb.setLength(0);
         }
@@ -576,9 +641,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            nearestEventShown = null;
-        }
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            nearestEventShown = null;
+//        }
         return super.onKeyDown(keyCode, event);
     }
 

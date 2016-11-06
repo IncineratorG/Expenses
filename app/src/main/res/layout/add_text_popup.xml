@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minWidth="1000sp">
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:background="@drawable/edit_text_custom"
+        android:minHeight="70sp"
+
+        android:textSize="25sp"
+        android:textAlignment="center"
+        android:hint="Заметка"
+        android:gravity="center"
+        android:editable="true"
+        android:id="@+id/addTextPopup_edit_text" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#FF9800"></LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="2"
+        android:layout_marginTop="0dp">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Добавить"
+            android:textColor="@drawable/button_text_color"
+            android:id="@+id/addTextPopup_add_text_btn"
+            android:layout_weight="1"
+            android:background="@drawable/keyboard_buttons_custom" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#FF9800"></LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Отмена"
+            android:textColor="@drawable/button_text_color"
+            android:id="@+id/addTextPopup_cancel_btn"
+            android:layout_weight="1"
+            android:background="@drawable/keyboard_buttons_custom" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

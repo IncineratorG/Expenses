@@ -49,8 +49,12 @@ public class CustomDialogClass extends Dialog implements
         cancelButton = (Button) findViewById(R.id.edit_cost_value_dialog_cancelButton);
         cancelButton.setOnClickListener(this);
 
-        String costName = dataString.substring(dataString.indexOf(" ") + 1, dataString.lastIndexOf(":"));
-        String costValue = dataString.substring(dataString.indexOf(":") + 2, dataString.lastIndexOf(Constants.SEPARATOR_MILLISECONDS));
+        String costName = dataString.substring(dataString.indexOf(" ") + 1,
+                                               dataString.indexOf(":"));
+        String costValue = dataString.substring(dataString.indexOf(":") + 2,
+                                                dataString.indexOf(Constants.SEPARATOR_NOTE));
+        String costNote = dataString.substring(dataString.indexOf(Constants.SEPARATOR_NOTE) + 1,
+                                               dataString.lastIndexOf(Constants.SEPARATOR_MILLISECONDS));
 
         TextView costValueTextView = (TextView) findViewById(R.id.edit_cost_value_dialog_costValue);
         costValueTextView.setText(costValue);
@@ -61,6 +65,11 @@ public class CustomDialogClass extends Dialog implements
                                  String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)) + " " +
                                  Constants.DECLENSION_MONTH_NAMES[calendar.get(Calendar.MONTH)] + ", " +
                                  String.valueOf(calendar.get(Calendar.YEAR)));
+        TextView costNoteTextView = (TextView) findViewById(R.id.edit_cost_value_dialog_costNote);
+        if (!costNote.equals("null"))
+            costNoteTextView.setText(costNote);
+        else
+            costNoteTextView.setText("");
     }
 
     @Override

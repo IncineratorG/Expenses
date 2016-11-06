@@ -1,15 +1,18 @@
 package com.example.newcosts;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,14 +30,17 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
     private String date;
     private String categoryName;
     private String costSum;
+    private String note;
     private String dateInMilliseconds;
 //    private List<String> availableCostNamesList;
     private String[] availableCostNamesArrayWithID;
     private CostsDB db;
+    private static final String tag = "EditCostsTag";
 
     Spinner availableCostNamesSpinner;
     Dialog currentDialog;
-    EditText inputDataEditText, dateEditText, costSumEditText;
+    EditText inputDataEditText, dateEditText,
+             costSumEditText, noteEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +76,7 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
         costSum = dataArr[1] + " руб.";
         date = dataArr[2] + "." + dataArr[3] + "." + dataArr[4];
         dateInMilliseconds = dataArr[5];
+        note = dataArr[6];
 
         // Получаем список всех используемых категорий расходов и их id_n
         availableCostNamesArrayWithID = db.getActiveCostNames_V2();
@@ -129,6 +136,52 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
                 inputDataEditText.setFilters(new DecimalDigitsInputFilter[] {new DecimalDigitsInputFilter()});
                 inputDataEditText.setCursorVisible(false);
                 inputDataEditText.setText(costSumEditText.getText().toString().substring(0, costSumEditText.getText().toString().indexOf(" ")));
+
+                dialog.show();
+            }
+        });
+
+        // При нажатии на заметку, появляется окно, в котором можно изменить заметку
+        noteEditText = (EditText) findViewById(R.id.editCosts_cost_note);
+        noteEditText.setCursorVisible(false);
+        noteEditText.setFocusable(false);
+        if (note != null && !note.equals("null"))
+            noteEditText.setText(note);
+        noteEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(EditCostsActivity.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.add_text_popup);
+
+                final EditText inputTextField = (EditText) dialog.findViewById(R.id.addTextPopup_edit_text);
+                inputTextField.setCursorVisible(false);
+                inputTextField.requestFocus();
+                inputTextField.setText(noteEditText.getText());
+                inputTextField.setSelection(inputTextField.getText().length());
+
+                // Отображаем клавиатуру
+                ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+
+                Button addTextButton = (Button) dialog.findViewById(R.id.addTextPopup_add_text_btn);
+                Button cancelButton = (Button) dialog.findViewById(R.id.addTextPopup_cancel_btn);
+
+                addTextButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String noteRaw = inputTextField.getText().toString();
+                        note = noteRaw;
+                        noteEditText.setText(note);
+                        dialog.cancel();
+                    }
+                });
+
+                cancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.cancel();
+                    }
+                });
 
                 dialog.show();
             }
@@ -201,6 +254,8 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
     public void onSaveCancelButtonsClick(View view) {
         switch (view.getId()) {
             case R.id.editCosts_saveButton:
+                boolean badData = false;
+
                 String chosenCategoryName = availableCostNamesSpinner.getSelectedItem().toString();
 
                 // Получаем id_n по названию выбранной категории расходов
@@ -217,41 +272,75 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
                     return;
                 }
 
+                // Получаем введённую заметку
+                String enteredNote = noteEditText.getText().toString();
+
                 // Получаем значение введённой суммы расходов
                 String enteredCostSum = costSumEditText.getText().toString().substring(0, costSumEditText.getText().toString().indexOf(" "));
 
                 // Получаем выбранную дату
                 String enteredDate = dateEditText.getText().toString();
+                long enteredDateInMilliseconds = Long.valueOf(dateInMilliseconds);
 
-                Calendar calendar = Calendar.getInstance();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
-                long enteredDateInMilliseconds = -1;
-                try {
-                    Date d = simpleDateFormat.parse(enteredDate);
-                    enteredDateInMilliseconds = d.getTime();
-                } catch (ParseException e) {
-                    Toast invalidDataErrorToast = Toast.makeText(this,
-                            "Неправильная дата",
-                            Toast.LENGTH_LONG);
-                    invalidDataErrorToast.show();
-                    return;
+                if (!enteredDate.equals(date)) {
+                    Calendar calendar = Calendar.getInstance();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
+                    try {
+                        Date d = simpleDateFormat.parse(enteredDate);
+                        enteredDateInMilliseconds = d.getTime();
+                    } catch (ParseException e) {
+                        Toast invalidDataErrorToast = Toast.makeText(this,
+                                "Неправильная дата",
+                                Toast.LENGTH_LONG);
+                        invalidDataErrorToast.show();
+                        return;
+                    }
+
+                    if (enteredDateInMilliseconds > calendar.getTimeInMillis()) {
+                        Toast wrongDateToast = Toast.makeText(this,
+                                "Введённая дата ещё не наступила",
+                                Toast.LENGTH_LONG);
+                        wrongDateToast.show();
+                        badData = true;
+                    }
                 }
+//                Calendar calendar = Calendar.getInstance();
+//                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
+//                try {
+//                    Date d = simpleDateFormat.parse(enteredDate);
+//                    enteredDateInMilliseconds = d.getTime();
+//                } catch (ParseException e) {
+//                    Toast invalidDataErrorToast = Toast.makeText(this,
+//                            "Неправильная дата",
+//                            Toast.LENGTH_LONG);
+//                    invalidDataErrorToast.show();
+//                    return;
+//                }
 
-                if (!(enteredDateInMilliseconds > calendar.getTimeInMillis())) {
+                if (!badData) {
                     db.removeCostValue(Long.valueOf(dateInMilliseconds));
-                    db.addCostInMilliseconds(id_n, enteredCostSum, enteredDateInMilliseconds);
+                    db.addCostInMilliseconds(id_n, enteredCostSum, enteredDateInMilliseconds, enteredNote);
 
                     Toast recordEditedSuccessfulToast = Toast.makeText(this,
                             "Запись изменена",
                             Toast.LENGTH_LONG);
                     recordEditedSuccessfulToast.show();
-                } else {
-                    Toast wrongDateToast = Toast.makeText(this,
-                            "Введённая дата ещё не наступила",
-                            Toast.LENGTH_LONG);
-                    wrongDateToast.show();
                 }
 
+//                if (!(enteredDateInMilliseconds > calendar.getTimeInMillis())) {
+//                    db.removeCostValue(Long.valueOf(dateInMilliseconds));
+//                    db.addCostInMilliseconds(id_n, enteredCostSum, enteredDateInMilliseconds, enteredNote);
+//
+//                    Toast recordEditedSuccessfulToast = Toast.makeText(this,
+//                            "Запись изменена",
+//                            Toast.LENGTH_LONG);
+//                    recordEditedSuccessfulToast.show();
+//                } else {
+//                    Toast wrongDateToast = Toast.makeText(this,
+//                            "Введённая дата ещё не наступила",
+//                            Toast.LENGTH_LONG);
+//                    wrongDateToast.show();
+//                }
                 break;
 
             case R.id.editCosts_cancelButton:

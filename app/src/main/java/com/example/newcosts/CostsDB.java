@@ -231,7 +231,7 @@ public class CostsDB extends SQLiteOpenHelper {
     }
 
     // Добавляет новую запись по статье расходов с соответсвующим id_n в базу
-    public void addCosts(double costValue, int id_n) {
+    public void addCosts(double costValue, int id_n, String note) {
         Calendar calendar = Calendar.getInstance();
 
         int day =  calendar.get(Calendar.DAY_OF_MONTH);
@@ -248,6 +248,8 @@ public class CostsDB extends SQLiteOpenHelper {
         values.put(DATE_IN_MILLISECONDS, currentDateInMilliseconds);
         values.put(ID_N_FK, id_n);
         values.put(COST_VALUE, costValue);
+        if (note != null && !"".equals(note))
+            values.put(TEXT, note);
         db.insert(TABLE_COST_VALUES, null, values);
 
         db.close();
@@ -357,7 +359,8 @@ public class CostsDB extends SQLiteOpenHelper {
                 MONTH + ", " +
                 COST_NAME + ", " +
                 COST_VALUE + ", " +
-                DATE_IN_MILLISECONDS +
+                DATE_IN_MILLISECONDS + ", " +
+                TEXT +
                 " FROM " + TABLE_COST_VALUES +
                 " INNER JOIN " + TABLE_COST_NAMES +
                 " ON " + TABLE_COST_VALUES + "." + ID_N_FK + " = " + TABLE_COST_NAMES + "." + ID_N +
@@ -368,11 +371,10 @@ public class CostsDB extends SQLiteOpenHelper {
         Cursor c = null;
         String[] array = null;
 
-
         try {
             c = db.rawQuery(getLastEntriesQuery, null);
             c.moveToFirst();
-            array = new String[c.getCount() * 5];
+            array = new String[c.getCount() * 6];
             int arrayIndexCounter = 0;
 
             while (!c.isAfterLast()) {
@@ -381,6 +383,7 @@ public class CostsDB extends SQLiteOpenHelper {
                 array[arrayIndexCounter++] = c.getString(c.getColumnIndex(COST_NAME));
                 array[arrayIndexCounter++] = Constants.formatDigit(c.getDouble(c.getColumnIndex(COST_VALUE)));
                 array[arrayIndexCounter++] = c.getString(c.getColumnIndex(DATE_IN_MILLISECONDS));
+                array[arrayIndexCounter++] = c.getString(c.getColumnIndex(TEXT));
                 c.moveToNext();
             }
         } catch (Exception e) {
@@ -522,7 +525,8 @@ public class CostsDB extends SQLiteOpenHelper {
         String query = "SELECT " +
                 COST_VALUE + ", " +
                 DAY + ", " +
-                DATE_IN_MILLISECONDS +
+                DATE_IN_MILLISECONDS + ", " +
+                TEXT +
                 " FROM " + TABLE_COST_VALUES +
                 " WHERE " + MONTH + " = " + month +
                 " AND " + YEAR + " = " + year +
@@ -542,6 +546,9 @@ public class CostsDB extends SQLiteOpenHelper {
             c.moveToFirst();
 
             while (!c.isAfterLast()) {
+                sb.append(c.getString(c.getColumnIndex(TEXT)));
+                sb.append(Constants.SEPARATOR_NOTE);
+
                 sb.append(c.getString(c.getColumnIndex(DAY)));
                 sb.append(".");
                 sb.append(month + 1);
@@ -573,7 +580,7 @@ public class CostsDB extends SQLiteOpenHelper {
         return arrayOfEntries;
     }
 
-    public String[] test(long initialDateInMilliseconds, long endingDateInMilliseconds) {
+    public String[] getCostsBetweenDates(long initialDateInMilliseconds, long endingDateInMilliseconds) {
         String query = "SELECT " +
                 TABLE_COST_NAMES + "." + COST_NAME + ", SUM(" + TABLE_COST_VALUES + "." + COST_VALUE + ") AS SUM, " +
                 TABLE_COST_VALUES + "." + MONTH + ", " + TABLE_COST_VALUES + "." + YEAR + ", " +
@@ -597,6 +604,60 @@ public class CostsDB extends SQLiteOpenHelper {
 
             while (!c.isAfterLast()) {
                 sb.append(c.getString(c.getColumnIndex(COST_NAME)));
+                sb.append(Constants.SEPARATOR_VALUE);
+
+                sb.append(Constants.formatDigit(c.getDouble(c.getColumnIndex("SUM"))));
+
+                listOfEntries.add(sb.toString());
+                sb.setLength(0);
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        String[] arrayOfEntries = new String[listOfEntries.size()];
+        listOfEntries.toArray(arrayOfEntries);
+
+        return arrayOfEntries;
+    }
+    public String[] getCostsBetweenDates_V2(long initialDateInMilliseconds, long endingDateInMilliseconds) {
+        String query = "SELECT " +
+                TABLE_COST_NAMES + "." + COST_NAME +
+                ", SUM(" + TABLE_COST_VALUES + "." + COST_VALUE + ") AS SUM, " +
+                TABLE_COST_VALUES + "." + MONTH + ", " +
+                TABLE_COST_VALUES + "." + YEAR + ", " +
+                TABLE_COST_VALUES + "." + DATE_IN_MILLISECONDS + ", " +
+                TABLE_COST_VALUES + "." + ID_N_FK + ", " +
+                TABLE_COST_NAMES + "." + ID_N +
+                " FROM " + TABLE_COST_VALUES +
+                " INNER JOIN " + TABLE_COST_NAMES +
+                " ON " + TABLE_COST_VALUES + "." + ID_N_FK + " = " + TABLE_COST_NAMES + "." + ID_N +
+                " WHERE " + DATE_IN_MILLISECONDS + " BETWEEN " + initialDateInMilliseconds + " AND " + endingDateInMilliseconds +
+                " GROUP BY " + ID_N_FK +
+                " ORDER BY " + "SUM" + " DESC";
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        StringBuilder sb = new StringBuilder();
+        List<String> listOfEntries = new ArrayList<>();
+
+        try {
+            c = db.rawQuery(query, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                sb.append(c.getString(c.getColumnIndex(COST_NAME)));
+                sb.append(Constants.SEPARATOR_DATE);
+
+                sb.append(c.getString(c.getColumnIndex(MONTH)));
+                sb.append(".");
+                sb.append(c.getString(c.getColumnIndex(YEAR)));
                 sb.append(Constants.SEPARATOR_VALUE);
 
                 sb.append(Constants.formatDigit(c.getDouble(c.getColumnIndex("SUM"))));
@@ -683,7 +744,8 @@ public class CostsDB extends SQLiteOpenHelper {
                 TABLE_COST_VALUES + "." + DAY + ", " +
                 TABLE_COST_VALUES + "." + MONTH + ", " +
                 TABLE_COST_VALUES + "." + YEAR + ", " +
-                TABLE_COST_VALUES + "." + DATE_IN_MILLISECONDS +
+                TABLE_COST_VALUES + "." + DATE_IN_MILLISECONDS + ", " +
+                TABLE_COST_VALUES + "." + TEXT +
                 " FROM " + TABLE_COST_VALUES +
                 " INNER JOIN " + TABLE_COST_NAMES +
                 " ON " + TABLE_COST_VALUES + "." + ID_N_FK + " = " + TABLE_COST_NAMES + "." + ID_N +
@@ -691,7 +753,7 @@ public class CostsDB extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        String[] array = new String[6];
+        String[] array = new String[7];
         int arrayIndexCounter = 0;
 
         try {
@@ -706,7 +768,8 @@ public class CostsDB extends SQLiteOpenHelper {
                         c.getInt(c.getColumnIndex(MONTH)) + 1
                 );
                 array[arrayIndexCounter++] = c.getString(c.getColumnIndex(YEAR));
-                array[arrayIndexCounter] = c.getString(c.getColumnIndex(DATE_IN_MILLISECONDS));
+                array[arrayIndexCounter++] = c.getString(c.getColumnIndex(DATE_IN_MILLISECONDS));
+                array[arrayIndexCounter] = c.getString(c.getColumnIndex(TEXT));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -722,7 +785,7 @@ public class CostsDB extends SQLiteOpenHelper {
 
 
 
-    public void addCostInMilliseconds(int id_n, String costValue, long milliseconds) {
+    public void addCostInMilliseconds(int id_n, String costValue, long milliseconds, String note) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milliseconds);
 
@@ -752,6 +815,7 @@ public class CostsDB extends SQLiteOpenHelper {
         values.put(DATE_IN_MILLISECONDS, milliseconds);
         values.put(ID_N_FK, id_n);
         values.put(COST_VALUE, costValue);
+        values.put(TEXT, note);
         db.insert(TABLE_COST_VALUES, null, values);
 
         db.close();

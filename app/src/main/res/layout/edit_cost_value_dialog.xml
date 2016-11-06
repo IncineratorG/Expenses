@@ -50,6 +50,16 @@
             android:textSize="30sp"
             android:layout_marginRight="5dp"
             android:layout_marginLeft="5dp" />
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_cost_value_dialog_costNote"
+            android:textColor="#FFFFFF"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:gravity="center"/>
     </LinearLayout>
 
     <LinearLayout

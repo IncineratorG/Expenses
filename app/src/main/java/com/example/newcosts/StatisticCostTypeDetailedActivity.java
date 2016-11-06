@@ -1,7 +1,6 @@
 package com.example.newcosts;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +17,11 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
 
     private static final String tag = "ctDetailedTag";
 
-    private String dataForStatisticDetailedActivity;
+    private String dataForPreviousActivity = null;
+    private String initialDateString;
+    private String endingDateString;
+    private long initialDateInMilliseconds;
+    private long endingDateInMilliseconds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,13 +32,17 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(new ColorDrawable(Constants.HEADER_SYSTEM_COLOR));
 
-        Bundle dataFromStatisticDetailedActivity = getIntent().getExtras();
-        if (dataFromStatisticDetailedActivity != null) {
-            String costName = dataFromStatisticDetailedActivity.getString("costName");
-            String costValue = dataFromStatisticDetailedActivity.getString("costValue");
-            int chosenMonth = dataFromStatisticDetailedActivity.getInt("chosenMonth");
-            int chosenYear = dataFromStatisticDetailedActivity.getInt("chosenYear");
-            dataForStatisticDetailedActivity = dataFromStatisticDetailedActivity.getString("dataForStatisticDetailedActivity");
+        Bundle dataFromPreviousActivity = getIntent().getExtras();
+        if (dataFromPreviousActivity != null) {
+            String costName = dataFromPreviousActivity.getString("costName");
+            String costValue = dataFromPreviousActivity.getString("costValue");
+            int chosenMonth = dataFromPreviousActivity.getInt("chosenMonth");
+            int chosenYear = dataFromPreviousActivity.getInt("chosenYear");
+            dataForPreviousActivity = dataFromPreviousActivity.getString("dataForPreviousActivity");
+            initialDateString = dataFromPreviousActivity.getString("initialDateString");
+            endingDateString = dataFromPreviousActivity.getString("endingDateString");
+            initialDateInMilliseconds = dataFromPreviousActivity.getLong("initialDateInMilliseconds");
+            endingDateInMilliseconds = dataFromPreviousActivity.getLong("endingDateInMilliseconds");
 
             CostsDB cdb = CostsDB.getInstance(this);
             String[] dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
@@ -56,29 +63,9 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
                     Intent editCostsIntent = new Intent(StatisticCostTypeDetailedActivity.this, EditCostsActivity.class);
                     editCostsIntent.putExtra("data", parent.getItemAtPosition(position).toString());
                     startActivity(editCostsIntent);
-
                 }
             });
         }
-
-//        Bundle statisticDetailedActivityBundle = getIntent().getExtras();
-//        chosenDateString = statisticDetailedActivityBundle.getString("chosenDate");
-//        overallCostsString = statisticDetailedActivityBundle.getString("overallCosts");
-//
-//        int chosenMonth = statisticDetailedActivityBundle.getInt("chosenMonth");
-//        int chosenYear = statisticDetailedActivityBundle.getInt("chosenYear");
-//        String costName = statisticDetailedActivityBundle.getString("costName");
-//        String costValue = statisticDetailedActivityBundle.getString("costValue");
-//
-
-//
-
-//
-//        CostsDataBase cdb = new CostsDataBase(this, null, null, 1);
-//
-//        String[] costsArray = cdb.getCostValuesOnSpecifiedDateAndCostName(chosenMonth, chosenYear, costName);
-//
-
     }
 
     @Override
@@ -86,9 +73,17 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // app icon in action bar clicked; go home
-                Intent intent = new Intent(this, StatisticDetailedActivity.class);
-
-                intent.putExtra("data", dataForStatisticDetailedActivity);
+                Intent intent = null;
+                if (dataForPreviousActivity == null) {
+                    intent = new Intent(this, StatisticChosenPeriodActivity.class);
+                    intent.putExtra("initialDateInMilliseconds", initialDateInMilliseconds);
+                    intent.putExtra("endingDateInMilliseconds", endingDateInMilliseconds);
+                    intent.putExtra("initialDateString", initialDateString);
+                    intent.putExtra("endingDateString", endingDateString);
+                } else {
+                    intent = new Intent(this, StatisticDetailedActivity.class);
+                    intent.putExtra("data", dataForPreviousActivity);
+                }
 
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);

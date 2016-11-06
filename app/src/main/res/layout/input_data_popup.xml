@@ -12,7 +12,7 @@
 
         <TextView
             android:text="TextView"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#FFFFFF"
             android:layout_marginLeft="5dp"
@@ -41,6 +41,21 @@
             android:layout_marginLeft="5dp" />
     </LinearLayout>
 
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:id="@+id/inputDataPopup_note_layout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/inputDataPopup_note_text_view"
+            android:layout_weight="1"
+            android:singleLine="true" />
+    </LinearLayout>
 
     <EditText
         android:layout_width="wrap_content"
@@ -260,11 +275,28 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:weightSum="2">
+
+        <Button
+            android:text="@string/input_data_popup_add_text_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/inputDataPopup_add_text_btn"
+            android:layout_weight="1"
+            android:background="@drawable/keyboard_buttons_custom"
+            android:textColor="@drawable/button_text_color"
+            android:onClick="onInputDataPopupClickListener"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#FF9800"></LinearLayout>
 
         <Button
             android:text="@string/input_data_popup_close"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/inputDataPopup_cancelButton"

@@ -18,7 +18,7 @@ public class Constants {
     public static final String SEPARATOR_DATE = "#";
     public static final String SEPARATOR_ID = "&";
     public static final String SEPARATOR_MILLISECONDS = "%";
-    public static final String SEPARATOR_PRIMARY = " ";
+    public static final String SEPARATOR_NOTE = "~";
     public static final int HEADER_SYSTEM_COLOR = Color.parseColor("#FF9800");
 
     public static String formatDigit(double d) {
