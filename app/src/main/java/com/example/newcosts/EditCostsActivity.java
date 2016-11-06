@@ -36,6 +36,7 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
     private CostsDB db;
     private String[] bundleDataArray;
     private String dataForPreviousActivity;
+    private double previousCostValue;
 
     Spinner availableCostNamesSpinner;
     Dialog currentDialog;
@@ -70,6 +71,9 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
 
         bundleDataArray = bundleData.getStringArray(Constants.DATA_ARRAY_LABEL);
         dataForPreviousActivity = bundleData.getString("dataForPreviousActivity");
+        previousCostValue = 0.0;
+        if (bundleDataArray != null)
+            previousCostValue = Double.parseDouble(bundleDataArray[Constants.COST_VALUE_INDEX]);
 
         db = CostsDB.getInstance(this);
         long milliseconds = Long.parseLong(dataString.substring(dataString.lastIndexOf(Constants.SEPARATOR_MILLISECONDS) + 1));
@@ -164,7 +168,8 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
                 inputTextField.setSelection(inputTextField.getText().length());
 
                 // Отображаем клавиатуру
-                ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
                 Button addTextButton = (Button) dialog.findViewById(R.id.addTextPopup_add_text_btn);
                 Button cancelButton = (Button) dialog.findViewById(R.id.addTextPopup_cancel_btn);
@@ -175,6 +180,7 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
                         String noteRaw = inputTextField.getText().toString();
                         note = noteRaw;
                         noteEditText.setText(note);
+                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
                         dialog.cancel();
                     }
                 });
@@ -182,6 +188,7 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
                 cancelButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
                         dialog.cancel();
                     }
                 });

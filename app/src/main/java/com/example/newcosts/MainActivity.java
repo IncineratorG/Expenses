@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 /*================================== Слушатели ===================================================*/
 
     // Обработчик нажатий кнопок в input_data_popup (диалог ввода значений расходов)
-    public void onInputDataPopupClickListener(View view) {
+    public void onInputDataPopupClickListener(final View view) {
         Button pressedButton = (Button) view;
         String buttonLabel = (String)pressedButton.getText();
 
@@ -200,7 +200,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // Отображаем клавиатуру
-                ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
                 Button addTextButton = (Button) dialog.findViewById(R.id.addTextPopup_add_text_btn);
                 Button cancelButton = (Button) dialog.findViewById(R.id.addTextPopup_cancel_btn);
@@ -221,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         }
+                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
                         dialog.cancel();
                     }
                 });
@@ -228,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
                 cancelButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
                         dialog.cancel();
                     }
                 });

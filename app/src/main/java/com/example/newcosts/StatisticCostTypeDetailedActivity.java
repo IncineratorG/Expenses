@@ -39,8 +39,17 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
             int chosenYear = Integer.parseInt(bundleDataArray[Constants.CHOSEN_YEAR_INDEX]);
             dataForPreviousActivity = dataFromPreviousActivity.getString("dataForPreviousActivity");
 
+//            if (dataForPreviousActivity == null) {
+//
+//            }
             CostsDB cdb = CostsDB.getInstance(this);
             String[] dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
+//            double costValue = 0.0;
+//            for (int i = 0; i < dataArray.length; ++i) {
+//                double val = Double.parseDouble(dataArray[i].substring(dataArray[i].lastIndexOf(Constants.SEPARATOR_VALUE) + 1,
+//                                                                        dataArray[i].lastIndexOf(Constants.SEPARATOR_MILLISECONDS)));
+//                costValue = costValue + val;
+//            }
 
             TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
             TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
