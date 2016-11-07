@@ -72,6 +72,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingStart="2dp"
             android:paddingLeft="2dp"
             android:layout_marginTop="2dp">
 
@@ -130,7 +131,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#FF9800"
-            android:layout_marginTop="5dp"></LinearLayout>
+            android:layout_marginTop="5dp"/>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -153,7 +154,7 @@
                 android:orientation="horizontal"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="#FF9800"></LinearLayout>
+                android:background="#FF9800"/>
 
             <Button
                 android:text="@string/edit_costs_cancel"
@@ -171,7 +172,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#FF9800"></LinearLayout>
+            android:background="#FF9800"/>
 
     </LinearLayout>
 

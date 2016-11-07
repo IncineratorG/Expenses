@@ -23,7 +23,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#FFFFFF"></LinearLayout>
+            android:background="#FFFFFF"/>
 
         <TextView
             android:text="TextView"
@@ -66,7 +66,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#FF9800"></LinearLayout>
+        android:background="#FF9800"/>
 
     <LinearLayout
         android:orientation="vertical"
@@ -101,7 +101,6 @@
             android:id="@+id/edit_cost_value_dialog_cancelButton"
             android:background="@drawable/keyboard_buttons_custom"
             android:textColor="@drawable/button_text_color"
-            android:layout_weight="1"
-            android:elevation="0dp" />
+            android:layout_weight="1" />
     </LinearLayout>
 </LinearLayout>

@@ -48,7 +48,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#FF9800"></LinearLayout>
+            android:background="#FF9800"/>
 
         <ListView
             android:layout_width="match_parent"

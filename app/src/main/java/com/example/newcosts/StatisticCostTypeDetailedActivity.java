@@ -44,28 +44,27 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
             long initialDateInMilliseconds;
             long endingDateInMilliseconds;
             String[] dataArray;
+            CostsDB cdb = CostsDB.getInstance(this);
 
+            TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
+            TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
+
+            // Если пользователь просматривает расходы за какой-либо определённый месяц - отображаем
+            // расходы по выбранной категории за этот месяц. Если пользователь вручную задаёт период просмтора -
+            // отображаем расходы по выбранной категории за выбранный период
             if (dataForPreviousActivity == null) {
                 initialDateString = bundleDataArray[Constants.INITIAL_DATE_STRING_INDEX];
                 endingDateString = bundleDataArray[Constants.ENDING_DATE_STRING_INDEX];
                 initialDateInMilliseconds = Long.parseLong(bundleDataArray[Constants.INITIAL_DATE_IN_MILLISECONDS_INDEX]);
                 endingDateInMilliseconds = Long.parseLong(bundleDataArray[Constants.ENDING_DATE_IN_MILLISECONDS_INDEX]);
 
-                CostsDB db = CostsDB.getInstance(this);
-                dataArray = db.getCostsBetweenDatesByName(initialDateInMilliseconds, endingDateInMilliseconds, costName);
-
-                TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
-                TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
+                dataArray = cdb.getCostsBetweenDatesByName(initialDateInMilliseconds, endingDateInMilliseconds, costName);
 
                 dateTextView.setText(initialDateString + " - " + endingDateString);
                 costNameAndCostValueTextView.setText(costName + ": " + costValue + " руб.");
                 actionBar.setTitle(initialDateString + " - " + endingDateString);
             } else {
-                CostsDB cdb = CostsDB.getInstance(this);
                 dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
-
-                TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
-                TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
 
                 dateTextView.setText(Constants.MONTH_NAMES[chosenMonth] + " " + chosenYear);
                 costNameAndCostValueTextView.setText(costName + ": " + costValue + " руб.");
