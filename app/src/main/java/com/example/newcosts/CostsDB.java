@@ -579,19 +579,21 @@ public class CostsDB extends SQLiteOpenHelper {
 
         return arrayOfEntries;
     }
-
-    public String[] getCostsBetweenDates(long initialDateInMilliseconds, long endingDateInMilliseconds) {
+    public String[] getCostsBetweenDatesByName(long initialDateInMilliseconds, long endingDateInMilliseconds, String costName) {
         String query = "SELECT " +
-                TABLE_COST_NAMES + "." + COST_NAME + ", SUM(" + TABLE_COST_VALUES + "." + COST_VALUE + ") AS SUM, " +
-                TABLE_COST_VALUES + "." + MONTH + ", " + TABLE_COST_VALUES + "." + YEAR + ", " +
-                TABLE_COST_VALUES + "." + DATE_IN_MILLISECONDS + ", " + TABLE_COST_VALUES + "." + ID_N_FK + ", " +
-                TABLE_COST_NAMES + "." + ID_N +
+                COST_VALUE + ", " +
+                DAY + ", " +
+                MONTH + ", " +
+                YEAR + ", " +
+                DATE_IN_MILLISECONDS + ", " +
+                TEXT +
                 " FROM " + TABLE_COST_VALUES +
-                " INNER JOIN " + TABLE_COST_NAMES +
-                " ON " + TABLE_COST_VALUES + "." + ID_N_FK + " = " + TABLE_COST_NAMES + "." + ID_N +
                 " WHERE " + DATE_IN_MILLISECONDS + " BETWEEN " + initialDateInMilliseconds + " AND " + endingDateInMilliseconds +
-                " GROUP BY " + ID_N_FK +
-                " ORDER BY " + "SUM" + " DESC";
+                " AND " + ID_N_FK + " IN" +
+                " (SELECT " + ID_N +
+                " FROM " + TABLE_COST_NAMES +
+                " WHERE " + COST_NAME + " LIKE '" + costName + "')" +
+                " ORDER BY " + DATE_IN_MILLISECONDS + " ASC";
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
@@ -603,10 +605,20 @@ public class CostsDB extends SQLiteOpenHelper {
             c.moveToFirst();
 
             while (!c.isAfterLast()) {
-                sb.append(c.getString(c.getColumnIndex(COST_NAME)));
+                sb.append(c.getString(c.getColumnIndex(TEXT)));
+                sb.append(Constants.SEPARATOR_NOTE);
+
+                sb.append(c.getString(c.getColumnIndex(DAY)));
+                sb.append(".");
+                sb.append(c.getInt(c.getColumnIndex(MONTH)) + 1);
+                sb.append(".");
+                sb.append(c.getString(c.getColumnIndex(YEAR)));
                 sb.append(Constants.SEPARATOR_VALUE);
 
-                sb.append(Constants.formatDigit(c.getDouble(c.getColumnIndex("SUM"))));
+                sb.append(Constants.formatDigit(c.getDouble(c.getColumnIndex(COST_VALUE))));
+                sb.append(Constants.SEPARATOR_MILLISECONDS);
+
+                sb.append(c.getString(c.getColumnIndex(DATE_IN_MILLISECONDS)));
 
                 listOfEntries.add(sb.toString());
                 sb.setLength(0);
@@ -626,6 +638,7 @@ public class CostsDB extends SQLiteOpenHelper {
 
         return arrayOfEntries;
     }
+
     public String[] getCostsBetweenDates_V2(long initialDateInMilliseconds, long endingDateInMilliseconds) {
         String query = "SELECT " +
                 TABLE_COST_NAMES + "." + COST_NAME +

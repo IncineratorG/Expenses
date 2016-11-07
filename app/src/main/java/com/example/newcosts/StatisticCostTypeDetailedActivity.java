@@ -39,24 +39,38 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
             int chosenYear = Integer.parseInt(bundleDataArray[Constants.CHOSEN_YEAR_INDEX]);
             dataForPreviousActivity = dataFromPreviousActivity.getString("dataForPreviousActivity");
 
-//            if (dataForPreviousActivity == null) {
-//
-//            }
-            CostsDB cdb = CostsDB.getInstance(this);
-            String[] dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
-//            double costValue = 0.0;
-//            for (int i = 0; i < dataArray.length; ++i) {
-//                double val = Double.parseDouble(dataArray[i].substring(dataArray[i].lastIndexOf(Constants.SEPARATOR_VALUE) + 1,
-//                                                                        dataArray[i].lastIndexOf(Constants.SEPARATOR_MILLISECONDS)));
-//                costValue = costValue + val;
-//            }
+            String initialDateString;
+            String endingDateString;
+            long initialDateInMilliseconds;
+            long endingDateInMilliseconds;
+            String[] dataArray;
 
-            TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
-            TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
+            if (dataForPreviousActivity == null) {
+                initialDateString = bundleDataArray[Constants.INITIAL_DATE_STRING_INDEX];
+                endingDateString = bundleDataArray[Constants.ENDING_DATE_STRING_INDEX];
+                initialDateInMilliseconds = Long.parseLong(bundleDataArray[Constants.INITIAL_DATE_IN_MILLISECONDS_INDEX]);
+                endingDateInMilliseconds = Long.parseLong(bundleDataArray[Constants.ENDING_DATE_IN_MILLISECONDS_INDEX]);
 
-            dateTextView.setText(Constants.MONTH_NAMES[chosenMonth] + " " + chosenYear);
-            costNameAndCostValueTextView.setText(costName + ": " + costValue + " руб.");
-            actionBar.setTitle(Constants.MONTH_NAMES[chosenMonth] + " " + chosenYear + ": " + costName);
+                CostsDB db = CostsDB.getInstance(this);
+                dataArray = db.getCostsBetweenDatesByName(initialDateInMilliseconds, endingDateInMilliseconds, costName);
+
+                TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
+                TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
+
+                dateTextView.setText(initialDateString + " - " + endingDateString);
+                costNameAndCostValueTextView.setText(costName + ": " + costValue + " руб.");
+                actionBar.setTitle(initialDateString + " - " + endingDateString);
+            } else {
+                CostsDB cdb = CostsDB.getInstance(this);
+                dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
+
+                TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
+                TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
+
+                dateTextView.setText(Constants.MONTH_NAMES[chosenMonth] + " " + chosenYear);
+                costNameAndCostValueTextView.setText(costName + ": " + costValue + " руб.");
+                actionBar.setTitle(Constants.MONTH_NAMES[chosenMonth] + " " + chosenYear + ": " + costName);
+            }
 
             ListAdapter costsListAdapter = new CostTypeDetailedAdapter(this, dataArray);
             ListView detailedCostsListView = (ListView) findViewById(R.id.listViewInCostTypeDetailed);

@@ -83,15 +83,6 @@ public class StatisticChosenPeriodActivity extends AppCompatActivity {
 
                 statisticCostTypeDetailedIntent.putExtra(Constants.DATA_ARRAY_LABEL, dataArray);
 
-//                statisticCostTypeDetailedIntent.putExtra("costName", costName);
-//                statisticCostTypeDetailedIntent.putExtra("costValue", costValue);
-//                statisticCostTypeDetailedIntent.putExtra("chosenMonth", month);
-//                statisticCostTypeDetailedIntent.putExtra("chosenYear", year);
-//                statisticCostTypeDetailedIntent.putExtra("initialDateInMilliseconds", initialDateInMilliseconds);
-//                statisticCostTypeDetailedIntent.putExtra("endingDateInMilliseconds", endingDateInMilliseconds);
-//                statisticCostTypeDetailedIntent.putExtra("initialDateString", initialDateString);
-//                statisticCostTypeDetailedIntent.putExtra("endingDateString", endingDateString);
-
                 startActivity(statisticCostTypeDetailedIntent);
             }
         });
