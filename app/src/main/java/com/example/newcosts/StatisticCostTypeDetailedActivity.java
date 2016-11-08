@@ -34,7 +34,7 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
                 return;
 
             String costName = bundleDataArray[Constants.COST_NAME_INDEX];
-            String costValue = bundleDataArray[Constants.COST_VALUE_INDEX];
+            String costValueTotalString = bundleDataArray[Constants.COST_VALUE_INDEX];
             int chosenMonth = Integer.parseInt(bundleDataArray[Constants.CHOSEN_MONTH_INDEX]);
             int chosenYear = Integer.parseInt(bundleDataArray[Constants.CHOSEN_YEAR_INDEX]);
             dataForPreviousActivity = dataFromPreviousActivity.getString("dataForPreviousActivity");
@@ -45,6 +45,7 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
             long endingDateInMilliseconds;
             String[] dataArray;
             CostsDB cdb = CostsDB.getInstance(this);
+            double costValueTotal = 0.0;
 
             TextView dateTextView = (TextView) findViewById(R.id.dateTextViewInCostTypeDetailed);
             TextView costNameAndCostValueTextView = (TextView) findViewById(R.id.costNameAndCostValueTextViewInCostTypeDetailed);
@@ -61,15 +62,23 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
                 dataArray = cdb.getCostsBetweenDatesByName(initialDateInMilliseconds, endingDateInMilliseconds, costName);
 
                 dateTextView.setText(initialDateString + " - " + endingDateString);
-                costNameAndCostValueTextView.setText(costName + ": " + costValue + " руб.");
                 actionBar.setTitle(initialDateString + " - " + endingDateString);
             } else {
                 dataArray = cdb.getCostValuesArrayOnDateAndCostName(chosenMonth, chosenYear, costName);
 
                 dateTextView.setText(Constants.MONTH_NAMES[chosenMonth] + " " + chosenYear);
-                costNameAndCostValueTextView.setText(costName + ": " + costValue + " руб.");
                 actionBar.setTitle(Constants.MONTH_NAMES[chosenMonth] + " " + chosenYear + ": " + costName);
             }
+
+            // Определяем суммарную величину расходов за заданный период по заданной категории
+            for (String s : dataArray) {
+                double costValue = Double.parseDouble(s.substring(s.lastIndexOf(Constants.SEPARATOR_VALUE) + 1,
+                                                                  s.lastIndexOf(Constants.SEPARATOR_MILLISECONDS)));
+                costValueTotal = costValueTotal + costValue;
+            }
+            costValueTotalString = String.valueOf(costValueTotal);
+            costNameAndCostValueTextView.setText(costName + ": " + costValueTotalString + " руб.");
+            bundleDataArray[Constants.COST_VALUE_INDEX] = costValueTotalString;
 
             ListAdapter costsListAdapter = new CostTypeDetailedAdapter(this, dataArray);
             ListView detailedCostsListView = (ListView) findViewById(R.id.listViewInCostTypeDetailed);

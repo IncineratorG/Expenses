@@ -314,18 +314,6 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
                         badData = true;
                     }
                 }
-//                Calendar calendar = Calendar.getInstance();
-//                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
-//                try {
-//                    Date d = simpleDateFormat.parse(enteredDate);
-//                    enteredDateInMilliseconds = d.getTime();
-//                } catch (ParseException e) {
-//                    Toast invalidDataErrorToast = Toast.makeText(this,
-//                            "Неправильная дата",
-//                            Toast.LENGTH_LONG);
-//                    invalidDataErrorToast.show();
-//                    return;
-//                }
 
                 if (!badData) {
                     db.removeCostValue(Long.valueOf(dateInMilliseconds));
@@ -337,32 +325,17 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
                     recordEditedSuccessfulToast.show();
                 }
 
-//                if (!(enteredDateInMilliseconds > calendar.getTimeInMillis())) {
-//                    db.removeCostValue(Long.valueOf(dateInMilliseconds));
-//                    db.addCostInMilliseconds(id_n, enteredCostSum, enteredDateInMilliseconds, enteredNote);
-//
-//                    Toast recordEditedSuccessfulToast = Toast.makeText(this,
-//                            "Запись изменена",
-//                            Toast.LENGTH_LONG);
-//                    recordEditedSuccessfulToast.show();
-//                } else {
-//                    Toast wrongDateToast = Toast.makeText(this,
-//                            "Введённая дата ещё не наступила",
-//                            Toast.LENGTH_LONG);
-//                    wrongDateToast.show();
-//                }
                 break;
 
             case R.id.editCosts_cancelButton:
                 Intent intent = null;
-//                if (bundleDataArray != null) {
-//                    intent = new Intent(this, StatisticCostTypeDetailedActivity.class);
-//                    intent.putExtra(Constants.DATA_ARRAY_LABEL, bundleDataArray);
-//                    intent.putExtra("dataForPreviousActivity", dataForPreviousActivity);
-//                } else
-//                    intent = new Intent(this, MainActivity.class);
+                if (bundleDataArray != null) {
+                    intent = new Intent(this, StatisticCostTypeDetailedActivity.class);
+                    intent.putExtra(Constants.DATA_ARRAY_LABEL, bundleDataArray);
+                    intent.putExtra("dataForPreviousActivity", dataForPreviousActivity);
+                } else
+                    intent = new Intent(this, MainActivity.class);
 
-                intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
@@ -383,14 +356,13 @@ public class EditCostsActivity extends AppCompatActivity implements MyDatePicker
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = null;
-//                if (bundleDataArray != null) {
-//                    intent = new Intent(this, StatisticCostTypeDetailedActivity.class);
-//                    intent.putExtra(Constants.DATA_ARRAY_LABEL, bundleDataArray);
-//                    intent.putExtra("dataForPreviousActivity", dataForPreviousActivity);
-//                } else
-//                    intent = new Intent(this, MainActivity.class);
+                if (bundleDataArray != null) {
+                    intent = new Intent(this, StatisticCostTypeDetailedActivity.class);
+                    intent.putExtra(Constants.DATA_ARRAY_LABEL, bundleDataArray);
+                    intent.putExtra("dataForPreviousActivity", dataForPreviousActivity);
+                } else
+                    intent = new Intent(this, MainActivity.class);
 
-                intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;

@@ -26,29 +26,36 @@ public class StatisticDetailedActivity extends AppCompatActivity {
 
         // Получаем строку с информацией о выбранной дате и суммарных затратах за выбранный месяц
         String dataString = "none";
-        Bundle dataFromStatisticMainScreenActivity = getIntent().getExtras();
-        if (dataFromStatisticMainScreenActivity != null)
-            dataString = dataFromStatisticMainScreenActivity.getString("data");
+        Bundle dataFromPreviousActivity = getIntent().getExtras();
+        if (dataFromPreviousActivity != null)
+            dataString = dataFromPreviousActivity.getString("data");
 
         if (dataString != null && !dataString.equals("none")) {
             // Вытаскиваем нужную нам информацию (месяц, год, суммарные затараты за этот месяц) из переданной строки
             String[] dataStringContent = dataString.split(" ");
             final int chosenMonthNumber = Integer.parseInt(dataStringContent[0].substring(0, dataStringContent[0].indexOf(Constants.SEPARATOR_VALUE)));
             final int chosenYear = Integer.parseInt(dataStringContent[1].substring(0, dataStringContent[1].indexOf(Constants.SEPARATOR_VALUE)));
-            String overallCostValueForChosenPeriodString = dataStringContent[1].substring(dataStringContent[1].indexOf(Constants.SEPARATOR_VALUE) + 1);
+//            String overallCostValueForChosenPeriodString = dataStringContent[1].substring(dataStringContent[1].indexOf(Constants.SEPARATOR_VALUE) + 1);
             String actionBarTitleString = dataStringContent[0].substring(dataStringContent[0].indexOf(Constants.SEPARATOR_VALUE) + 1) +  " " + chosenYear;
+            String overallCostValueForChosenPeriodString;
 
             actionBar.setTitle(actionBarTitleString);
+
+            // Получаем массив статей расходов и суммарные значения по ним за выбранный месяц
+            CostsDB cdb = CostsDB.getInstance(this);
+            String[] costsArray = cdb.getCostValuesArrayOnDate_V2(chosenMonthNumber, chosenYear);
+            double overallCostValueForChosenPeriod = 0.0;
+            for (String s : costsArray) {
+                double d = Double.parseDouble(s.substring(s.lastIndexOf(Constants.SEPARATOR_VALUE) + 1));
+                overallCostValueForChosenPeriod = overallCostValueForChosenPeriod + d;
+            }
+            overallCostValueForChosenPeriodString = String.valueOf(overallCostValueForChosenPeriod);
 
             TextView chosenDateTextViewStatisticDetailedActivity = (TextView) findViewById(R.id.chosenDateStatisticDetailedActivity);
             chosenDateTextViewStatisticDetailedActivity.setText(actionBarTitleString);
 
             TextView overallCostsTextViewStatisticDetailedActivity = (TextView) findViewById(R.id.overallCostsStatisticDetailedActivity);
             overallCostsTextViewStatisticDetailedActivity.setText(overallCostValueForChosenPeriodString + " руб.");
-
-            // Получаем массив статей расходов и суммарные значения по ним за выбранный месяц
-            CostsDB cdb = CostsDB.getInstance(this);
-            String[] costsArray = cdb.getCostValuesArrayOnDate_V2(chosenMonthNumber, chosenYear);
 
             // Инициализируем ListView полученным массивом
             ListAdapter costsListViewStatisticDetailedActivityAdapter = new CostsListViewAdapter(this, costsArray);

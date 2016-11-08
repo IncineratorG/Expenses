@@ -4,13 +4,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -23,7 +21,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -49,20 +46,15 @@ public class MainActivity extends AppCompatActivity {
     private double chosenCostTypeValue;
     private String currentOverallCosts;
     private String note;
-//    String[] costsArray;
     private String[] nonActiveCostNames;
-//    Map<String, Double> costsMap;
-//    NumberFormat format;
-//    private static String nearestEventShown;
 
     TextView currentDateTextViewMainActivity;
+    TextView currentDayNumberTextView;
     TextView currentOverallCostsTextViewMainActivity;
     TextView currentDialogCostSumTextView;
     ListAdapter costsListViewMainActivityAdapter;
     ListView costsListViewMainActivity;
     Dialog currentDialog;
-
-//    LinearLayout inputDataDialogNoteLayout;
     TextView inputDataPopupNoteTextView;
 
 
@@ -96,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
         // Инициализируем поле, содержащее выбранные день, месяц и год
         if (currentDateTextViewMainActivity == null)
             currentDateTextViewMainActivity = (TextView) findViewById(R.id.currentDateMainActivity);
+        if (currentDayNumberTextView == null)
+            currentDayNumberTextView = (TextView) findViewById(R.id.dayNumberMainActivity);
 
         // Инициализируем поле, отображающее текущие расходы
         if (currentOverallCostsTextViewMainActivity == null)
@@ -576,7 +570,8 @@ public class MainActivity extends AppCompatActivity {
         currentMonth = todayMonth = c.get(Calendar.MONTH);
         currentDay = todayDay = c.get(Calendar.DAY_OF_MONTH);
 
-        currentDateTextViewMainActivity.setText(currentDay + " " + Constants.DECLENSION_MONTH_NAMES[currentMonth] + " " + currentYear);
+        currentDateTextViewMainActivity.setText(Constants.MONTH_NAMES[currentMonth] + " " + currentYear);
+        currentDayNumberTextView.setText("День " + Constants.DAY_NAMES_ORDINAL[currentDay].toLowerCase());
     }
 
 
