@@ -25,7 +25,7 @@ public class Constants {
     public static final String SEPARATOR_MILLISECONDS = "%";
     public static final String SEPARATOR_NOTE = "~";
     public static final int HEADER_SYSTEM_COLOR = Color.parseColor("#FF9800");
-    public static final String tag = "globalTag";
+    public static final String tag = "tag";
     public static final String DATA_ARRAY_LABEL = "dataArray";
     public static final int INITIAL_DATE_IN_MILLISECONDS_INDEX = 0;
     public static final int ENDING_DATE_IN_MILLISECONDS_INDEX = 1;
@@ -35,6 +35,9 @@ public class Constants {
     public static final int COST_VALUE_INDEX = 5;
     public static final int CHOSEN_MONTH_INDEX = 6;
     public static final int CHOSEN_YEAR_INDEX = 7;
+    public static final int COST_ID_INDEX = 8;
+    public static final int COST_NOTE_INDEX = 9;
+    public static final int DATA_ARRAY_SIZE = 10;
 
     public static String formatDigit(double d) {
         NumberFormat format = NumberFormat.getInstance(Locale.UK);

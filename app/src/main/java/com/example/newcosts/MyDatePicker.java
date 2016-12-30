@@ -21,7 +21,7 @@ public class MyDatePicker extends Dialog implements
         android.view.View.OnClickListener, ViewSwitcher.ViewFactory {
 
     private int pickedDay, pickedMonth, pickedYear;
-    private int MaxTextViewWidth;
+    private long milliseconds;
     private long dateInMilliseconds = 0;
     private Calendar calendar;
 

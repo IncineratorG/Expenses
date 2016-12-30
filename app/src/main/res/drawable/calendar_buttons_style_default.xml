@@ -19,8 +19,6 @@
         android:width="0dp"
         android:color="#000000"
         />
-    <item
-        android:textSize="24sp"></item>
 </shape>
 
     <!--"#D6D6D6"-->

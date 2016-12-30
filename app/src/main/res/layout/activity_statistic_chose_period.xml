@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Конечная дата:"
-                android:id="@+id/textView2" />
+                android:id="@+id/activity_input_data_sign_textview" />
 
             <EditText
                 android:layout_width="match_parent"

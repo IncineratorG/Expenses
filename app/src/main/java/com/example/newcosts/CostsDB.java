@@ -7,11 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 
 public class CostsDB extends SQLiteOpenHelper {
@@ -95,14 +93,21 @@ public class CostsDB extends SQLiteOpenHelper {
 
     // Возвращает список из ID и названий всех активных статей расходов
     public String[] getActiveCostNames_V2() {
-        String query = "SELECT COUNT(" + ID_N_FK + ") AS quantity," +
+        int rowLimit = 30;
+
+        String query = "SELECT COUNT(" + ID_N_FK + ") AS quantity, " +
                 COST_NAME + ", " +
                 ID_N +
                 " FROM " + TABLE_COST_NAMES +
-                " LEFT OUTER JOIN " + TABLE_COST_VALUES +
+                " LEFT OUTER JOIN " +
+                "(" +
+                    "SELECT " + ID_N_FK +
+                    " FROM " + TABLE_COST_VALUES +
+                    " LIMIT " + rowLimit +
+                ") " +
                 " ON " + ID_N + " = " + ID_N_FK +
                 " WHERE " + IS_ACTIVE + " = " + 1 +
-                " GROUP BY " + ID_N +
+                " GROUP BY " + ID_N + ", " + COST_NAME +
                 " ORDER BY quantity DESC";
 
         SQLiteDatabase db = getWritableDatabase();

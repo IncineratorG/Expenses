@@ -7,14 +7,16 @@
     android:paddingTop="0sp"
     android:paddingBottom="0sp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_main" tools:context=".MainActivity">
+    tools:showIn="@layout/activity_main" tools:context=".MainActivity"
+    android:id="@+id/activity_main_root_layout">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <LinearLayout
             android:orientation="vertical"
@@ -45,7 +47,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/dayNumberMainActivity"
                 android:textColor="#FFFFFF"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:gravity="center" />
 
             <TextView
                 android:layout_width="match_parent"

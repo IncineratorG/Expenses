@@ -22,9 +22,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddNewEvent"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".StatisticMainScreenActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -41,6 +38,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".EditCostsActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".ActivityInputData"
             android:screenOrientation="portrait">
         </activity>
 
