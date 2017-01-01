@@ -386,6 +386,12 @@ public class MainActivity extends AppCompatActivity {
         int numberOfLastEntriesToShow = 30;
 
         String[] lastEnteredValuesRaw = cdb.getLastEntries_V2(numberOfLastEntriesToShow);
+        for (String s : lastEnteredValuesRaw) {
+            if (s == null)
+                s = "null";
+            Log.i(Constants.tag, s);
+        }
+
         final String[] lastEnteredValuesFinal = new String[lastEnteredValuesRaw.length / 6];
         StringBuilder sb = new StringBuilder();
 
