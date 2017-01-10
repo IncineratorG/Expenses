@@ -2,11 +2,10 @@ package com.example.newcosts;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -14,13 +13,14 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Calendar;
 
 
-public class ActivityInputData extends AppCompatActivity implements MyDatePicker.MyDatePickerCallback {
+public class ActivityInputData extends AppCompatActivity implements MyDatePicker.MyDatePickerCallback, ExpensesListDialogFragment.ExpenseListDialogCallback {
 
     private TextView signTextView;
     private EditText inputValueEditText, inputNoteEditText;
@@ -31,6 +31,16 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
     private static final long CURRENT_DAY = -1;
     private static final long PREVIOUS_DAY = -2;
     private boolean hasStoredValue = false;
+    private int MODE = -1;
+    private int PREVIOUS_ACTIVITY_INDEX = -1;
+
+    private ExpensesDataUnit dataUnit;
+    private TextView toolbarTextView;
+
+    private ExpensesDataUnit selectedDataUnit;
+    private Button choseDateButton;
+    private String savedValue = "";
+    private long editItemMilliseconds = -1;
 
 
     @Override
@@ -43,15 +53,19 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
         if (expenseDataBundle == null)
             return;
 
-        String[] expenseDataArray = expenseDataBundle.getStringArray(Constants.DATA_ARRAY_LABEL);
-        if (expenseDataArray == null || expenseDataArray.length != Constants.DATA_ARRAY_SIZE)
+        dataUnit = expenseDataBundle.getParcelable(Constants.EXPENSE_DATA_UNIT_LABEL);
+        if (dataUnit == null)
             return;
+        selectedDataUnit = dataUnit;
+        editItemMilliseconds = dataUnit.getMilliseconds();
 
-        String costNameString = expenseDataArray[Constants.COST_NAME_INDEX];
-        String costIdString = expenseDataArray[Constants.COST_ID_INDEX];
-        costID = Integer.parseInt(costIdString);
-        String costValueString = expenseDataArray[Constants.COST_VALUE_INDEX];
-        String costNoteString = expenseDataArray[Constants.COST_NOTE_INDEX];
+        MODE = expenseDataBundle.getInt(Constants.ACTIVITY_INPUT_DATA_MODE);
+        PREVIOUS_ACTIVITY_INDEX = expenseDataBundle.getInt(Constants.PREVIOUS_ACTIVITY_INDEX);
+
+        String costNameString = dataUnit.getExpenseName();
+        costID = dataUnit.getExpenseId_N();
+        String costValueString = dataUnit.getExpenseValueString();
+        String costNoteString = dataUnit.getExpenseNoteString();
 
         // Инициализируем элементы интерфейса
         signTextView = (TextView) findViewById(R.id.activity_input_data_sign_textview);
@@ -63,17 +77,89 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
         inputValueEditText = (EditText) findViewById(R.id.activity_input_data_input_value_edittext);
         inputValueEditText.setFilters(new DecimalDigitsInputFilter[] {new DecimalDigitsInputFilter()});
         inputNoteEditText = (EditText) findViewById(R.id.activity_input_data_input_note_edittext);
-        if (costNoteString != null && costNoteString.length() > 0) {
-            inputNoteEditText.setText(costNoteString);
-            inputNoteEditText.setSelection(inputNoteEditText.getText().length());
-        }
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(costNameString + ": " + costValueString + " руб.");
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Constants.HEADER_SYSTEM_COLOR));
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_input_data_toolbar);
-//        setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
+        setSupportActionBar(toolbar);
+
+        // При нажатии на стрелку - возвращаемся к предыдущему экрану, ничего не сохраняя
+        ImageView toolbarBackArrow = (ImageView) findViewById(R.id.activity_input_data_arrow_back);
+        toolbarBackArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                returnToPreviousActivity();
+            }
+        });
+
+        ImageView toolbarExpandExpensesList = (ImageView) findViewById(R.id.activity_input_data_expand_expenses_list);
+        toolbarTextView = (TextView) findViewById(R.id.activity_input_data_toolbar_text_view);
+
+        // Toolbar имеет разное наполнение в зависимости от того, редактируется ли элемент
+        // или вводится новое значение расходов
+        if (MODE == Constants.INPUT_MODE) {
+            // При вводе нового значения заполняем toolbar название выбранной
+            // категории расходов и суммарным значением расходов по этой
+            // категории за текущий месяц
+            toolbarTextView.setText(costNameString + ": " + costValueString + " руб.");
+            toolbarExpandExpensesList.setVisibility(View.GONE);
+        }
+        if (MODE == Constants.EDIT_MODE) {
+            // При редактировании элемента названием выбранного элемента и
+            // возможностью открыть список всех существующих категорий расходов
+            toolbarTextView.setText(costNameString);
+            toolbarTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CostsDB cdb = CostsDB.getInstance(ActivityInputData.this);
+                    ExpensesDataUnit[] dataForExpensesListDialog = cdb.getActiveCostNames_V3();
+
+                    ExpensesListDialogFragment expensesListDialogFragment = ExpensesListDialogFragment.newInstance(dataForExpensesListDialog);
+                    expensesListDialogFragment.show(getSupportFragmentManager(), Constants.EXPENSES_LIST_DIALOG_TAG);
+                }
+            });
+
+            // Устанавливаем значение выбранного элемента
+            inputValueEditText.setText(costValueString);
+            inputValueEditText.setSelection(inputValueEditText.getText().length());
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(dataUnit.getMilliseconds());
+
+            // Скрываем кнопки с выбором сегодняшнего и вчерашнего дней для внесения значения расходов.
+            // Кнопку выбора даты растягиваем на всю ширину экрана и устанавливаем в ней дату
+            // выбранного элемента расходов
+            Button dateTodayButton = (Button) findViewById(R.id.activity_input_data_date_today_button);
+            Button dateYesterdayButton = (Button) findViewById(R.id.activity_input_data_date_yesterday_button);
+            choseDateButton = (Button) findViewById(R.id.activity_input_data_choose_date_button);
+            choseDateButton.setText(new StringBuilder()
+                                        .append(selectedDataUnit.getDay())
+                                        .append(" ")
+                                        .append(Constants.DECLENSION_MONTH_NAMES[selectedDataUnit.getMonth() - 1])
+                                        .append(" ")
+                                        .append(selectedDataUnit.getYear()));
+            choseDateButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+            dateTodayButton.setVisibility(View.GONE);
+            dateYesterdayButton.setVisibility(View.GONE);
+
+            // При нажатии на "стрелку вниз" появляется диалоговое окно, в котором можно изменить
+            // название выбранного элемента расходов
+            toolbarExpandExpensesList.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CostsDB cdb = CostsDB.getInstance(ActivityInputData.this);
+                    ExpensesDataUnit[] dataForExpensesListDialog = cdb.getActiveCostNames_V3();
+
+                    ExpensesListDialogFragment expensesListDialogFragment = ExpensesListDialogFragment.newInstance(dataForExpensesListDialog);
+                    expensesListDialogFragment.show(getSupportFragmentManager(), Constants.EXPENSES_LIST_DIALOG_TAG);
+                }
+            });
+
+            // Если у выбранного элемента есть заметка - устанавливаем её в соответсвующее поле
+            if (dataUnit.HAS_NOTE) {
+                inputNoteEditText.setText(costNoteString);
+                inputNoteEditText.setSelection(inputNoteEditText.getText().length());
+            }
+        }
 
         previousValueString = "";
         previousTokenWasPlus = false;
@@ -92,8 +178,15 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
                 break;
             case R.id.activity_input_data_choose_date_button:
                 calculateInputValues();
-                MyDatePicker datePicker = new MyDatePicker(ActivityInputData.this);
-                datePicker.show();
+                // При редактировании элемента устанавливаем дату, соответсвующую данному элементу
+                if (MODE == Constants.INPUT_MODE) {
+                    MyDatePicker datePicker = new MyDatePicker(ActivityInputData.this);
+                    datePicker.show();
+                }
+                if (MODE == Constants.EDIT_MODE) {
+                    MyDatePicker datePicker = new MyDatePicker(ActivityInputData.this, selectedDataUnit.getMilliseconds());
+                    datePicker.show();
+                }
                 break;
         }
     }
@@ -233,18 +326,30 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
             return false;
         }
 
-        if (milliseconds == CURRENT_DAY) {
-            cdb.addCosts(inputValue, costID, inputNoteString);
-            returnToPreviousActivity(inputValueString);
-        } else if (milliseconds == PREVIOUS_DAY) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DAY_OF_MONTH, -1);
-            long millis = calendar.getTimeInMillis();
-            cdb.addCostInMilliseconds(costID, inputValueString, millis, inputNoteString);
-            returnToPreviousActivity(inputValueString);
-        } else {
-            cdb.addCostInMilliseconds(costID, inputValueString, milliseconds, inputNoteString);
-            returnToPreviousActivity(inputValueString);
+        savedValue = inputValueString;
+
+        // Если вводим новый элемент - просто сохраняем его в базу.
+        // Если редактируем существующий - сначала удаляем старый элемент, затем вносим отредактированный
+        if (MODE == Constants.INPUT_MODE) {
+            if (milliseconds == CURRENT_DAY) {
+                cdb.addCosts(inputValue, costID, inputNoteString);
+                returnToPreviousActivity();
+            } else if (milliseconds == PREVIOUS_DAY) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DAY_OF_MONTH, -1);
+                long millis = calendar.getTimeInMillis();
+                cdb.addCostInMilliseconds(costID, inputValueString, millis, inputNoteString);
+                returnToPreviousActivity();
+            } else {
+                cdb.addCostInMilliseconds(costID, inputValueString, milliseconds, inputNoteString);
+                returnToPreviousActivity();
+            }
+        }
+        if (MODE == Constants.EDIT_MODE) {
+            cdb = CostsDB.getInstance(this);
+            cdb.removeCostValue(editItemMilliseconds);
+            cdb.addCostInMilliseconds(selectedDataUnit.getExpenseId_N(), inputValueString, selectedDataUnit.getMilliseconds(), inputNoteString);
+            returnToPreviousActivity();
         }
 
         return true;
@@ -263,13 +368,38 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
 
 
     // После сохранения введённого значения возвращаемся к предыдущему экрану
-    private void returnToPreviousActivity(String savedValue) {
-        // Возвращаемся на главный экран приложения
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("result", true);
-        intent.putExtra("value", savedValue);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+    private void returnToPreviousActivity() {
+        if (PREVIOUS_ACTIVITY_INDEX == -1) {
+            showAlertDialogWithMessage("Всё очень плохо!");
+            return;
+        }
+
+        // Возвращаемся к предыдущему экрану
+        switch (PREVIOUS_ACTIVITY_INDEX) {
+            case Constants.FRAGMENT_CURRENT_MONTH_SCREEN:
+                Intent currentMonthScreenIntent = new Intent(ActivityInputData.this, MainActivityWithFragments.class);
+                currentMonthScreenIntent.putExtra(Constants.PREVIOUS_ACTIVITY_INDEX, Constants.EDIT_DATA_ACTIVITY);
+                currentMonthScreenIntent.putExtra(Constants.SAVED_VALUE, savedValue);
+                currentMonthScreenIntent.putExtra(Constants.TARGET_TAB, Constants.FRAGMENT_CURRENT_MONTH_SCREEN);
+                currentMonthScreenIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(currentMonthScreenIntent);
+                break;
+            case Constants.FRAGMENT_LAST_ENTERED_VALUES_SCREEN:
+                Intent lastEnteredValuesScreenIntent = new Intent(ActivityInputData.this, MainActivityWithFragments.class);
+                lastEnteredValuesScreenIntent.putExtra(Constants.PREVIOUS_ACTIVITY_INDEX, Constants.EDIT_DATA_ACTIVITY);
+                lastEnteredValuesScreenIntent.putExtra(Constants.SAVED_VALUE, savedValue);
+                lastEnteredValuesScreenIntent.putExtra(Constants.TARGET_TAB, Constants.FRAGMENT_LAST_ENTERED_VALUES_SCREEN);
+                lastEnteredValuesScreenIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(lastEnteredValuesScreenIntent);
+                break;
+            case Constants.STATISTIC_DETAILED_ACTIVITY:
+                Intent statisticDetailedActivityIntent = new Intent(ActivityInputData.this, StatisticCostTypeDetailedActivity.class);
+                statisticDetailedActivityIntent.putExtra(Constants.PREVIOUS_ACTIVITY_INDEX, Constants.EDIT_DATA_ACTIVITY);
+                statisticDetailedActivityIntent.putExtra(Constants.SAVED_VALUE, savedValue);
+                statisticDetailedActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(statisticDetailedActivityIntent);
+                break;
+        }
     }
 
 
@@ -283,6 +413,14 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
         return fadeIn;
     }
 
+    // При редактировании существующего элемента получаем название выбранной
+    // статьи расходов из списка статей расходов при нажатии на "стрелку вниз"
+    @Override
+    public void getSelectedExpense(ExpensesDataUnit dataUnit) {
+        toolbarTextView.setText(dataUnit.getExpenseName());
+        selectedDataUnit.setExpenseId_N(dataUnit.getExpenseId_N());
+        selectedDataUnit.setExpenseName(dataUnit.getExpenseName());
+    }
 
     @Override
     public void getPickedDate(String pickedDate) {
@@ -304,20 +442,23 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
             String message = "Выбранная дата ещё не наступила";
             showAlertDialogWithMessage(message);
         } else {
-            saveData(pickedTimeInMilliseconds);
+            if (MODE == Constants.INPUT_MODE) {
+                saveData(pickedTimeInMilliseconds);
+            }
+            if (MODE == Constants.EDIT_MODE) {
+                selectedDataUnit.setDay(pickedDay);
+                selectedDataUnit.setMonth(pickedMonth);
+                selectedDataUnit.setYear(pickedYear);
+                selectedDataUnit.setMilliseconds(pickedTimeInMilliseconds);
+
+                choseDateButton.setText(new StringBuilder()
+                        .append(selectedDataUnit.getDay())
+                        .append(" ")
+                        .append(Constants.DECLENSION_MONTH_NAMES[selectedDataUnit.getMonth() - 1])
+                        .append(" ")
+                        .append(selectedDataUnit.getYear()));
+            }
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 }

@@ -92,37 +92,28 @@ public class CostsDB extends SQLiteOpenHelper {
 
 
     // Возвращает список из ID и названий всех активных статей расходов
-    public String[] getActiveCostNames_V2() {
-        int rowLimit = 30;
-
-        String query = "SELECT COUNT(" + ID_N_FK + ") AS quantity, " +
-                COST_NAME + ", " +
-                ID_N +
-                " FROM " + TABLE_COST_NAMES +
-                " LEFT OUTER JOIN " +
-                "(" +
-                    "SELECT " + ID_N_FK +
-                    " FROM " + TABLE_COST_VALUES +
-                    " LIMIT " + rowLimit +
-                ") " +
-                " ON " + ID_N + " = " + ID_N_FK +
-                " WHERE " + IS_ACTIVE + " = " + 1 +
-                " GROUP BY " + ID_N + ", " + COST_NAME +
-                " ORDER BY quantity DESC";
+    public ExpensesDataUnit[] getActiveCostNames_V3() {
+        String query = "SELECT " +
+                ID_N + ", " +
+                COST_NAME + " " +
+                "FROM " + TABLE_COST_NAMES +
+                " WHERE " + IS_ACTIVE + " = " + 1;
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        String[] array = null;
+        List<ExpensesDataUnit> dataUnitsList = new ArrayList<>();
 
         try {
             c = db.rawQuery(query, null);
             c.moveToFirst();
-            array = new String[c.getCount() * 2];
-            int arrayIndexCounter = 0;
 
             while (!c.isAfterLast()) {
-                array[arrayIndexCounter++] = c.getString(c.getColumnIndex(COST_NAME));
-                array[arrayIndexCounter++] = c.getString(c.getColumnIndex(ID_N));
+                ExpensesDataUnit dataUnit = new ExpensesDataUnit();
+
+                dataUnit.setExpenseId_N(c.getInt(c.getColumnIndex(ID_N)));
+                dataUnit.setExpenseName(c.getString(c.getColumnIndex(COST_NAME)));
+
+                dataUnitsList.add(dataUnit);
                 c.moveToNext();
             }
         } catch (Exception e) {
@@ -134,15 +125,90 @@ public class CostsDB extends SQLiteOpenHelper {
                 db.close();
         }
 
-        if (array == null)
-            array = new String[0];
+        ExpensesDataUnit[] dataUnitsArray = new ExpensesDataUnit[dataUnitsList.size()];
+        dataUnitsList.toArray(dataUnitsArray);
 
-        return array;
+        return dataUnitsArray;
     }
 
-    // Добавляет новую статью расходов. В случае успеха возвращает "true".
-    // Если запись присутствует в базе - возвращает "false".
-    public boolean addCostName(String costName) {
+    // Возвращает ID соответсвующей статьи расходов
+    public int getExpenseIdByName(String expenseName) {
+        String query = "SELECT " + ID_N +
+                " FROM " + TABLE_COST_NAMES +
+                " WHERE " + COST_NAME + " LIKE '" + expenseName + "'";
+
+        SQLiteDatabase db = getWritableDatabase();
+        int id_n = -1;
+        Cursor c = null;
+
+        try {
+            c = db.rawQuery(query, null);
+            c.moveToFirst();
+
+            id_n = c.getInt(c.getColumnIndex(ID_N));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return id_n;
+    }
+//    public String[] getActiveCostNames_V2() {
+//        int rowLimit = 30;
+//
+//        String query = "SELECT COUNT(" + ID_N_FK + ") AS quantity, " +
+//                COST_NAME + ", " +
+//                ID_N +
+//                " FROM " + TABLE_COST_NAMES +
+//                " LEFT OUTER JOIN " +
+//                "(" +
+//                    "SELECT " + ID_N_FK +
+//                    " FROM " + TABLE_COST_VALUES +
+//                    " LIMIT " + rowLimit +
+//                ") " +
+//                " ON " + ID_N + " = " + ID_N_FK +
+//                " WHERE " + IS_ACTIVE + " = " + 1 +
+//                " GROUP BY " + ID_N + ", " + COST_NAME +
+//                " ORDER BY quantity DESC";
+//
+//        SQLiteDatabase db = getWritableDatabase();
+//        Cursor c = null;
+//        String[] array = null;
+//
+//        try {
+//            c = db.rawQuery(query, null);
+//            c.moveToFirst();
+//            array = new String[c.getCount() * 2];
+//            int arrayIndexCounter = 0;
+//
+//            while (!c.isAfterLast()) {
+//                array[arrayIndexCounter++] = c.getString(c.getColumnIndex(COST_NAME));
+//                array[arrayIndexCounter++] = c.getString(c.getColumnIndex(ID_N));
+//                c.moveToNext();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (c != null)
+//                c.close();
+//            if (db != null)
+//                db.close();
+//        }
+//
+//        if (array == null)
+//            array = new String[0];
+//
+//        return array;
+//    }
+
+
+    // Добавляет новую статью расходов. В случае успеха возвращает "1".
+    // Если запись присутствует в базе - возвращает "0".
+    public long addCostName(String costName) {
         String checkCostNameQuery = "SELECT " + COST_NAME + ", " + IS_ACTIVE + ", " + ID_N +
                 " FROM " + TABLE_COST_NAMES +
                 " WHERE " + COST_NAME +
@@ -150,7 +216,7 @@ public class CostsDB extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        boolean result = true;
+        long result = 1;
 
         try {
             c = db.rawQuery(checkCostNameQuery, null);
@@ -162,7 +228,7 @@ public class CostsDB extends SQLiteOpenHelper {
                 int id_n = c.getInt(c.getColumnIndex(ID_N));
 
                 if (is_active == 1)
-                    result = false;
+                    result = 0;
                 else {
                     String makeCostNameActiveQuery = "UPDATE " + TABLE_COST_NAMES +
                             " SET " + IS_ACTIVE + " = " + 1 +
@@ -405,11 +471,65 @@ public class CostsDB extends SQLiteOpenHelper {
 
         return array;
     }
+    List<ExpensesDataUnit> getLastEntries_V3(int numberOfEntries) {
+        String getLastEntriesQuery = "SELECT " +
+                ID_N + ", " +
+                DAY + ", " +
+                MONTH + ", " +
+                YEAR + ", " +
+                COST_NAME + ", " +
+                COST_VALUE + ", " +
+                DATE_IN_MILLISECONDS + ", " +
+                TEXT +
+                " FROM " + TABLE_COST_VALUES +
+                " INNER JOIN " + TABLE_COST_NAMES +
+                " ON " + TABLE_COST_VALUES + "." + ID_N_FK + " = " + TABLE_COST_NAMES + "." + ID_N +
+                " ORDER BY " + DATE_IN_MILLISECONDS + " DESC " +
+                " LIMIT " + numberOfEntries;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<ExpensesDataUnit> listOfEntries = null;
+
+        try {
+            c = db.rawQuery(getLastEntriesQuery, null);
+            c.moveToFirst();
+            listOfEntries = new ArrayList<>();
+
+            while (!c.isAfterLast()) {
+                ExpensesDataUnit singleUnit = new ExpensesDataUnit();
+
+                singleUnit.setExpenseId_N(c.getInt(c.getColumnIndex(ID_N)));
+                singleUnit.setDay(c.getInt(c.getColumnIndex(DAY)));
+                singleUnit.setMonth(c.getInt(c.getColumnIndex(MONTH)) + 1);
+                singleUnit.setYear(c.getInt(c.getColumnIndex(YEAR)));
+                singleUnit.setExpenseName(c.getString(c.getColumnIndex(COST_NAME)));
+                double costValueDouble = c.getDouble(c.getColumnIndex(COST_VALUE));
+                singleUnit.setExpenseValueDouble(costValueDouble);
+                singleUnit.setExpenseValueString(Constants.formatDigit(costValueDouble));
+                singleUnit.setMilliseconds(c.getLong(c.getColumnIndex(DATE_IN_MILLISECONDS)));
+                singleUnit.setExpenseNoteString(c.getString(c.getColumnIndex(TEXT)));
+
+                listOfEntries.add(singleUnit);
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return listOfEntries;
+    }
 
 
     // Удаляет запись из таблицы TABLE_COST_VALUES, дата в миллисекундах
     // для которой равна "dateInMilliseconds"
     public boolean removeCostValue(long dateInMillisecond) {
+
         String deleteQuery = "DELETE FROM " + TABLE_COST_VALUES +
                 " WHERE " + DATE_IN_MILLISECONDS + " = " + dateInMillisecond;
 

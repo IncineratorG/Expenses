@@ -1,10 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:id="@+id/activity_input_data_root_layout">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/activity_input_data_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/orange"
+        android:elevation="6dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_arrow_back_white_36dp"
+            android:id="@+id/activity_input_data_arrow_back"
+            android:background="@drawable/activity_input_data_buttons_style"
+            android:clickable="true" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_expand_more_white_36dp"
+            android:id="@+id/activity_input_data_expand_expenses_list"
+            android:background="@drawable/activity_input_data_buttons_style"
+            android:layout_gravity="end"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
+            android:clickable="true" />
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textSize="20sp"
+            android:id="@+id/activity_input_data_toolbar_text_view"
+            android:paddingLeft="10dp"
+            android:paddingStart="10dp"
+            android:paddingRight="10dp"
+            android:paddingEnd="10dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:textStyle="normal|bold"
+            android:layout_gravity="end"
+            android:background="@drawable/activity_input_data_buttons_style" />
+
+
+
+    </android.support.v7.widget.Toolbar>
+
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -404,7 +459,7 @@
                 android:textColor="@android:color/white"
                 android:onClick="onDateButtonsClick"
                 android:background="@drawable/activity_input_data_buttons_style"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
 
             <Button
                 android:text="Сегодня"
@@ -415,7 +470,7 @@
                 android:background="@drawable/activity_input_data_buttons_style"
                 android:textColor="@android:color/white"
                 android:onClick="onDateButtonsClick"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
 
             <Button
                 android:text="Дата"
@@ -426,7 +481,7 @@
                 android:background="@drawable/activity_input_data_buttons_style"
                 android:textColor="@android:color/white"
                 android:onClick="onDateButtonsClick"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
         </LinearLayout>
 
     </LinearLayout>

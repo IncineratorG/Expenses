@@ -18,4 +18,11 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
+    <!-- For Activity with tabs -->
+    <style name="CustomAppStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/orange</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
 </resources>

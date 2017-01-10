@@ -9,22 +9,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:label="Мои расходы"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateAlwaysHidden">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".StatisticMainScreenActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".StatisticDetailedActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -37,17 +21,19 @@
             android:name=".StatisticChosenPeriodActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".EditCostsActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity
             android:name=".ActivityInputData"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/CustomAppStyle"/>
+        <activity
+            android:name=".MainActivityWithFragments"
+            android:screenOrientation="portrait"
+            android:theme="@style/CustomAppStyle">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-
-
     </application>
 
 </manifest>
-
-

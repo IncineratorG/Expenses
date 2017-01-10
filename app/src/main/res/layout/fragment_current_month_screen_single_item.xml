@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="2"
+    android:background="@drawable/bottom_border"
+    android:paddingTop="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingEnd="10dp"
+    android:paddingStart="10dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@android:drawable/ic_menu_edit"
+                android:id="@+id/current_month_single_item_edit_category_imageview"
+                android:layout_weight="1" />
+
+            <TextView
+                android:text="Электроника"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/current_month_single_item_category_textview"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textSize="24sp"
+                android:layout_weight="1"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:textStyle="normal|bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:weightSum="2">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end">
+
+                <TextView
+                    android:text="В текущем месяце"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/current_month_single_item_in_current_month_textview" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="19dp"
+                    app:srcCompat="@drawable/arrow_right"
+                    android:id="@+id/current_month_single_item_arrow_right_imageview" />
+
+                <TextView
+                    android:text="500 руб."
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/current_month_single_item_value_textview"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -87,7 +87,7 @@ public class MyDatePicker extends Dialog implements
 
 
 //        Animation in = AnimationUtils.loadAnimation(activity,
-//                android.R.anim.fade_in);
+//                android.R.anim.fade_out);
 //        Animation out = AnimationUtils.loadAnimation(activity,
 //                android.R.anim.fade_out);
 

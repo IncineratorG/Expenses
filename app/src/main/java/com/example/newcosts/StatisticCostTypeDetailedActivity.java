@@ -86,11 +86,11 @@ public class StatisticCostTypeDetailedActivity extends AppCompatActivity {
             detailedCostsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent editCostsIntent = new Intent(StatisticCostTypeDetailedActivity.this, EditCostsActivity.class);
-                    editCostsIntent.putExtra(Constants.DATA_ARRAY_LABEL, bundleDataArray);
-                    editCostsIntent.putExtra("dataForPreviousActivity", dataForPreviousActivity);
-                    editCostsIntent.putExtra("data", parent.getItemAtPosition(position).toString());
-                    startActivity(editCostsIntent);
+//                    Intent editCostsIntent = new Intent(StatisticCostTypeDetailedActivity.this, EditCostsActivity.class);
+//                    editCostsIntent.putExtra(Constants.DATA_ARRAY_LABEL, bundleDataArray);
+//                    editCostsIntent.putExtra("dataForPreviousActivity", dataForPreviousActivity);
+//                    editCostsIntent.putExtra("data", parent.getItemAtPosition(position).toString());
+//                    startActivity(editCostsIntent);
                 }
             });
         }

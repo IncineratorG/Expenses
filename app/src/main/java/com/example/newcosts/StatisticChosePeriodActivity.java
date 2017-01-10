@@ -95,7 +95,8 @@ public class StatisticChosePeriodActivity extends AppCompatActivity implements M
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(StatisticChosePeriodActivity.this, StatisticMainScreenActivity.class);
+                Intent intent = new Intent(StatisticChosePeriodActivity.this, MainActivityWithFragments.class);
+                intent.putExtra(Constants.TARGET_TAB, Constants.FRAGMENT_STATISTIC_MAIN_SCREEN);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
@@ -149,7 +150,8 @@ public class StatisticChosePeriodActivity extends AppCompatActivity implements M
         switch (item.getItemId()) {
             case android.R.id.home:
                 // app icon in action bar clicked; go home
-                Intent intent = new Intent(this, StatisticMainScreenActivity.class);
+                Intent intent = new Intent(this, MainActivityWithFragments.class);
+                intent.putExtra(Constants.TARGET_TAB, Constants.FRAGMENT_STATISTIC_MAIN_SCREEN);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;

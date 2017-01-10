@@ -57,7 +57,7 @@
                     android:textColor="@drawable/button_text_color"
                     android:id="@+id/addNewCostTypeButton"
                     android:layout_weight="1"
-                    android:background="@drawable/ok_button_custom" />
+                    android:background="@drawable/keyboard_buttons_custom" />
 
             </LinearLayout>
         </LinearLayout>
@@ -76,7 +76,7 @@
                 android:textColor="@drawable/button_text_color"
                 android:id="@+id/cancelButton"
                 android:layout_weight="1"
-                android:background="@drawable/del_button_custom" />
+                android:background="@drawable/keyboard_buttons_custom" />
         </LinearLayout>
     </LinearLayout>
 
