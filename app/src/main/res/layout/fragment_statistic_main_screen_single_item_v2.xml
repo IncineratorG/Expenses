@@ -3,29 +3,59 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/fragment_last_entered_values_top_layout"
+    android:id="@+id/fragment_statistic_main_screen_top_layout"
     android:layout_marginTop="10dp">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/fragment_last_entered_values_date_layout">
+        android:id="@+id/fragment_statistic_main_screen_date_layout">
 
-        <TextView
-            android:text="TextView"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/fragment_last_entered_values_date_textview"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textSize="24sp"
-            android:layout_marginLeft="10sp"
-            android:layout_marginTop="20sp"
-            android:layout_marginStart="10sp"
-            android:layout_marginEnd="10sp"
-            android:layout_marginRight="10sp"
-            android:textColor="@color/deeperGrey"
-            android:textStyle="normal|bold" />
+            android:layout_height="match_parent"
+            android:weightSum="1">
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/fragment_statistic_main_screen_year_textview"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textSize="20sp"
+                android:layout_marginLeft="10sp"
+                android:layout_marginTop="20sp"
+                android:layout_marginStart="10sp"
+                android:textColor="@color/deeperGrey"
+                android:textStyle="normal|bold"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp" />
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="20dp"
+                app:srcCompat="@drawable/arrow_right"
+                android:id="@+id/imageView6"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginStart="2dp" />
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/fragment_statistic_main_screen_year_value_textview"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textColor="@color/deeperGrey"
+                android:textStyle="normal|bold"
+                android:textSize="20sp"
+                android:layout_gravity="bottom"
+                android:gravity="bottom" />
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="vertical"
@@ -48,7 +78,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
-            android:id="@+id/fragment_last_entered_values_layout_with_text">
+            android:id="@+id/fragment_statistic_main_screen_layout_with_text">
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -60,25 +90,18 @@
                     android:text="TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/fragment_last_entered_values_expenses_type_textview"
+                    android:id="@+id/fragment_statistic_main_screen_month_textview"
                     android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat"
                     android:textSize="20sp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5sp"
+                    android:layout_marginStart="5sp"
                     android:gravity="left|start"
                     android:textStyle="normal|bold"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginRight="5dp" />
+                    android:layout_marginEnd="5sp"
+                    android:layout_marginRight="5sp" />
             </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/lightGrey"
-                android:id="@+id/fragment_last_entered_values_vertical_separator"></LinearLayout>
 
             <LinearLayout
                 android:orientation="vertical"
@@ -98,7 +121,7 @@
                         android:text="TextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/fragment_last_entered_values_expenses_value_textview"
+                        android:id="@+id/fragment_statistic_main_screen_expenses_value_textview"
                         android:layout_weight="1"
                         android:textAppearance="@style/TextAppearance.AppCompat"
                         android:textSize="20sp"
@@ -106,35 +129,8 @@
                         android:layout_marginEnd="5sp"
                         android:layout_marginRight="5sp"
                         android:layout_marginLeft="5sp"
-                        android:layout_marginStart="5sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/lightGrey"
-                    android:id="@+id/fragment_last_entered_values_layout_horizontal_note_separator"/>
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.5">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/fragment_last_entered_values_expenses_note_textview"
-                        android:layout_weight="1"
-                        android:gravity="right|end"
-                        android:layout_marginRight="5sp"
-                        android:layout_marginEnd="5sp"
-                        android:textSize="18sp"
-                        android:text="Note"
-                        android:layout_gravity="center_vertical"
-                        android:maxLines="1"
-                        android:ellipsize="end"/>
+                        android:layout_marginStart="5sp"
+                        android:textColor="@color/darkGrey" />
                 </LinearLayout>
 
             </LinearLayout>

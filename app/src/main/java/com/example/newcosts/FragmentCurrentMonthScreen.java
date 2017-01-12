@@ -18,7 +18,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,7 +30,7 @@ public class FragmentCurrentMonthScreen extends Fragment {
     private RecyclerView recyclerView;
     private TextView currentMonthTextView;
     private TextView overallValueTextView;
-    private AdapterCurrentMonthScreenFragment currentMonthScreenAdapter;
+    private AdapterCurrentMonthScreenRecyclerView currentMonthScreenAdapter;
     private int currentMonth;
     private int currentYear;
     private int currentDay;
@@ -96,8 +95,8 @@ public class FragmentCurrentMonthScreen extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        currentMonthScreenAdapter = new AdapterCurrentMonthScreenFragment(listOfActiveCostNames, context, this);
-        currentMonthScreenAdapter.setClickListener(new AdapterCurrentMonthScreenFragment.OnItemClickListener() {
+        currentMonthScreenAdapter = new AdapterCurrentMonthScreenRecyclerView(listOfActiveCostNames, context, this);
+        currentMonthScreenAdapter.setClickListener(new AdapterCurrentMonthScreenRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position) {
                 ExpensesDataUnit selectedDataUnit = listOfActiveCostNames.get(position);
@@ -114,7 +113,7 @@ public class FragmentCurrentMonthScreen extends Fragment {
                     // Далог добавления новой категории расходов
                     final Dialog dialog = new Dialog(context);
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    dialog.setContentView(R.layout.add_new_cost_type_popup);
+                    dialog.setContentView(R.layout.add_new_expense_type_popup);
 
                     // Инициализируем поле ввода названия новой статьи расходов
                     final AutoCompleteTextView inputTextField = (AutoCompleteTextView) dialog.findViewById(R.id.costTypeTextViewInAddNewCostTypePopup);
@@ -245,7 +244,7 @@ public class FragmentCurrentMonthScreen extends Fragment {
                         // Далог редактирования категории расходов
                         final Dialog dialog = new Dialog(context);
                         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        dialog.setContentView(R.layout.add_new_cost_type_popup);
+                        dialog.setContentView(R.layout.add_new_expense_type_popup);
 
                         // Инициализируем поле переименования статьи расходов
                         final AutoCompleteTextView inputTextField = (AutoCompleteTextView) dialog.findViewById(R.id.costTypeTextViewInAddNewCostTypePopup);

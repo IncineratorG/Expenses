@@ -50,7 +50,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignBottom="@+id/fragment_last_entered_values_layout_with_text"
+            android:layout_alignBottom="@+id/fragment_statistic_main_screen_layout_with_text"
             android:descendantFocusability="blocksDescendants">
 
             <LinearLayout
@@ -106,7 +106,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
-            android:id="@+id/fragment_last_entered_values_layout_with_text">
+            android:id="@+id/fragment_statistic_main_screen_layout_with_text">
 
             <TextView
                 android:layout_width="match_parent"

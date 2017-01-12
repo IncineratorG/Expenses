@@ -1,17 +1,17 @@
 package com.example.newcosts;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.List;
 
 public class StatisticDetailedActivity extends AppCompatActivity {
 
@@ -20,88 +20,127 @@ public class StatisticDetailedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_detailed);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Constants.HEADER_SYSTEM_COLOR));
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.activity_statistic_cost_type_detailed_toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
 
-        // Получаем строку с информацией о выбранной дате и суммарных затратах за выбранный месяц
-        String dataString = "none";
-        Bundle dataFromPreviousActivity = getIntent().getExtras();
-        if (dataFromPreviousActivity != null)
-            dataString = dataFromPreviousActivity.getString("data");
+        Bundle expenseDataBundle = getIntent().getExtras();
+        if (expenseDataBundle == null)
+            return;
 
-        if (dataString != null && !dataString.equals("none")) {
-            // Вытаскиваем нужную нам информацию (месяц, год, суммарные затараты за этот месяц) из переданной строки
-            String[] dataStringContent = dataString.split(" ");
-            final int chosenMonthNumber = Integer.parseInt(dataStringContent[0].substring(0, dataStringContent[0].indexOf(Constants.SEPARATOR_VALUE)));
-            final int chosenYear = Integer.parseInt(dataStringContent[1].substring(0, dataStringContent[1].indexOf(Constants.SEPARATOR_VALUE)));
-//            String overallCostValueForChosenPeriodString = dataStringContent[1].substring(dataStringContent[1].indexOf(Constants.SEPARATOR_VALUE) + 1);
-            String actionBarTitleString = dataStringContent[0].substring(dataStringContent[0].indexOf(Constants.SEPARATOR_VALUE) + 1) +  " " + chosenYear;
-            String overallCostValueForChosenPeriodString;
+        TextView toolBarTextView = (TextView) toolbar.findViewById(R.id.activity_statistic_detailed_toolbar_textview);
+        TextView overallValueTextView = (TextView) findViewById(R.id.activity_statistic_detailed_overall_value_textview);
+        ListView statisticDetailedListView = (ListView) findViewById(R.id.activity_statistic_detailed_list_view);
 
-            actionBar.setTitle(actionBarTitleString);
-
-            // Получаем массив статей расходов и суммарные значения по ним за выбранный месяц
-            CostsDB cdb = CostsDB.getInstance(this);
-            String[] costsArray = cdb.getCostValuesArrayOnDate_V2(chosenMonthNumber, chosenYear);
-            double overallCostValueForChosenPeriod = 0.0;
-            for (String s : costsArray) {
-                double d = Double.parseDouble(s.substring(s.lastIndexOf(Constants.SEPARATOR_VALUE) + 1));
-                overallCostValueForChosenPeriod = overallCostValueForChosenPeriod + d;
+        // При нажатии на стрелку назад - возвращаемся к предыдущему экрану
+        ImageView toolbarBackArrowImageView = (ImageView) toolbar.findViewById(R.id.activity_statistic_detailed_arrow_back);
+        toolbarBackArrowImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                returnToPreviousActivity();
             }
-            overallCostValueForChosenPeriodString = String.valueOf(overallCostValueForChosenPeriod);
+        });
 
-            TextView chosenDateTextViewStatisticDetailedActivity = (TextView) findViewById(R.id.chosenDateStatisticDetailedActivity);
-            chosenDateTextViewStatisticDetailedActivity.setText(actionBarTitleString);
+        CostsDB cdb = CostsDB.getInstance(this);
 
-            TextView overallCostsTextViewStatisticDetailedActivity = (TextView) findViewById(R.id.overallCostsStatisticDetailedActivity);
-            overallCostsTextViewStatisticDetailedActivity.setText(overallCostValueForChosenPeriodString + " руб.");
+        final int MODE = expenseDataBundle.getInt(Constants.STATISTIC_DETAILED_ACTIVITY_MODE);
+        switch (MODE) {
+            case Constants.STATISTIC_DETAILED_ACTIVITY_MODE_BY_MONTHS: {
+                ExpensesDataUnit chosenMonthDataUnit = expenseDataBundle.getParcelable(Constants.DATA_FOR_STATISTIC_DETAILED_ACTIVITY);
+                if (chosenMonthDataUnit != null) {
+                    // Отображаем выбранный период просмотра
+                    toolBarTextView.setText(Constants.MONTH_NAMES[chosenMonthDataUnit.getMonth()] + " " + chosenMonthDataUnit.getYear());
 
-            // Инициализируем ListView полученным массивом
-            ListAdapter costsListViewStatisticDetailedActivityAdapter = new CostsListViewAdapter(this, costsArray);
-            ListView costsListViewStatisticDetailedActivity = (ListView) findViewById(R.id.costsListViewStatisticDetailedActivity);
-            costsListViewStatisticDetailedActivity.setAdapter(costsListViewStatisticDetailedActivityAdapter);
+                    // Получаем список статей расходов и суммарные значения по ним за выбранный месяц
+                    final List<ExpensesDataUnit> expensesDataUnitList = cdb.getCostValuesArrayOnDate_V3(chosenMonthDataUnit.getMonth(), chosenMonthDataUnit.getYear());
+                    double overallExpensesValueForChosenPeriod = 0.0;
+                    for (ExpensesDataUnit dataUnit : expensesDataUnitList)
+                        overallExpensesValueForChosenPeriod = overallExpensesValueForChosenPeriod + dataUnit.getExpenseValueDouble();
 
-            // При нажатии на элемент списка статей расходов происходит переход на экран
-            // детального просмотра затрат по выбранной статье за выбранный месяц
-            final String finalDataString = dataString;
-            costsListViewStatisticDetailedActivity.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent statisticCostTypeDetailedIntent = new Intent(StatisticDetailedActivity.this, StatisticCostTypeDetailedActivity.class);
+                    // Устанавливаем суммарное значение за выбранный период
+                    overallValueTextView.setText(Constants.formatDigit(overallExpensesValueForChosenPeriod) + " руб.");
 
-                    String textLine = String.valueOf(parent.getItemAtPosition(position));
-                    String costName = textLine.substring(0, textLine.lastIndexOf(Constants.SEPARATOR_VALUE));
-                    String costValue = textLine.substring(textLine.lastIndexOf(Constants.SEPARATOR_VALUE) + 1);
+                    // Инициализируем ListView полученным списком статей расходов
+                    ListAdapter statisticDetailedListViewAdapter = new AdapterStatisticDetailedActivityListView(this, expensesDataUnitList);
+                    statisticDetailedListView.setAdapter(statisticDetailedListViewAdapter);
 
-                    String[] dataArray = new String[8];
-                    dataArray[Constants.COST_NAME_INDEX] = costName;
-                    dataArray[Constants.COST_VALUE_INDEX] = costValue;
-                    dataArray[Constants.CHOSEN_MONTH_INDEX] = String.valueOf(chosenMonthNumber);
-                    dataArray[Constants.CHOSEN_YEAR_INDEX] = String.valueOf(chosenYear);
-
-                    statisticCostTypeDetailedIntent.putExtra(Constants.DATA_ARRAY_LABEL, dataArray);
-                    statisticCostTypeDetailedIntent.putExtra("dataForPreviousActivity", finalDataString);
-
-                    startActivity(statisticCostTypeDetailedIntent);
+                    // При нажатии на элемент списка статей расходов происходит переход на экран
+                    // детального просмотра затрат по выбранной статье за выбранный месяц
+                    final ExpensesDataUnit finalChosenMonthDataUnit = chosenMonthDataUnit;
+                    statisticDetailedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Intent statisticCostTypeDetailedIntent = new Intent(StatisticDetailedActivity.this, StatisticExpenseTypeDetailedActivity.class);
+                            statisticCostTypeDetailedIntent.putExtra(Constants.STATISTIC_DETAILED_ACTIVITY_MODE, MODE);
+                            statisticCostTypeDetailedIntent.putExtra(Constants.DATA_FOR_STATISTIC_COST_TYPE_DETAILED_ACTIVITY, expensesDataUnitList.get(position));
+                            statisticCostTypeDetailedIntent.putExtra(Constants.DATA_FOR_STATISTIC_DETAILED_ACTIVITY, finalChosenMonthDataUnit);
+                            statisticCostTypeDetailedIntent.putExtra(Constants.PREVIOUS_ACTIVITY, Constants.STATISTIC_DETAILED_ACTIVITY);
+                            startActivity(statisticCostTypeDetailedIntent);
+                        }
+                    });
                 }
-            });
+            }
+            break;
+
+            case Constants.STATISTIC_DETAILED_ACTIVITY_MODE_CUSTOM_DATE: {
+                final ExpensesDataUnit startingDateDataUnit = expenseDataBundle.getParcelable(Constants.STARTING_DATE_LABEL);
+                final ExpensesDataUnit endingDateDataUnit = expenseDataBundle.getParcelable(Constants.ENDING_DATE_LABEL);
+                if (startingDateDataUnit == null ||  endingDateDataUnit == null)
+                    return;
+
+                System.out.println(startingDateDataUnit.getMilliseconds());
+                System.out.println(endingDateDataUnit.getMilliseconds());
+
+                // Отображаем выбранный период просмотра
+                toolBarTextView.setText(new StringBuilder()
+                                        .append(startingDateDataUnit.getDay())
+                                        .append(" ")
+                                        .append(Constants.DECLENSION_MONTH_NAMES[startingDateDataUnit.getMonth()])
+                                        .append(" ")
+                                        .append(startingDateDataUnit.getYear())
+                                        .append(" -\n")
+                                        .append(endingDateDataUnit.getDay())
+                                        .append(" ")
+                                        .append(Constants.DECLENSION_MONTH_NAMES[endingDateDataUnit.getMonth()])
+                                        .append(" ")
+                                        .append(endingDateDataUnit.getYear())
+                                        .toString());
+
+                // Получаем список статей расходов и суммарные значения по ним за выбранный период
+                final List<ExpensesDataUnit> expensesDataUnitList = cdb.getCostsBetweenDates_V3(startingDateDataUnit.getMilliseconds(),
+                                                                                            endingDateDataUnit.getMilliseconds());
+                double overallExpensesValueForChosenPeriod = 0.0;
+                for (ExpensesDataUnit dataUnit : expensesDataUnitList)
+                    overallExpensesValueForChosenPeriod = overallExpensesValueForChosenPeriod + dataUnit.getExpenseValueDouble();
+
+                // Устанавливаем суммарное значение за выбранный период
+                overallValueTextView.setText(Constants.formatDigit(overallExpensesValueForChosenPeriod) + " руб.");
+
+                // Инициализируем ListView полученным списком статей расходов
+                ListAdapter statisticDetailedListViewAdapter = new AdapterStatisticDetailedActivityListView(this, expensesDataUnitList);
+                statisticDetailedListView.setAdapter(statisticDetailedListViewAdapter);
+                statisticDetailedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent statisticCostTypeDetailedIntent = new Intent(StatisticDetailedActivity.this, StatisticExpenseTypeDetailedActivity.class);
+                        statisticCostTypeDetailedIntent.putExtra(Constants.STATISTIC_DETAILED_ACTIVITY_MODE, MODE);
+                        statisticCostTypeDetailedIntent.putExtra(Constants.STARTING_DATE_LABEL, startingDateDataUnit);
+                        statisticCostTypeDetailedIntent.putExtra(Constants.ENDING_DATE_LABEL, endingDateDataUnit);
+                        statisticCostTypeDetailedIntent.putExtra(Constants.DATA_FOR_STATISTIC_COST_TYPE_DETAILED_ACTIVITY, expensesDataUnitList.get(position));
+                        statisticCostTypeDetailedIntent.putExtra(Constants.PREVIOUS_ACTIVITY, Constants.STATISTIC_DETAILED_ACTIVITY);
+                        startActivity(statisticCostTypeDetailedIntent);
+                    }
+                });
+            }
+            break;
         }
     }
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                Intent intent = new Intent(this, MainActivityWithFragments.class);
-                intent.putExtra(Constants.TARGET_TAB, Constants.FRAGMENT_STATISTIC_MAIN_SCREEN);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    // Возвращаемся к предыдущему экрану
+    private void returnToPreviousActivity() {
+        Intent previousActivity = new Intent(this, MainActivityWithFragments.class);
+        previousActivity.putExtra(Constants.TARGET_TAB, Constants.FRAGMENT_STATISTIC_MAIN_SCREEN);
+        previousActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(previousActivity);
     }
 }

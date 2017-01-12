@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -393,7 +392,7 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
                 startActivity(lastEnteredValuesScreenIntent);
                 break;
             case Constants.STATISTIC_DETAILED_ACTIVITY:
-                Intent statisticDetailedActivityIntent = new Intent(ActivityInputData.this, StatisticCostTypeDetailedActivity.class);
+                Intent statisticDetailedActivityIntent = new Intent(ActivityInputData.this, StatisticExpenseTypeDetailedActivity.class);
                 statisticDetailedActivityIntent.putExtra(Constants.PREVIOUS_ACTIVITY_INDEX, Constants.EDIT_DATA_ACTIVITY);
                 statisticDetailedActivityIntent.putExtra(Constants.SAVED_VALUE, savedValue);
                 statisticDetailedActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

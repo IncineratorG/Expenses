@@ -47,7 +47,7 @@ public class MainActivityWithFragments extends AppCompatActivity {
         mainActivityTabLayout.getTabAt(1).setCustomView(tabTextView_1);
 
         TextView tabTextView_2 = (TextView) LayoutInflater.from(this).inflate(R.layout.activity_main_with_fragments_custom_tab, null);
-        tabTextView_2.setText("Статисттика");
+        tabTextView_2.setText("Статистика");
         tabTextView_2.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_pie_chart_white_24dp, 0, 0);
         mainActivityTabLayout.getTabAt(2).setCustomView(tabTextView_2);
 

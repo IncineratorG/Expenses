@@ -10,16 +10,12 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".StatisticDetailedActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/CustomAppStyle"/>
         <activity
-            android:name=".StatisticCostTypeDetailedActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".StatisticChosePeriodActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".StatisticChosenPeriodActivity"
-            android:screenOrientation="portrait" />
+            android:name=".StatisticExpenseTypeDetailedActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/CustomAppStyle"/>
         <activity
             android:name=".ActivityInputData"
             android:screenOrientation="portrait"

@@ -1,7 +1,6 @@
 package com.example.newcosts;
 
 import android.app.Dialog;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -10,11 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
-
-import java.util.Calendar;
 
 /**
  * TODO: Add a class header comment
@@ -48,8 +43,8 @@ public class ExpensesListDialogFragment extends DialogFragment {
 
         final ListView expensesListView = (ListView) v.findViewById(R.id.expenses_list_dialog_listview);
 
-        AdapterExpensesListDialog adapterExpensesListDialog = new AdapterExpensesListDialog(getActivity(), data);
-        expensesListView.setAdapter(adapterExpensesListDialog);
+        AdapterExpensesListDialogListView adapterExpensesListDialogListView = new AdapterExpensesListDialogListView(getActivity(), data);
+        expensesListView.setAdapter(adapterExpensesListDialogListView);
         expensesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

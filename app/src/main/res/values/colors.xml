@@ -21,4 +21,6 @@
     <!-- Tab color -->
     <color name="darkerOrange">#FB8C00</color>
 
+    <color name="darkGrey">#9E9E9E</color>
+
 </resources>

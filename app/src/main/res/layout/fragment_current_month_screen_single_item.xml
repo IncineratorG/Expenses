@@ -27,7 +27,8 @@
                 android:layout_height="wrap_content"
                 app:srcCompat="@android:drawable/ic_menu_edit"
                 android:id="@+id/current_month_single_item_edit_category_imageview"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="@drawable/activity_input_data_buttons_style" />
 
             <TextView
                 android:text="Электроника"

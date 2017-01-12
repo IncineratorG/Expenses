@@ -1,0 +1,115 @@
+package com.example.newcosts;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import java.util.Calendar;
+import java.util.List;
+
+/**
+ * TODO: Add a class header comment
+ */
+
+public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter<AdapterStatisticMainScreenRecyclerView.FragmentStatisticMainScreenViewHolder> {
+    private AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener clickListener;
+    private List<ExpensesDataUnit> data;
+    private Context context;
+    private Calendar calendar;
+
+    public interface OnItemClickListener {
+        void onItemClick(View itemView, int position);
+    }
+
+
+    public AdapterStatisticMainScreenRecyclerView(List<ExpensesDataUnit> data, Context context) {
+        this.data = data;
+        this.context = context;
+        calendar = Calendar.getInstance();
+    }
+
+    @Override
+    public int getItemCount() {
+        return data == null ? 0 : data.size();
+    }
+
+    @Override
+    public FragmentStatisticMainScreenViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_statistic_main_screen_single_item_v2, parent, false);
+        return new FragmentStatisticMainScreenViewHolder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(FragmentStatisticMainScreenViewHolder holder, int position) {
+        // Группируем список последних введённых значений по году
+        if (position > 0 && data.get(position - 1).getYear() == data.get(position).getYear())
+        {
+            holder.dateLayout.setVisibility(View.GONE);
+        }
+        else
+        {
+            holder.dateLayout.setVisibility(View.VISIBLE);
+            holder.yearTextView.setText(data.get(position).getYear() + "-й год");
+
+            // Получаем величину расходов за один год
+            double overallExpenseValueForYear = data.get(position).getExpenseValueDouble();
+            int i = position + 1;
+            while (i < data.size() && data.get(i).getYear() == data.get(i - 1).getYear())
+            {
+                overallExpenseValueForYear = overallExpenseValueForYear + data.get(i).getExpenseValueDouble();
+                ++i;
+            }
+
+            holder.yearValueTextView.setText(Constants.formatDigit(overallExpenseValueForYear) + " руб.");
+        }
+
+        holder.expensesMonthTextView.setText(Constants.MONTH_NAMES[data.get(position).getMonth()]);
+        holder.expensesValueTextView.setText(data.get(position).getExpenseValueString() + " руб.");
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    public void setClickListener(AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener listener) {
+        this.clickListener = listener;
+    }
+
+
+
+    // ===================================== View Holder ===========================================
+    public class FragmentStatisticMainScreenViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        private LinearLayout dateLayout;
+        private TextView expensesMonthTextView;
+        private TextView expensesValueTextView;
+        private TextView yearTextView;
+        private TextView yearValueTextView;
+
+
+        public FragmentStatisticMainScreenViewHolder(View itemView) {
+            super(itemView);
+
+            expensesMonthTextView = (TextView) itemView.findViewById(R.id.fragment_statistic_main_screen_month_textview);
+            expensesValueTextView = (TextView) itemView.findViewById(R.id.fragment_statistic_main_screen_expenses_value_textview);
+            yearTextView = (TextView) itemView.findViewById(R.id.fragment_statistic_main_screen_year_textview);
+            yearValueTextView = (TextView) itemView.findViewById(R.id.fragment_statistic_main_screen_year_value_textview);
+
+            dateLayout = (LinearLayout) itemView.findViewById(R.id.fragment_statistic_main_screen_date_layout);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (clickListener != null)
+                clickListener.onItemClick(v, getAdapterPosition());
+        }
+
+    }
+}

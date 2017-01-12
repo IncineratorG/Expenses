@@ -13,8 +13,8 @@ import android.widget.TextView;
  * TODO: Add a class header comment
  */
 
-public class AdapterExpensesListDialog extends ArrayAdapter<ExpensesDataUnit> {
-    public AdapterExpensesListDialog(Context context, ExpensesDataUnit[] dataUnits) {
+public class AdapterExpensesListDialogListView extends ArrayAdapter<ExpensesDataUnit> {
+    public AdapterExpensesListDialogListView(Context context, ExpensesDataUnit[] dataUnits) {
         super(context, R.layout.expenses_names_list_single_item, dataUnits);
     }
 

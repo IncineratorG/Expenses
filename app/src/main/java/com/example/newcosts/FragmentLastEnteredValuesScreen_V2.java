@@ -22,7 +22,7 @@ public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
     private Context context;
     private RecyclerView recyclerView;
     private List<ExpensesDataUnit> listOfLastEntries;
-    private AdapterLastEnteredValuesFragment_V2 lastEnteredValuesFragmentAdapter;
+    private AdapterLastEnteredValuesRecyclerView_V2 lastEnteredValuesFragmentAdapter;
     private int selectedItemPosition = -1;
     private CostsDB cdb;
 
@@ -61,8 +61,8 @@ public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
 
         // При нажатии на элемент списка появляется диалоговое окно, из которого можно
         // удалить или изменить выбранную запись
-        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesFragment_V2(listOfLastEntries, context);
-        lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesFragment_V2.OnItemClickListener() {
+        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView_V2(listOfLastEntries, context);
+        lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, final int position) {
                 selectedItemPosition = position;

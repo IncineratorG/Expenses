@@ -3,29 +3,52 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/fragment_last_entered_values_top_layout"
+    android:id="@+id/expense_type_detailed_single_item_top_layout"
     android:layout_marginTop="10dp">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/fragment_last_entered_values_date_layout">
+        android:id="@+id/expense_type_detailed_single_item_date_layout">
 
-        <TextView
-            android:text="TextView"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/fragment_last_entered_values_date_textview"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textSize="24sp"
-            android:layout_marginLeft="10sp"
-            android:layout_marginTop="20sp"
-            android:layout_marginStart="10sp"
-            android:layout_marginEnd="10sp"
-            android:layout_marginRight="10sp"
-            android:textColor="@color/deeperGrey"
-            android:textStyle="normal|bold" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/expense_type_detailed_single_item_date_textview"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textSize="16sp"
+                android:layout_marginLeft="10sp"
+                android:layout_marginTop="20sp"
+                android:layout_marginStart="10sp"
+                android:textColor="@color/deeperGrey"
+                android:textStyle="normal|bold" />
+
+            <ImageView
+                android:layout_width="29dp"
+                android:layout_height="22dp"
+                app:srcCompat="@drawable/arrow_right"
+                android:id="@+id/imageView4"
+                android:layout_gravity="bottom" />
+
+            <TextView
+                android:text="528458 руб."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/expense_type_detailed_single_item_date_overall_value_textview"
+                android:layout_gravity="bottom"
+                android:gravity="right|end"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textColor="@color/deeperGrey"
+                android:textStyle="normal|bold"
+                android:textSize="18sp" />
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="vertical"
@@ -48,37 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
-            android:id="@+id/fragment_last_entered_values_layout_with_text">
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
-
-                <TextView
-                    android:text="TextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/fragment_last_entered_values_expenses_type_textview"
-                    android:layout_weight="1"
-                    android:textAppearance="@style/TextAppearance.AppCompat"
-                    android:textSize="20sp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginStart="5dp"
-                    android:gravity="left|start"
-                    android:textStyle="normal|bold"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginRight="5dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/lightGrey"
-                android:id="@+id/fragment_last_entered_values_vertical_separator"></LinearLayout>
+            android:id="@+id/fragment_statistic_main_screen_layout_with_text">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -98,15 +91,18 @@
                         android:text="TextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/fragment_last_entered_values_expenses_value_textview"
+                        android:id="@+id/expense_type_detailed_single_item_expenses_value_textview"
                         android:layout_weight="1"
                         android:textAppearance="@style/TextAppearance.AppCompat"
-                        android:textSize="20sp"
-                        android:gravity="right|end"
+                        android:textSize="24sp"
                         android:layout_marginEnd="5sp"
                         android:layout_marginRight="5sp"
                         android:layout_marginLeft="5sp"
-                        android:layout_marginStart="5sp" />
+                        android:layout_marginStart="5sp"
+                        android:textStyle="normal|bold"
+                        android:gravity="center_horizontal"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -114,7 +110,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/lightGrey"
-                    android:id="@+id/fragment_last_entered_values_layout_horizontal_note_separator"/>
+                    android:id="@+id/expense_type_detailed_single_item_horizontal_note_separator"/>
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -125,16 +121,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/fragment_last_entered_values_expenses_note_textview"
+                        android:id="@+id/expense_type_detailed_single_item_expenses_note_textview"
                         android:layout_weight="1"
                         android:gravity="right|end"
                         android:layout_marginRight="5sp"
                         android:layout_marginEnd="5sp"
                         android:textSize="18sp"
                         android:text="Note"
-                        android:layout_gravity="center_vertical"
-                        android:maxLines="1"
-                        android:ellipsize="end"/>
+                        android:layout_gravity="center_vertical" />
                 </LinearLayout>
 
             </LinearLayout>

@@ -1,7 +1,5 @@
 package com.example.newcosts;
 
-import android.animation.AnimatorInflater;
-import android.animation.AnimatorSet;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,15 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
-
-import jp.wasabeef.recyclerview.adapters.SlideInLeftAnimationAdapter;
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 
 public class FragmentLastEnteredValuesScreen extends Fragment {
@@ -27,7 +21,7 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
     private RecyclerView recyclerView;
     private List<ExpensesDataUnit> listOfLastEntries;
     private int selectedItemPosition = -1;
-    private AdapterLastEnteredValuesFragment lastEnteredValuesFragmentAdapter;
+    private AdapterLastEnteredValuesRecyclerView lastEnteredValuesFragmentAdapter;
     private View selectedItemView = null;
     private View lastSelectedItemView = null;
     private LinearLayoutManager linearLayoutManager;
@@ -61,9 +55,9 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
 
-        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesFragment(listOfLastEntries, context);
+        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView(listOfLastEntries, context);
         // Нажатие на элемент списка последних введённых значений
-        lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesFragment.OnItemClickListener() {
+        lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position) {
                 // Необходимо обеспечить, чтобы только один элемент был доступен для редактирования
@@ -76,7 +70,7 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
                     if (hiddenDataTextView.getText().toString().equals("1")) {
 
                         // Инициализируем необходимые компоненты
-                        LinearLayout lastSelectedLayoutWithText = (LinearLayout) lastSelectedItemView.findViewById(R.id.fragment_last_entered_values_layout_with_text);
+                        LinearLayout lastSelectedLayoutWithText = (LinearLayout) lastSelectedItemView.findViewById(R.id.fragment_statistic_main_screen_layout_with_text);
                         LinearLayout lastSelectedEditLayout = (LinearLayout) lastSelectedItemView.findViewById(R.id.fragment_last_entered_values_edit_layout);
                         LinearLayout lastSelectedDeleteLayout = (LinearLayout) lastSelectedItemView.findViewById(R.id.fragment_last_entered_values_delete_layout);
 
@@ -97,7 +91,7 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
                 }
 
                 // При нажатии на элемент списка инициализируем необходимые компоненты
-                LinearLayout layoutWithText = (LinearLayout) itemView.findViewById(R.id.fragment_last_entered_values_layout_with_text);
+                LinearLayout layoutWithText = (LinearLayout) itemView.findViewById(R.id.fragment_statistic_main_screen_layout_with_text);
                 LinearLayout editLayout = (LinearLayout) itemView.findViewById(R.id.fragment_last_entered_values_edit_layout);
                 LinearLayout deleteLayout = (LinearLayout) itemView.findViewById(R.id.fragment_last_entered_values_delete_layout);
 

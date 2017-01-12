@@ -15,7 +15,7 @@ import java.util.List;
  * TODO: Add a class header comment
  */
 
-public class AdapterLastEnteredValuesFragment_V2 extends RecyclerView.Adapter<AdapterLastEnteredValuesFragment_V2.FragmentLastEnteredValuesViewHolder_V2> {
+public class AdapterLastEnteredValuesRecyclerView_V2 extends RecyclerView.Adapter<AdapterLastEnteredValuesRecyclerView_V2.FragmentLastEnteredValuesViewHolder_V2> {
 
     private OnItemClickListener clickListener;
     private List<ExpensesDataUnit> data;
@@ -27,7 +27,7 @@ public class AdapterLastEnteredValuesFragment_V2 extends RecyclerView.Adapter<Ad
     }
 
 
-    public AdapterLastEnteredValuesFragment_V2(List<ExpensesDataUnit> data, Context context) {
+    public AdapterLastEnteredValuesRecyclerView_V2(List<ExpensesDataUnit> data, Context context) {
         this.data = data;
         this.context = context;
         calendar = Calendar.getInstance();
