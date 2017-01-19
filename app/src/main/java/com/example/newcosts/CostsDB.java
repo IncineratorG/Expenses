@@ -394,12 +394,11 @@ public class CostsDB extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        List<ExpensesDataUnit> listOfEntries = null;
+        List<ExpensesDataUnit> listOfEntries = new ArrayList<>();
 
         try {
             c = db.rawQuery(getLastEntriesQuery, null);
             c.moveToFirst();
-            listOfEntries = new ArrayList<>();
 
             while (!c.isAfterLast()) {
                 ExpensesDataUnit singleUnit = new ExpensesDataUnit();
@@ -428,6 +427,36 @@ public class CostsDB extends SQLiteOpenHelper {
         }
 
         return listOfEntries;
+    }
+
+    public List<Long> getLastEnteredMilliseconds(long fromMilliseconds) {
+        String getLastEntriesQuery = "SELECT " +
+                DATE_IN_MILLISECONDS +
+                " FROM " + TABLE_COST_VALUES +
+                " WHERE " + DATE_IN_MILLISECONDS + " > " + fromMilliseconds;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<Long> millisecondsList = new ArrayList<>();
+
+        try {
+            c = db.rawQuery(getLastEntriesQuery, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                millisecondsList.add(c.getLong(c.getColumnIndex(DATE_IN_MILLISECONDS)));
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return millisecondsList;
     }
 
 

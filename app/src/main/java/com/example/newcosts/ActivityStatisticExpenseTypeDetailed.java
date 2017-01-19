@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class StatisticExpenseTypeDetailedActivity extends AppCompatActivity {
+public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
 
 //    private int PREVIOUS_ACTIVITY = -1;
     private int STATISTIC_DETAILED_ACTIVITY_MODE = -1;
@@ -120,13 +120,13 @@ public class StatisticExpenseTypeDetailedActivity extends AppCompatActivity {
         Intent previousActivity = null;
         switch (STATISTIC_DETAILED_ACTIVITY_MODE) {
             case Constants.STATISTIC_DETAILED_ACTIVITY_MODE_BY_MONTHS:
-                previousActivity = new Intent(this, StatisticDetailedActivity.class);
+                previousActivity = new Intent(this, ActivityStatisticDetailed.class);
                 previousActivity.putExtra(Constants.STATISTIC_DETAILED_ACTIVITY_MODE, STATISTIC_DETAILED_ACTIVITY_MODE);
                 previousActivity.putExtra(Constants.DATA_FOR_STATISTIC_DETAILED_ACTIVITY, statisticDetailedActivityDataUnit);
                 previousActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 break;
             case Constants.STATISTIC_DETAILED_ACTIVITY_MODE_CUSTOM_DATE:
-                previousActivity = new Intent(this, StatisticDetailedActivity.class);
+                previousActivity = new Intent(this, ActivityStatisticDetailed.class);
                 previousActivity.putExtra(Constants.STATISTIC_DETAILED_ACTIVITY_MODE, STATISTIC_DETAILED_ACTIVITY_MODE);
                 previousActivity.putExtra(Constants.STARTING_DATE_LABEL, startingDateDataUnit);
                 previousActivity.putExtra(Constants.ENDING_DATE_LABEL, endingDateDataUnit);

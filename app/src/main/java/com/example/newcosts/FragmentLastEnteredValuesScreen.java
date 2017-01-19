@@ -215,7 +215,7 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
 //
 //        layout.setVisibility(View.INVISIBLE);
 //
-//        EditDialogFragment editDialogFragment = EditDialogFragment.newInstance(listOfLastEntries.get(position), itemViewPosition[0], itemViewPosition[1], height, width);
+//        DialogFragmentEditExpenses editDialogFragment = DialogFragmentEditExpenses.newInstance(listOfLastEntries.get(position), itemViewPosition[0], itemViewPosition[1], height, width);
 //        editDialogFragment.setTargetFragment(FragmentLastEnteredValuesScreen_V2.this, Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE);
 //        editDialogFragment.show(getFragmentManager(), Constants.EDIT_DIALOG_TAG);
 //    }

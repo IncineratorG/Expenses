@@ -8,7 +8,7 @@
     android:paddingLeft="0sp"
     android:paddingRight="0sp"
     android:paddingTop="0sp"
-    tools:context=".StatisticDetailedActivity">
+    tools:context=".ActivityStatisticDetailed">
 
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"

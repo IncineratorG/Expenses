@@ -17,18 +17,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 
 /**
  * TODO: Add a class header comment
  */
 
-public class ChooseStatisticPeriodDialogFragment extends DialogFragment implements View.OnClickListener, ViewSwitcher.ViewFactory {
+public class DialogFragmentChooseStatisticPeriod extends DialogFragment implements View.OnClickListener, ViewSwitcher.ViewFactory {
 
     private Context context;
     private Button OkButton, CancelButton;
@@ -56,8 +52,8 @@ public class ChooseStatisticPeriodDialogFragment extends DialogFragment implemen
     private Toast wrongDateToast;
 
 
-    static ChooseStatisticPeriodDialogFragment newInstance(Context context) {
-        return new ChooseStatisticPeriodDialogFragment();
+    static DialogFragmentChooseStatisticPeriod newInstance(Context context) {
+        return new DialogFragmentChooseStatisticPeriod();
     }
 
 

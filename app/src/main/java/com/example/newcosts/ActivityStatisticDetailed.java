@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class StatisticDetailedActivity extends AppCompatActivity {
+public class ActivityStatisticDetailed extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +70,7 @@ public class StatisticDetailedActivity extends AppCompatActivity {
                     statisticDetailedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Intent statisticCostTypeDetailedIntent = new Intent(StatisticDetailedActivity.this, StatisticExpenseTypeDetailedActivity.class);
+                            Intent statisticCostTypeDetailedIntent = new Intent(ActivityStatisticDetailed.this, ActivityStatisticExpenseTypeDetailed.class);
                             statisticCostTypeDetailedIntent.putExtra(Constants.STATISTIC_DETAILED_ACTIVITY_MODE, MODE);
                             statisticCostTypeDetailedIntent.putExtra(Constants.DATA_FOR_STATISTIC_COST_TYPE_DETAILED_ACTIVITY, expensesDataUnitList.get(position));
                             statisticCostTypeDetailedIntent.putExtra(Constants.DATA_FOR_STATISTIC_DETAILED_ACTIVITY, finalChosenMonthDataUnit);
@@ -122,7 +122,7 @@ public class StatisticDetailedActivity extends AppCompatActivity {
                 statisticDetailedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Intent statisticCostTypeDetailedIntent = new Intent(StatisticDetailedActivity.this, StatisticExpenseTypeDetailedActivity.class);
+                        Intent statisticCostTypeDetailedIntent = new Intent(ActivityStatisticDetailed.this, ActivityStatisticExpenseTypeDetailed.class);
                         statisticCostTypeDetailedIntent.putExtra(Constants.STATISTIC_DETAILED_ACTIVITY_MODE, MODE);
                         statisticCostTypeDetailedIntent.putExtra(Constants.STARTING_DATE_LABEL, startingDateDataUnit);
                         statisticCostTypeDetailedIntent.putExtra(Constants.ENDING_DATE_LABEL, endingDateDataUnit);
@@ -138,7 +138,7 @@ public class StatisticDetailedActivity extends AppCompatActivity {
 
     // Возвращаемся к предыдущему экрану
     private void returnToPreviousActivity() {
-        Intent previousActivity = new Intent(this, MainActivityWithFragments.class);
+        Intent previousActivity = new Intent(this, ActivityMainWithFragments.class);
         previousActivity.putExtra(Constants.TARGET_TAB, Constants.FRAGMENT_STATISTIC_MAIN_SCREEN);
         previousActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(previousActivity);

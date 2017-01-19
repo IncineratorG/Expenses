@@ -59,7 +59,7 @@ public class AdapterCurrentMonthScreenRecyclerView extends RecyclerView.Adapter<
         holder.editCategoryImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditExpenseNameDialogFragment editExpenseNameDialogFragment = EditExpenseNameDialogFragment.newInstance(data.get(finalPosition));
+                DialogFragmentEditExpenseName editExpenseNameDialogFragment = DialogFragmentEditExpenseName.newInstance(data.get(finalPosition));
                 editExpenseNameDialogFragment.setTargetFragment(targetFragment, Constants.EDIT_EXPENSE_NAME_REQUEST_CODE);
                 editExpenseNameDialogFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), Constants.EDIT_DIALOG_TAG);
             }

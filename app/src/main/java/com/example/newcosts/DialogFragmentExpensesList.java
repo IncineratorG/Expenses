@@ -15,7 +15,7 @@ import android.widget.ListView;
  * TODO: Add a class header comment
  */
 
-public class ExpensesListDialogFragment extends DialogFragment {
+public class DialogFragmentExpensesList extends DialogFragment {
     static ExpensesDataUnit[] data;
 
     public interface ExpenseListDialogCallback {
@@ -24,9 +24,9 @@ public class ExpensesListDialogFragment extends DialogFragment {
 
     public ExpenseListDialogCallback callback;
 
-    static ExpensesListDialogFragment newInstance(ExpensesDataUnit[] d) {
+    static DialogFragmentExpensesList newInstance(ExpensesDataUnit[] d) {
         data = d;
-        return new ExpensesListDialogFragment();
+        return new DialogFragmentExpensesList();
     }
 
 

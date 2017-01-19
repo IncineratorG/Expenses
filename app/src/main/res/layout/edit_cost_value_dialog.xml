@@ -95,7 +95,8 @@
             style="?android:attr/borderlessButtonStyle"
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textSize="18sp"
-            android:textColor="@drawable/button_text_color" />
+            android:textColor="@drawable/button_text_color"
+            android:fontFamily="sans-serif" />
 
         <Button
             android:text="@string/delete_btn"

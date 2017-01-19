@@ -19,7 +19,7 @@ import android.widget.TextView;
 import java.util.Calendar;
 
 
-public class ActivityInputData extends AppCompatActivity implements MyDatePicker.MyDatePickerCallback, ExpensesListDialogFragment.ExpenseListDialogCallback {
+public class ActivityInputData extends AppCompatActivity implements DialogDatePicker.MyDatePickerCallback, DialogFragmentExpensesList.ExpenseListDialogCallback {
 
     private TextView signTextView;
     private EditText inputValueEditText, inputNoteEditText;
@@ -111,7 +111,7 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
                     CostsDB cdb = CostsDB.getInstance(ActivityInputData.this);
                     ExpensesDataUnit[] dataForExpensesListDialog = cdb.getActiveCostNames_V3();
 
-                    ExpensesListDialogFragment expensesListDialogFragment = ExpensesListDialogFragment.newInstance(dataForExpensesListDialog);
+                    DialogFragmentExpensesList expensesListDialogFragment = DialogFragmentExpensesList.newInstance(dataForExpensesListDialog);
                     expensesListDialogFragment.show(getSupportFragmentManager(), Constants.EXPENSES_LIST_DIALOG_TAG);
                 }
             });
@@ -148,7 +148,7 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
                     CostsDB cdb = CostsDB.getInstance(ActivityInputData.this);
                     ExpensesDataUnit[] dataForExpensesListDialog = cdb.getActiveCostNames_V3();
 
-                    ExpensesListDialogFragment expensesListDialogFragment = ExpensesListDialogFragment.newInstance(dataForExpensesListDialog);
+                    DialogFragmentExpensesList expensesListDialogFragment = DialogFragmentExpensesList.newInstance(dataForExpensesListDialog);
                     expensesListDialogFragment.show(getSupportFragmentManager(), Constants.EXPENSES_LIST_DIALOG_TAG);
                 }
             });
@@ -179,11 +179,11 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
                 calculateInputValues();
                 // При редактировании элемента устанавливаем дату, соответсвующую данному элементу
                 if (MODE == Constants.INPUT_MODE) {
-                    MyDatePicker datePicker = new MyDatePicker(ActivityInputData.this);
+                    DialogDatePicker datePicker = new DialogDatePicker(ActivityInputData.this);
                     datePicker.show();
                 }
                 if (MODE == Constants.EDIT_MODE) {
-                    MyDatePicker datePicker = new MyDatePicker(ActivityInputData.this, selectedDataUnit.getMilliseconds());
+                    DialogDatePicker datePicker = new DialogDatePicker(ActivityInputData.this, selectedDataUnit.getMilliseconds());
                     datePicker.show();
                 }
                 break;
@@ -376,7 +376,7 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
         // Возвращаемся к предыдущему экрану
         switch (PREVIOUS_ACTIVITY_INDEX) {
             case Constants.FRAGMENT_CURRENT_MONTH_SCREEN:
-                Intent currentMonthScreenIntent = new Intent(ActivityInputData.this, MainActivityWithFragments.class);
+                Intent currentMonthScreenIntent = new Intent(ActivityInputData.this, ActivityMainWithFragments.class);
                 currentMonthScreenIntent.putExtra(Constants.PREVIOUS_ACTIVITY_INDEX, Constants.EDIT_DATA_ACTIVITY);
                 currentMonthScreenIntent.putExtra(Constants.SAVED_VALUE, savedValue);
                 currentMonthScreenIntent.putExtra(Constants.TARGET_TAB, Constants.FRAGMENT_CURRENT_MONTH_SCREEN);
@@ -384,7 +384,7 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
                 startActivity(currentMonthScreenIntent);
                 break;
             case Constants.FRAGMENT_LAST_ENTERED_VALUES_SCREEN:
-                Intent lastEnteredValuesScreenIntent = new Intent(ActivityInputData.this, MainActivityWithFragments.class);
+                Intent lastEnteredValuesScreenIntent = new Intent(ActivityInputData.this, ActivityMainWithFragments.class);
                 lastEnteredValuesScreenIntent.putExtra(Constants.PREVIOUS_ACTIVITY_INDEX, Constants.EDIT_DATA_ACTIVITY);
                 lastEnteredValuesScreenIntent.putExtra(Constants.SAVED_VALUE, savedValue);
                 lastEnteredValuesScreenIntent.putExtra(Constants.TARGET_TAB, Constants.FRAGMENT_LAST_ENTERED_VALUES_SCREEN);
@@ -392,7 +392,7 @@ public class ActivityInputData extends AppCompatActivity implements MyDatePicker
                 startActivity(lastEnteredValuesScreenIntent);
                 break;
             case Constants.STATISTIC_DETAILED_ACTIVITY:
-                Intent statisticDetailedActivityIntent = new Intent(ActivityInputData.this, StatisticExpenseTypeDetailedActivity.class);
+                Intent statisticDetailedActivityIntent = new Intent(ActivityInputData.this, ActivityStatisticExpenseTypeDetailed.class);
                 statisticDetailedActivityIntent.putExtra(Constants.PREVIOUS_ACTIVITY_INDEX, Constants.EDIT_DATA_ACTIVITY);
                 statisticDetailedActivityIntent.putExtra(Constants.SAVED_VALUE, savedValue);
                 statisticDetailedActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

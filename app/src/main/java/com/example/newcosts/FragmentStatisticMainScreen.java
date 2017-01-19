@@ -1,24 +1,15 @@
 package com.example.newcosts;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 
 import java.util.List;
 
@@ -67,7 +58,7 @@ public class FragmentStatisticMainScreen extends Fragment {
         statisticMainScreenRecyclerViewAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position) {
-                Intent statisticDetailedActivityIntent = new Intent(context, StatisticDetailedActivity.class);
+                Intent statisticDetailedActivityIntent = new Intent(context, ActivityStatisticDetailed.class);
                 statisticDetailedActivityIntent.putExtra(Constants.STATISTIC_DETAILED_ACTIVITY_MODE, Constants.STATISTIC_DETAILED_ACTIVITY_MODE_BY_MONTHS);
                 statisticDetailedActivityIntent.putExtra(Constants.DATA_FOR_STATISTIC_DETAILED_ACTIVITY, sumByMonthList.get(position));
                 startActivity(statisticDetailedActivityIntent);
@@ -78,7 +69,7 @@ public class FragmentStatisticMainScreen extends Fragment {
 
     // Вызов диалога ручного задания периода просмотра статистики расходов
     public void onChoseStatisticPeriodButtonClick(View view) {
-        ChooseStatisticPeriodDialogFragment choosePeriodDialog = ChooseStatisticPeriodDialogFragment.newInstance(context);
+        DialogFragmentChooseStatisticPeriod choosePeriodDialog = DialogFragmentChooseStatisticPeriod.newInstance(context);
         choosePeriodDialog.setTargetFragment(FragmentStatisticMainScreen.this, Constants.CHOOSE_STATISTIC_PERIOD_REQUEST_CODE);;
         choosePeriodDialog.show(getFragmentManager(), Constants.CHOOSE_STATISTIC_PERIOD_DIALOG_TAG);
     }
@@ -100,7 +91,7 @@ public class FragmentStatisticMainScreen extends Fragment {
                 startingDateDataUnit = data.getExtras().getParcelable(Constants.STARTING_DATE_LABEL);
                 endingDateDataUnit = data.getExtras().getParcelable(Constants.ENDING_DATE_LABEL);
 
-                Intent statisticDetailedActivityIntent = new Intent(context, StatisticDetailedActivity.class);
+                Intent statisticDetailedActivityIntent = new Intent(context, ActivityStatisticDetailed.class);
                 statisticDetailedActivityIntent.putExtra(Constants.STATISTIC_DETAILED_ACTIVITY_MODE, Constants.STATISTIC_DETAILED_ACTIVITY_MODE_CUSTOM_DATE);
                 statisticDetailedActivityIntent.putExtra(Constants.STARTING_DATE_LABEL, startingDateDataUnit);
                 statisticDetailedActivityIntent.putExtra(Constants.ENDING_DATE_LABEL, endingDateDataUnit);

@@ -23,4 +23,6 @@
 
     <color name="darkGrey">#9E9E9E</color>
 
+    <color name="smsBodyGreen">#00E676</color>
+
 </resources>

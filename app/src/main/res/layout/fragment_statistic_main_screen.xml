@@ -7,7 +7,7 @@
     android:paddingLeft="0sp"
     android:paddingRight="0sp"
     android:paddingTop="0sp"
-    tools:context=".MainActivityWithFragments">
+    tools:context=".ActivityMainWithFragments">
 
     <LinearLayout
         android:orientation="vertical"

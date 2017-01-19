@@ -44,6 +44,18 @@ public class ExpensesDataUnit implements Parcelable {
     public boolean HAS_NOTE = false;
 
     public ExpensesDataUnit() {}
+    public ExpensesDataUnit(ExpensesDataUnit dataUnit) {
+        expenseId_N = dataUnit.getExpenseId_N();
+        day = dataUnit.getDay();
+        month = dataUnit.getMonth();
+        year = dataUnit.getYear();
+        milliseconds = dataUnit.getMilliseconds();
+        expenseValueDouble = dataUnit.getExpenseValueDouble();
+        expenseValueString = dataUnit.getExpenseValueString();
+        expenseName = dataUnit.getExpenseName();
+        expenseNoteString = dataUnit.getExpenseNoteString();
+        HAS_NOTE = dataUnit.HAS_NOTE;
+    }
 
     public void setExpenseId_N(int id) { expenseId_N = id; }
     public void setDay(int day) { this.day = day; }

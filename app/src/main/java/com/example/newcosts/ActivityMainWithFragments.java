@@ -1,5 +1,6 @@
 package com.example.newcosts;
 
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -9,11 +10,12 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Calendar;
 
-public class MainActivityWithFragments extends AppCompatActivity {
+public class ActivityMainWithFragments extends AppCompatActivity {
 
     private int PREVIOUS_ACTIVITY_INDEX = -1;
     private int TARGET_TAB = -1;
@@ -27,6 +29,15 @@ public class MainActivityWithFragments extends AppCompatActivity {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
         toolbar.setTitle("Мои расходы");
         setSupportActionBar(toolbar);
+
+        ImageView creditCardImageView = (ImageView) findViewById(R.id.activity_main_credit_card_imageview);
+        creditCardImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent smsExpensesReaderActitvityIntent = new Intent(ActivityMainWithFragments.this, ActivitySmsExpensesReader.class);
+                startActivity(smsExpensesReaderActitvityIntent);
+            }
+        });
 
         final TabLayout mainActivityTabLayout = (TabLayout) findViewById(R.id.activity_main_tab_layout);
         mainActivityTabLayout.addTab(mainActivityTabLayout.newTab().setText("Tab 1"));
@@ -63,11 +74,6 @@ public class MainActivityWithFragments extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 mainActivityViewPager.setCurrentItem(tab.getPosition());
                 mainActivityViewPagerAdapter.notifyDataSetChanged();
-
-//                Fragment f = (Fragment) mainActivityViewPagerAdapter.instantiateItem(null, 0);
-//                View view = f.getView();
-//                TextView tv = (TextView) view.findViewById(R.id.current_month_screen_overall_value_textview);
-//                tv.setText("none");
             }
 
             @Override
