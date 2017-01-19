@@ -45,7 +45,9 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/activity_sms_expenses_reader_recycler_view" />
+        android:id="@+id/activity_sms_expenses_reader_recycler_view"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp" />
 
 
 </LinearLayout>
