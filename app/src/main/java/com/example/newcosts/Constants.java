@@ -3,6 +3,8 @@ package com.example.newcosts;
 
 import android.graphics.Color;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -87,8 +89,11 @@ public class Constants {
 
 
     public static String formatDigit(double d) {
-        NumberFormat format = NumberFormat.getInstance(Locale.UK);
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
+        DecimalFormat format = (DecimalFormat) numberFormat;
         format.setGroupingUsed(false);
+        format.applyPattern("#.##");
+        format.setRoundingMode(RoundingMode.CEILING);
 
         return format.format(d);
     }

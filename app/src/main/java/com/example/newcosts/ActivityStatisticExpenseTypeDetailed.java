@@ -10,7 +10,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
 
@@ -41,6 +44,7 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
         TextView toolBarTextView = (TextView) toolbar.findViewById(R.id.activity_statistic_cost_type_detailed_toolbar_textview);
         TextView expenseNameTextView = (TextView) findViewById(R.id.activity_statistic_cost_type_detailed_expense_name_textview);
         TextView expenseValueTextView = (TextView) findViewById(R.id.activity_statistic_cost_type_detailed_overall_value_textview);
+        TextView perDayExpensesTextView = (TextView) findViewById(R.id.activity_statistic_cost_type_detailed_per_day_textview);
 
         CostsDB cdb = CostsDB.getInstance(this);
 
@@ -67,6 +71,23 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
                 if (chosenExpenseTypeDataUnit == null)
                     return;
 
+                // Определяем количество дней в выбранном месяце. Если выбран
+                // текущий месяц - оиспользуем количество дней, прошедших с начала месяца
+                Calendar calendar = new GregorianCalendar();
+                int daysInMonth = calendar.get(Calendar.DAY_OF_MONTH);
+                if (chosenExpenseTypeDataUnit.getMonth() != (int) calendar.get(Calendar.MONTH) ||
+                        chosenExpenseTypeDataUnit.getYear() != (int) calendar.get(Calendar.YEAR))
+                {
+                    calendar.set(Calendar.DAY_OF_MONTH, 1);
+                    calendar.set(Calendar.YEAR, chosenExpenseTypeDataUnit.getYear());
+                    calendar.set(Calendar.MONTH, chosenExpenseTypeDataUnit.getMonth());
+                    daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                }
+
+                // Устанавливаем средний расход в день
+                double averageExpensesPerDay = chosenExpenseTypeDataUnit.getExpenseValueDouble() / daysInMonth;
+                perDayExpensesTextView.setText(Constants.formatDigit(averageExpensesPerDay) + " руб./день");
+
                 // Отображаем выбранный период просмотра
                 toolBarTextView.setText(Constants.MONTH_NAMES[chosenExpenseTypeDataUnit.getMonth()] + " " +
                         chosenExpenseTypeDataUnit.getYear());
@@ -87,6 +108,15 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
                 endingDateDataUnit = expenseDataBundle.getParcelable(Constants.ENDING_DATE_LABEL);
                 if (startingDateDataUnit == null || endingDateDataUnit == null || chosenExpenseTypeDataUnit == null)
                     return;
+
+                // Подсчитывем количество дней в выбранном периоде
+                long chosenAmountOfDays = TimeUnit.DAYS.convert(endingDateDataUnit.getMilliseconds() - startingDateDataUnit.getMilliseconds(), TimeUnit.MILLISECONDS);
+                if (chosenAmountOfDays == 0)
+                    chosenAmountOfDays = 1;
+
+                // Устанавливаем средний расход в день
+                double averageExpensesPerDay = chosenExpenseTypeDataUnit.getExpenseValueDouble() / chosenAmountOfDays;
+                perDayExpensesTextView.setText(Constants.formatDigit(averageExpensesPerDay) + " руб./день");
 
                 // Отображаем выбранный период просмотра
                 toolBarTextView.setText(new StringBuilder()
