@@ -140,7 +140,8 @@
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/activity_statistic_cost_type_detailed_recycler_view" />
+                android:id="@+id/activity_statistic_cost_type_detailed_recycler_view"
+                android:paddingBottom="5dp" />
         </LinearLayout>
 
     </LinearLayout>

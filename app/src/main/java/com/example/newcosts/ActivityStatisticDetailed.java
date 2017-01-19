@@ -137,9 +137,8 @@ public class ActivityStatisticDetailed extends AppCompatActivity {
                 for (ExpensesDataUnit dataUnit : expensesDataUnitList)
                     overallExpensesValueForChosenPeriod = overallExpensesValueForChosenPeriod + dataUnit.getExpenseValueDouble();
 
-                // Усьанавливаем средний расход в день
+                // Устанавливаем средний расход в день
                 double averageExpensesPerDay = overallExpensesValueForChosenPeriod / chosenAmountOfDays;
-                System.out.println(averageExpensesPerDay);
                 perDayExpensesTextView.setText(Constants.formatDigit(averageExpensesPerDay) + " руб./день");
 
                 // Устанавливаем суммарное значение за выбранный период

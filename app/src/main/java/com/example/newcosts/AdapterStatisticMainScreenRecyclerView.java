@@ -55,15 +55,21 @@ public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter
             holder.dateLayout.setVisibility(View.VISIBLE);
             holder.yearTextView.setText(data.get(position).getYear() + "-й год");
 
-            // Получаем величину расходов за один год
+            // Получаем величину расходов за год
             double overallExpenseValueForYear = data.get(position).getExpenseValueDouble();
             int i = position + 1;
+            int count = 1;
             while (i < data.size() && data.get(i).getYear() == data.get(i - 1).getYear())
             {
                 overallExpenseValueForYear = overallExpenseValueForYear + data.get(i).getExpenseValueDouble();
                 ++i;
+                ++count;
             }
 
+            // Получаем величину расходов в месяц
+            double expenseValuePerMonth = overallExpenseValueForYear / count;
+
+            holder.perMonthValueTextView.setText(Constants.formatDigit(expenseValuePerMonth) + " руб./мес.");
             holder.yearValueTextView.setText(Constants.formatDigit(overallExpenseValueForYear) + " руб.");
         }
 
@@ -90,6 +96,7 @@ public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter
         private TextView expensesValueTextView;
         private TextView yearTextView;
         private TextView yearValueTextView;
+        private TextView perMonthValueTextView;
 
 
         public FragmentStatisticMainScreenViewHolder(View itemView) {
@@ -99,6 +106,7 @@ public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter
             expensesValueTextView = (TextView) itemView.findViewById(R.id.fragment_statistic_main_screen_expenses_value_textview);
             yearTextView = (TextView) itemView.findViewById(R.id.fragment_statistic_main_screen_year_textview);
             yearValueTextView = (TextView) itemView.findViewById(R.id.fragment_statistic_main_screen_year_value_textview);
+            perMonthValueTextView = (TextView) itemView.findViewById(R.id.fragment_statistic_main_screen_per_month_value_textview);
 
             dateLayout = (LinearLayout) itemView.findViewById(R.id.fragment_statistic_main_screen_date_layout);
 

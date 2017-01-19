@@ -18,7 +18,7 @@ import java.util.List;
 public class SmsNotesDB extends SQLiteOpenHelper {
 
 
-    private static final String tag = "CostsDbTag";
+    private static final String tag = "DB_Tag";
     private static SmsNotesDB dbInstance;
 
     private static final int DATABASE_VERSION = 1;
@@ -29,6 +29,8 @@ public class SmsNotesDB extends SQLiteOpenHelper {
     private static final String NOTES_ID = "id_notes";
     private static final String EXPENSES_ID = "id_expenses";
     private static final String NOTE_TEXT = "note_text";
+    private static final String SMS_MILLIS = "sms_millis";
+    private static final String VALUE = "value";
     // **********************************************************
 
 
@@ -51,7 +53,9 @@ public class SmsNotesDB extends SQLiteOpenHelper {
         String createTableNotes = "CREATE TABLE " + TABLE_NOTES + " (" +
                 NOTES_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 EXPENSES_ID + " INTEGER, " +
-                NOTE_TEXT + " TEXT)";
+                NOTE_TEXT + " TEXT, " +
+                SMS_MILLIS + " INTEGER, " +
+                VALUE + " REAL)";
 
         db.execSQL(createTableNotes);
     }
