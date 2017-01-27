@@ -36,6 +36,13 @@ public class AdapterStatisticExpenseTypeDetailedRecyclerView extends RecyclerVie
         calendar = Calendar.getInstance();
     }
 
+
+    public void swapData(List<ExpensesDataUnit> newDataList) {
+        data = newDataList;
+        notifyDataSetChanged();
+    }
+
+
     @Override
     public int getItemCount() {
         return data == null ? 0 : data.size();

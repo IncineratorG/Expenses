@@ -129,7 +129,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingEnd="5dp"
@@ -137,11 +137,19 @@
             android:paddingRight="5dp"
             android:paddingStart="5dp">
 
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/activity_statistic_cost_type_detailed_spinner"
+                android:gravity="right|center_vertical|end"
+                android:layout_gravity="right|end" />
+
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/activity_statistic_cost_type_detailed_recycler_view"
-                android:paddingBottom="5dp" />
+                android:paddingBottom="5dp"
+                android:layout_marginTop="5dp" />
         </LinearLayout>
 
     </LinearLayout>

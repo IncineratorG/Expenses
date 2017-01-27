@@ -7,9 +7,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -17,11 +20,22 @@ import java.util.concurrent.TimeUnit;
 
 public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
 
-//    private int PREVIOUS_ACTIVITY = -1;
     private int STATISTIC_DETAILED_ACTIVITY_MODE = -1;
     private ExpensesDataUnit statisticDetailedActivityDataUnit;
     private ExpensesDataUnit startingDateDataUnit;
     private ExpensesDataUnit endingDateDataUnit;
+    private List<ExpensesDataUnit> originalDataUnitList;
+    private AdapterStatisticExpenseTypeDetailedRecyclerView expenseTypeDetailedAdapter;
+    private RecyclerView recyclerView;
+
+    private int CURRENT_SORT_TYPE = 0;
+    private static final int SORT_BY_DATE_ASCENDING = 0;
+    private static final int SORT_BY_DATE_DESCENDING = 1;
+    private static final int SORT_BY_DAILY_SUM_ASCENDING = 2;
+    private static final int SORT_BY_DAILY_SUM_DESCENDING = 3;
+//    private List<List<ExpensesDataUnit>> sortedListsList = new ArrayList<>(4);
+
+    private List<ExpensesDataUnit> currentDataUnitList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +45,7 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.activity_statistic_cost_type_detailed_toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
+
 
         // При нажатии стрелки назад - возвращаемся к предыдущему экрану
         ImageView arrowBackImageView = (ImageView) findViewById(R.id.activity_statistic_cost_type_detailed_arrow_back);
@@ -49,7 +64,7 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
         CostsDB cdb = CostsDB.getInstance(this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_statistic_cost_type_detailed_recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.activity_statistic_cost_type_detailed_recycler_view);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         Bundle expenseDataBundle = getIntent().getExtras();
@@ -93,12 +108,14 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
                         chosenExpenseTypeDataUnit.getYear());
 
                 // Получаем список всех расходов по выбранной катнгории за выбранной период
-                List<ExpensesDataUnit> dataUnitList = cdb.getCostValuesArrayOnDateAndCostName_V2(chosenExpenseTypeDataUnit.getMonth(),
+                originalDataUnitList = cdb.getCostValuesArrayOnDateAndCostName_V2(chosenExpenseTypeDataUnit.getMonth(),
                         chosenExpenseTypeDataUnit.getYear(),
                         chosenExpenseTypeDataUnit.getExpenseId_N(),
                         chosenExpenseTypeDataUnit.getExpenseName());
+//                currentDataUnitList = originalDataUnitList;
+//                sortedListsList.add(currentDataUnitList);
 
-                AdapterStatisticExpenseTypeDetailedRecyclerView expenseTypeDetailedAdapter = new AdapterStatisticExpenseTypeDetailedRecyclerView(dataUnitList, this);
+                expenseTypeDetailedAdapter = new AdapterStatisticExpenseTypeDetailedRecyclerView(originalDataUnitList, this);
                 recyclerView.setAdapter(expenseTypeDetailedAdapter);
             }
             break;
@@ -133,17 +150,173 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
                         .append(endingDateDataUnit.getYear())
                         .toString());
 
-                List<ExpensesDataUnit> dataUnitList = cdb.getCostsBetweenDatesByName_V2(startingDateDataUnit.getMilliseconds(),
-                                                    endingDateDataUnit.getMilliseconds(),
-                                                    chosenExpenseTypeDataUnit.getExpenseName(),
-                                                    chosenExpenseTypeDataUnit.getExpenseId_N());
+                originalDataUnitList = cdb.getCostsBetweenDatesByName_V2(startingDateDataUnit.getMilliseconds(),
+                        endingDateDataUnit.getMilliseconds(),
+                        chosenExpenseTypeDataUnit.getExpenseName(),
+                        chosenExpenseTypeDataUnit.getExpenseId_N());
+//                currentDataUnitList = new ArrayList<>(originalDataUnitList);
 
-                AdapterStatisticExpenseTypeDetailedRecyclerView expenseTypeDetailedAdapter = new AdapterStatisticExpenseTypeDetailedRecyclerView(dataUnitList, this);
+                expenseTypeDetailedAdapter = new AdapterStatisticExpenseTypeDetailedRecyclerView(originalDataUnitList, this);
                 recyclerView.setAdapter(expenseTypeDetailedAdapter);
             }
             break;
         }
+
+
+        Spinner sortingTypeSpinner = (Spinner) findViewById(R.id.activity_statistic_cost_type_detailed_spinner);
+        AdapterStatisticExpenseTypeDetailedSpinner sortingTypeSpinnerAdapter
+                = new AdapterStatisticExpenseTypeDetailedSpinner(this);
+        sortingTypeSpinner.setAdapter(sortingTypeSpinnerAdapter);
+        sortingTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case SORT_BY_DATE_ASCENDING:
+                        if (CURRENT_SORT_TYPE != SORT_BY_DATE_ASCENDING)
+                            expenseTypeDetailedAdapter.swapData(originalDataUnitList);
+
+                        CURRENT_SORT_TYPE = SORT_BY_DATE_ASCENDING;
+                        break;
+                    case SORT_BY_DATE_DESCENDING:
+                        if (CURRENT_SORT_TYPE == SORT_BY_DATE_DESCENDING)
+                            return;
+
+                        List<ExpensesDataUnit> descendingSortedDataUnitList = new ArrayList<>(originalDataUnitList.size());
+                        for (int i = originalDataUnitList.size() - 1; i >= 0; --i)
+                            descendingSortedDataUnitList.add(originalDataUnitList.get(i));
+                        expenseTypeDetailedAdapter.swapData(descendingSortedDataUnitList);
+
+                        CURRENT_SORT_TYPE = SORT_BY_DATE_DESCENDING;
+                        break;
+                    case SORT_BY_DAILY_SUM_ASCENDING:
+                        if (CURRENT_SORT_TYPE == SORT_BY_DAILY_SUM_ASCENDING)
+                            return;
+
+                        List<ExpensesDataUnit> ascendingSortedByDailySumDataUnitList =
+                                sortExpensesByDailySum(SORT_BY_DAILY_SUM_ASCENDING);
+                        expenseTypeDetailedAdapter.swapData(ascendingSortedByDailySumDataUnitList);
+
+                        CURRENT_SORT_TYPE = SORT_BY_DAILY_SUM_ASCENDING;
+                        break;
+                    case SORT_BY_DAILY_SUM_DESCENDING:
+                        if (CURRENT_SORT_TYPE == SORT_BY_DAILY_SUM_DESCENDING)
+                            return;
+
+                        List<ExpensesDataUnit> descendingSortedByDailySumDataUnitList =
+                                sortExpensesByDailySum(SORT_BY_DAILY_SUM_DESCENDING);
+                        expenseTypeDetailedAdapter.swapData(descendingSortedByDailySumDataUnitList);
+
+                        CURRENT_SORT_TYPE = SORT_BY_DAILY_SUM_DESCENDING;
+                        break;
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
+
+
+    private List<ExpensesDataUnit> sortExpensesByDailySum(int sortType) {
+        List<ExpensesDataUnit> sortedByDailySumDataUnitList = new ArrayList<>(originalDataUnitList.size());
+
+        List<Double> sumByDaysList = new ArrayList<>();
+        List<List<ExpensesDataUnit>> groupedByDaysDataUnitsList = new ArrayList<>();
+
+        // Находим суммы затрат за каждый отдельный день
+        int unitListNewDayIndex = 0;
+        while (true) {
+            double overallValueForSingleDay = originalDataUnitList.get(unitListNewDayIndex).getExpenseValueDouble();
+            List<ExpensesDataUnit> expensesDataUnitsForSingleDay = new ArrayList<>();
+            expensesDataUnitsForSingleDay.add(originalDataUnitList.get(unitListNewDayIndex));
+
+            int i = 0;
+            for (i = unitListNewDayIndex + 1; i < originalDataUnitList.size(); ++i) {
+                if (originalDataUnitList.get(i).getDay() == originalDataUnitList.get(i - 1).getDay()
+                        && originalDataUnitList.get(i).getMonth() == originalDataUnitList.get(i -1).getMonth()
+                        && originalDataUnitList.get(i).getYear() == originalDataUnitList.get(i - 1).getYear())
+                {
+                    overallValueForSingleDay = overallValueForSingleDay + originalDataUnitList.get(i).getExpenseValueDouble();
+                    expensesDataUnitsForSingleDay.add(originalDataUnitList.get(i));
+                }
+                else
+                {
+                    break;
+                }
+            }
+            sumByDaysList.add(overallValueForSingleDay);
+            groupedByDaysDataUnitsList.add(expensesDataUnitsForSingleDay);
+
+            unitListNewDayIndex = i;
+            if (unitListNewDayIndex >= originalDataUnitList.size())
+                break;
+        }
+
+
+        switch (sortType) {
+            case SORT_BY_DAILY_SUM_ASCENDING:
+
+                for (int i = 0; i < sumByDaysList.size(); ++i) {
+                    for (int j = i + 1; j < sumByDaysList.size(); ++j) {
+                        if (sumByDaysList.get(j) < sumByDaysList.get(i)) {
+                            double tempValueDouble = sumByDaysList.get(i);
+                            List<ExpensesDataUnit> tempValueList = groupedByDaysDataUnitsList.get(i);
+
+                            sumByDaysList.set(i, sumByDaysList.get(j));
+                            sumByDaysList.set(j, tempValueDouble);
+                            groupedByDaysDataUnitsList.set(i, groupedByDaysDataUnitsList.get(j));
+                            groupedByDaysDataUnitsList.set(j, tempValueList);
+                        }
+                    }
+                }
+
+                for (List<ExpensesDataUnit> singleDayDataUnitList : groupedByDaysDataUnitsList) {
+                    for (ExpensesDataUnit singleDataUnit : singleDayDataUnitList)
+                        sortedByDailySumDataUnitList.add(singleDataUnit);
+                }
+
+                break;
+            case SORT_BY_DAILY_SUM_DESCENDING:
+
+                for (int i = 0; i < sumByDaysList.size(); ++i) {
+                    for (int j = i + 1; j < sumByDaysList.size(); ++j) {
+                        if (sumByDaysList.get(j) > sumByDaysList.get(i)) {
+                            double tempValueDouble = sumByDaysList.get(i);
+                            List<ExpensesDataUnit> tempValueList = groupedByDaysDataUnitsList.get(i);
+
+                            sumByDaysList.set(i, sumByDaysList.get(j));
+                            sumByDaysList.set(j, tempValueDouble);
+                            groupedByDaysDataUnitsList.set(i, groupedByDaysDataUnitsList.get(j));
+                            groupedByDaysDataUnitsList.set(j, tempValueList);
+                        }
+                    }
+                }
+
+                for (List<ExpensesDataUnit> singleDayDataUnitList : groupedByDaysDataUnitsList) {
+                    for (ExpensesDataUnit singleDataUnit : singleDayDataUnitList)
+                        sortedByDailySumDataUnitList.add(singleDataUnit);
+                }
+
+                break;
+        }
+
+        return sortedByDailySumDataUnitList;
+    }
+
+
+
+    public void reverseCurrentDataList() {
+        for (int i = 0; i < currentDataUnitList.size() / 2; ++i) {
+            ExpensesDataUnit temp = currentDataUnitList.get(i);
+            currentDataUnitList.set(i, currentDataUnitList.get(currentDataUnitList.size() - 1 - i));
+            currentDataUnitList.set(currentDataUnitList.size() - 1 - i, temp);
+        }
+    }
+
+
 
     // Возвращаемся к предыдущему экрану
     private void returnToPreviousActivity() {
