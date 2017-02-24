@@ -1,27 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.example.newcosts;
 
 import android.os.Parcel;
@@ -31,7 +7,7 @@ import android.os.Parcelable;
  * TODO: Add a class header comment
  */
 
-public class ExpensesDataUnit implements Parcelable {
+public class DataUnitExpenses implements Parcelable {
     private int expenseId_N = -1;
     private int day = -1;
     private int month = -1;
@@ -43,8 +19,8 @@ public class ExpensesDataUnit implements Parcelable {
     private String expenseNoteString = "";
     public boolean HAS_NOTE = false;
 
-    public ExpensesDataUnit() {}
-    public ExpensesDataUnit(ExpensesDataUnit dataUnit) {
+    public DataUnitExpenses() {}
+    public DataUnitExpenses(DataUnitExpenses dataUnit) {
         expenseId_N = dataUnit.getExpenseId_N();
         day = dataUnit.getDay();
         month = dataUnit.getMonth();
@@ -90,6 +66,9 @@ public class ExpensesDataUnit implements Parcelable {
     public int getYear() { return year; }
 
 
+
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -109,7 +88,7 @@ public class ExpensesDataUnit implements Parcelable {
         dest.writeByte(this.HAS_NOTE ? (byte) 1 : (byte) 0);
     }
 
-    protected ExpensesDataUnit(Parcel in) {
+    protected DataUnitExpenses(Parcel in) {
         this.expenseId_N = in.readInt();
         this.day = in.readInt();
         this.month = in.readInt();
@@ -122,15 +101,15 @@ public class ExpensesDataUnit implements Parcelable {
         this.HAS_NOTE = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<ExpensesDataUnit> CREATOR = new Parcelable.Creator<ExpensesDataUnit>() {
+    public static final Parcelable.Creator<DataUnitExpenses> CREATOR = new Parcelable.Creator<DataUnitExpenses>() {
         @Override
-        public ExpensesDataUnit createFromParcel(Parcel source) {
-            return new ExpensesDataUnit(source);
+        public DataUnitExpenses createFromParcel(Parcel source) {
+            return new DataUnitExpenses(source);
         }
 
         @Override
-        public ExpensesDataUnit[] newArray(int size) {
-            return new ExpensesDataUnit[size];
+        public DataUnitExpenses[] newArray(int size) {
+            return new DataUnitExpenses[size];
         }
     };
 }

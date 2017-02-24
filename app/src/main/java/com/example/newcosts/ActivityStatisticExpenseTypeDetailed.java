@@ -21,10 +21,10 @@ import java.util.concurrent.TimeUnit;
 public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
 
     private int STATISTIC_DETAILED_ACTIVITY_MODE = -1;
-    private ExpensesDataUnit statisticDetailedActivityDataUnit;
-    private ExpensesDataUnit startingDateDataUnit;
-    private ExpensesDataUnit endingDateDataUnit;
-    private List<ExpensesDataUnit> originalDataUnitList;
+    private DataUnitExpenses statisticDetailedActivityDataUnit;
+    private DataUnitExpenses startingDateDataUnit;
+    private DataUnitExpenses endingDateDataUnit;
+    private List<DataUnitExpenses> originalDataUnitList;
     private AdapterStatisticExpenseTypeDetailedRecyclerView expenseTypeDetailedAdapter;
     private RecyclerView recyclerView;
 
@@ -35,16 +35,16 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
     private static final int SORT_BY_DAILY_SUM_DESCENDING = 3;
 //    private List<List<ExpensesDataUnit>> sortedListsList = new ArrayList<>(4);
 
-    private List<ExpensesDataUnit> currentDataUnitList;
+    private List<DataUnitExpenses> currentDataUnitList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_expense_type_detailed);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.activity_statistic_cost_type_detailed_toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
+//        final Toolbar toolbar = (Toolbar) findViewById(R.id.activity_statistic_cost_type_detailed_toolbar);
+//        toolbar.setTitle("");
+//        setSupportActionBar(toolbar);
 
 
         // При нажатии стрелки назад - возвращаемся к предыдущему экрану
@@ -56,12 +56,12 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
             }
         });
 
-        TextView toolBarTextView = (TextView) toolbar.findViewById(R.id.activity_statistic_cost_type_detailed_toolbar_textview);
+        TextView toolBarTextView = (TextView) findViewById(R.id.activity_statistic_cost_type_detailed_toolbar_textview);
         TextView expenseNameTextView = (TextView) findViewById(R.id.activity_statistic_cost_type_detailed_expense_name_textview);
         TextView expenseValueTextView = (TextView) findViewById(R.id.activity_statistic_cost_type_detailed_overall_value_textview);
         TextView perDayExpensesTextView = (TextView) findViewById(R.id.activity_statistic_cost_type_detailed_per_day_textview);
 
-        CostsDB cdb = CostsDB.getInstance(this);
+        DB_Costs cdb = DB_Costs.getInstance(this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView = (RecyclerView) findViewById(R.id.activity_statistic_cost_type_detailed_recycler_view);
@@ -72,7 +72,7 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
             return;
 
         STATISTIC_DETAILED_ACTIVITY_MODE = expenseDataBundle.getInt(Constants.STATISTIC_DETAILED_ACTIVITY_MODE);
-        ExpensesDataUnit chosenExpenseTypeDataUnit = expenseDataBundle.getParcelable(Constants.DATA_FOR_STATISTIC_COST_TYPE_DETAILED_ACTIVITY);
+        DataUnitExpenses chosenExpenseTypeDataUnit = expenseDataBundle.getParcelable(Constants.DATA_FOR_STATISTIC_COST_TYPE_DETAILED_ACTIVITY);
 
         // Отображаем название выбранной категории
         expenseNameTextView.setText(chosenExpenseTypeDataUnit.getExpenseName());
@@ -181,7 +181,7 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
                         if (CURRENT_SORT_TYPE == SORT_BY_DATE_DESCENDING)
                             return;
 
-                        List<ExpensesDataUnit> descendingSortedDataUnitList = new ArrayList<>(originalDataUnitList.size());
+                        List<DataUnitExpenses> descendingSortedDataUnitList = new ArrayList<>(originalDataUnitList.size());
                         for (int i = originalDataUnitList.size() - 1; i >= 0; --i)
                             descendingSortedDataUnitList.add(originalDataUnitList.get(i));
                         expenseTypeDetailedAdapter.swapData(descendingSortedDataUnitList);
@@ -192,7 +192,7 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
                         if (CURRENT_SORT_TYPE == SORT_BY_DAILY_SUM_ASCENDING)
                             return;
 
-                        List<ExpensesDataUnit> ascendingSortedByDailySumDataUnitList =
+                        List<DataUnitExpenses> ascendingSortedByDailySumDataUnitList =
                                 sortExpensesByDailySum(SORT_BY_DAILY_SUM_ASCENDING);
                         expenseTypeDetailedAdapter.swapData(ascendingSortedByDailySumDataUnitList);
 
@@ -202,7 +202,7 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
                         if (CURRENT_SORT_TYPE == SORT_BY_DAILY_SUM_DESCENDING)
                             return;
 
-                        List<ExpensesDataUnit> descendingSortedByDailySumDataUnitList =
+                        List<DataUnitExpenses> descendingSortedByDailySumDataUnitList =
                                 sortExpensesByDailySum(SORT_BY_DAILY_SUM_DESCENDING);
                         expenseTypeDetailedAdapter.swapData(descendingSortedByDailySumDataUnitList);
 
@@ -220,17 +220,17 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
     }
 
 
-    private List<ExpensesDataUnit> sortExpensesByDailySum(int sortType) {
-        List<ExpensesDataUnit> sortedByDailySumDataUnitList = new ArrayList<>(originalDataUnitList.size());
+    private List<DataUnitExpenses> sortExpensesByDailySum(int sortType) {
+        List<DataUnitExpenses> sortedByDailySumDataUnitList = new ArrayList<>(originalDataUnitList.size());
 
         List<Double> sumByDaysList = new ArrayList<>();
-        List<List<ExpensesDataUnit>> groupedByDaysDataUnitsList = new ArrayList<>();
+        List<List<DataUnitExpenses>> groupedByDaysDataUnitsList = new ArrayList<>();
 
         // Находим суммы затрат за каждый отдельный день
         int unitListNewDayIndex = 0;
         while (true) {
             double overallValueForSingleDay = originalDataUnitList.get(unitListNewDayIndex).getExpenseValueDouble();
-            List<ExpensesDataUnit> expensesDataUnitsForSingleDay = new ArrayList<>();
+            List<DataUnitExpenses> expensesDataUnitsForSingleDay = new ArrayList<>();
             expensesDataUnitsForSingleDay.add(originalDataUnitList.get(unitListNewDayIndex));
 
             int i = 0;
@@ -263,7 +263,7 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
                     for (int j = i + 1; j < sumByDaysList.size(); ++j) {
                         if (sumByDaysList.get(j) < sumByDaysList.get(i)) {
                             double tempValueDouble = sumByDaysList.get(i);
-                            List<ExpensesDataUnit> tempValueList = groupedByDaysDataUnitsList.get(i);
+                            List<DataUnitExpenses> tempValueList = groupedByDaysDataUnitsList.get(i);
 
                             sumByDaysList.set(i, sumByDaysList.get(j));
                             sumByDaysList.set(j, tempValueDouble);
@@ -273,8 +273,8 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
                     }
                 }
 
-                for (List<ExpensesDataUnit> singleDayDataUnitList : groupedByDaysDataUnitsList) {
-                    for (ExpensesDataUnit singleDataUnit : singleDayDataUnitList)
+                for (List<DataUnitExpenses> singleDayDataUnitList : groupedByDaysDataUnitsList) {
+                    for (DataUnitExpenses singleDataUnit : singleDayDataUnitList)
                         sortedByDailySumDataUnitList.add(singleDataUnit);
                 }
 
@@ -285,7 +285,7 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
                     for (int j = i + 1; j < sumByDaysList.size(); ++j) {
                         if (sumByDaysList.get(j) > sumByDaysList.get(i)) {
                             double tempValueDouble = sumByDaysList.get(i);
-                            List<ExpensesDataUnit> tempValueList = groupedByDaysDataUnitsList.get(i);
+                            List<DataUnitExpenses> tempValueList = groupedByDaysDataUnitsList.get(i);
 
                             sumByDaysList.set(i, sumByDaysList.get(j));
                             sumByDaysList.set(j, tempValueDouble);
@@ -295,8 +295,8 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
                     }
                 }
 
-                for (List<ExpensesDataUnit> singleDayDataUnitList : groupedByDaysDataUnitsList) {
-                    for (ExpensesDataUnit singleDataUnit : singleDayDataUnitList)
+                for (List<DataUnitExpenses> singleDayDataUnitList : groupedByDaysDataUnitsList) {
+                    for (DataUnitExpenses singleDataUnit : singleDayDataUnitList)
                         sortedByDailySumDataUnitList.add(singleDataUnit);
                 }
 
@@ -310,7 +310,7 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
 
     public void reverseCurrentDataList() {
         for (int i = 0; i < currentDataUnitList.size() / 2; ++i) {
-            ExpensesDataUnit temp = currentDataUnitList.get(i);
+            DataUnitExpenses temp = currentDataUnitList.get(i);
             currentDataUnitList.set(i, currentDataUnitList.get(currentDataUnitList.size() - 1 - i));
             currentDataUnitList.set(currentDataUnitList.size() - 1 - i, temp);
         }

@@ -5,19 +5,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 
-public class CostsDB extends SQLiteOpenHelper {
+public class DB_Costs extends SQLiteOpenHelper {
 
     /*  В базе данных месяца начинаются с 0  */
     private static final String tag = "CostsDbTag";
 
-    private static CostsDB dbInstance;
+    private static DB_Costs dbInstance;
 
 
     private static final int DATABASE_VERSION = 1;
@@ -44,15 +43,15 @@ public class CostsDB extends SQLiteOpenHelper {
     // **********************************************************
 
 
-    private CostsDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    private DB_Costs(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
     }
 
-    public static CostsDB getInstance(Context context) {
+    public static synchronized DB_Costs getInstance(Context context) {
         if (dbInstance != null)
             return dbInstance;
         else {
-            dbInstance = new CostsDB(context.getApplicationContext(), null, null, 1);
+            dbInstance = new DB_Costs(context.getApplicationContext(), null, null, 1);
             return dbInstance;
         }
     }
@@ -89,10 +88,194 @@ public class CostsDB extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public boolean COSTS_DB_IS_EMPTY() {
+        String query = "SELECT * FROM " + TABLE_COST_NAMES;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        boolean costsDbIsEmpty = true;
+
+        try {
+            c = db.rawQuery(query, null);
+            if (c.moveToFirst())
+                costsDbIsEmpty = false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return costsDbIsEmpty;
+    }
+
+    // Возвращает всё содержимое TABLE_COST_NAMES
+    public List<DataUnitTableCostNames> getAllTableCostNames() {
+        String query = "SELECT * FROM " + TABLE_COST_NAMES;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<DataUnitTableCostNames> tableCostNamesDataList = new ArrayList<>();
+
+        try {
+            c = db.rawQuery(query, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                DataUnitTableCostNames costNamesDataUnit = new DataUnitTableCostNames();
+
+                costNamesDataUnit.set_ID_N(c.getInt(c.getColumnIndex(ID_N)));
+                costNamesDataUnit.set_COST_NAME(c.getString(c.getColumnIndex(COST_NAME)));
+                costNamesDataUnit.set_IS_ACTIVE(c.getInt(c.getColumnIndex(IS_ACTIVE)));
+
+                tableCostNamesDataList.add(costNamesDataUnit);
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return tableCostNamesDataList;
+    }
+
+    // Возвращает всё содержимое TABLE_COST_VALUES
+    public List<DataUnitTableCostValues> getAllTableCostValues() {
+        String query = "SELECT * FROM " + TABLE_COST_VALUES;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<DataUnitTableCostValues> tableCostValuesDataList = new ArrayList<>();
+
+        try {
+            c = db.rawQuery(query, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                DataUnitTableCostValues costValuesDataUnit = new DataUnitTableCostValues();
+
+                costValuesDataUnit.set_ID_C(c.getInt(c.getColumnIndexOrThrow(ID_C)));
+                costValuesDataUnit.set_ID_N_FK(c.getInt(c.getColumnIndexOrThrow(ID_N_FK)));
+                costValuesDataUnit.set_DAY(c.getInt(c.getColumnIndexOrThrow(DAY)));
+                costValuesDataUnit.set_MONTH(c.getInt(c.getColumnIndexOrThrow(MONTH)));
+                costValuesDataUnit.set_YEAR(c.getInt(c.getColumnIndexOrThrow(YEAR)));
+                costValuesDataUnit.set_DATE_IN_MILLISECONDS(c.getLong(c.getColumnIndexOrThrow(DATE_IN_MILLISECONDS)));
+                costValuesDataUnit.set_COST_VALUE(c.getDouble(c.getColumnIndexOrThrow(COST_VALUE)));
+                costValuesDataUnit.set_TEXT(c.getString(c.getColumnIndexOrThrow(TEXT)));
+
+                tableCostValuesDataList.add(costValuesDataUnit);
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return tableCostValuesDataList;
+    }
+
+    public void deleteTableCostNames() {
+        String query = "DELETE FROM " + TABLE_COST_NAMES;
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL(query);
+//        db.execSQL("vacuum");
+
+        if (db != null)
+            db.close();
+    }
+
+    public void deleteTableCostValues() {
+        String query = "DELETE FROM " + TABLE_COST_VALUES;
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL(query);
+//        db.execSQL("vacuum");
+
+        if (db != null)
+            db.close();
+    }
+
+    public void restoreTableCostNames(List<DataUnitTableCostNames> restoringDataList) {
+        deleteTableCostNames();
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (DataUnitTableCostNames costNamesDataUnit : restoringDataList) {
+            ContentValues values = new ContentValues(3);
+            values.put(ID_N, costNamesDataUnit.get_ID_N());
+            values.put(COST_NAME, costNamesDataUnit.get_COST_NAME());
+            values.put(IS_ACTIVE, costNamesDataUnit.get_IS_ACTIVE());
+
+            db.insert(TABLE_COST_NAMES, null, values);
+        }
+
+        if (db != null)
+            db.close();
+    }
+
+    public void restoreTableCostValues(List<DataUnitTableCostValues> restoringDataList) {
+        deleteTableCostValues();
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (DataUnitTableCostValues costValuesDataUnit : restoringDataList) {
+            ContentValues values = new ContentValues(8);
+            values.put(ID_C, costValuesDataUnit.get_ID_C());
+            values.put(ID_N_FK, costValuesDataUnit.get_ID_N_FK());
+            values.put(DAY, costValuesDataUnit.get_DAY());
+            values.put(MONTH, costValuesDataUnit.get_MONTH());
+            values.put(YEAR, costValuesDataUnit.get_YEAR());
+            values.put(DATE_IN_MILLISECONDS, costValuesDataUnit.get_DATE_IN_MILLISECONDS());
+            values.put(COST_VALUE, costValuesDataUnit.get_COST_VALUE());
+            values.put(TEXT, costValuesDataUnit.get_TEXT());
+
+            db.insert(TABLE_COST_VALUES, null, values);
+        }
+
+        if (db != null)
+            db.close();
+    }
+
+    public void restoreTableCostValues(DataUnitTableCostValues restoringData) {
+//        deleteTableCostValues();
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues(8);
+        values.put(ID_C, restoringData.get_ID_C());
+        values.put(ID_N_FK, restoringData.get_ID_N_FK());
+        values.put(DAY, restoringData.get_DAY());
+        values.put(MONTH, restoringData.get_MONTH());
+        values.put(YEAR, restoringData.get_YEAR());
+        values.put(DATE_IN_MILLISECONDS, restoringData.get_DATE_IN_MILLISECONDS());
+        values.put(COST_VALUE, restoringData.get_COST_VALUE());
+        values.put(TEXT, restoringData.get_TEXT());
+
+        db.insert(TABLE_COST_VALUES, null, values);
+
+        if (db != null)
+            db.close();
+    }
+
+
+
+
+
+
+
 
 
     // Возвращает список из ID и названий всех активных статей расходов
-    public ExpensesDataUnit[] getActiveCostNames_V3() {
+    public DataUnitExpenses[] getActiveCostNames_V3() {
         String query = "SELECT " +
                 ID_N + ", " +
                 COST_NAME + " " +
@@ -101,14 +284,14 @@ public class CostsDB extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        List<ExpensesDataUnit> dataUnitsList = new ArrayList<>();
+        List<DataUnitExpenses> dataUnitsList = new ArrayList<>();
 
         try {
             c = db.rawQuery(query, null);
             c.moveToFirst();
 
             while (!c.isAfterLast()) {
-                ExpensesDataUnit dataUnit = new ExpensesDataUnit();
+                DataUnitExpenses dataUnit = new DataUnitExpenses();
 
                 dataUnit.setExpenseId_N(c.getInt(c.getColumnIndex(ID_N)));
                 dataUnit.setExpenseName(c.getString(c.getColumnIndex(COST_NAME)));
@@ -125,7 +308,7 @@ public class CostsDB extends SQLiteOpenHelper {
                 db.close();
         }
 
-        ExpensesDataUnit[] dataUnitsArray = new ExpensesDataUnit[dataUnitsList.size()];
+        DataUnitExpenses[] dataUnitsArray = new DataUnitExpenses[dataUnitsList.size()];
         dataUnitsList.toArray(dataUnitsArray);
 
         return dataUnitsArray;
@@ -376,7 +559,7 @@ public class CostsDB extends SQLiteOpenHelper {
     }
 
     // Возвращает заданное число последних введённых сумм расходов
-    public List<ExpensesDataUnit> getLastEntries_V3(int numberOfEntries) {
+    public List<DataUnitExpenses> getLastEntries_V3(int numberOfEntries) {
         String getLastEntriesQuery = "SELECT " +
                 ID_N + ", " +
                 DAY + ", " +
@@ -394,14 +577,14 @@ public class CostsDB extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        List<ExpensesDataUnit> listOfEntries = new ArrayList<>();
+        List<DataUnitExpenses> listOfEntries = new ArrayList<>();
 
         try {
             c = db.rawQuery(getLastEntriesQuery, null);
             c.moveToFirst();
 
             while (!c.isAfterLast()) {
-                ExpensesDataUnit singleUnit = new ExpensesDataUnit();
+                DataUnitExpenses singleUnit = new DataUnitExpenses();
 
                 singleUnit.setExpenseId_N(c.getInt(c.getColumnIndex(ID_N)));
                 singleUnit.setDay(c.getInt(c.getColumnIndex(DAY)));
@@ -485,7 +668,7 @@ public class CostsDB extends SQLiteOpenHelper {
 
     // Возвращает массив строк, состоящих из месяца, года и суммарного значения расходов
     // за эти месяц и год, сгруппированные по месяцу и году в формате: 5$1989$575
-    public List<ExpensesDataUnit> getSumByMonthsList() {
+    public List<DataUnitExpenses> getSumByMonthsList() {
         String query = "SELECT " +
                 MONTH + ", " +
                 YEAR +
@@ -496,14 +679,14 @@ public class CostsDB extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        List<ExpensesDataUnit> listOfEnteries = new ArrayList<>();
+        List<DataUnitExpenses> listOfEnteries = new ArrayList<>();
 
         try {
             c = db.rawQuery(query, null);
             c.moveToFirst();
 
             while (!c.isAfterLast()) {
-                ExpensesDataUnit dataUnit = new ExpensesDataUnit();
+                DataUnitExpenses dataUnit = new DataUnitExpenses();
                 dataUnit.setMonth(c.getInt(c.getColumnIndex(MONTH)));
                 dataUnit.setYear(c.getInt(c.getColumnIndex(YEAR)));
                 dataUnit.setExpenseValueDouble(c.getDouble(c.getColumnIndex("SUM")));
@@ -526,7 +709,7 @@ public class CostsDB extends SQLiteOpenHelper {
 
     // Возвращает массив строк, состоящих из названия статьи расходов и суммарного
     // значения расходов по этой статье за выбранный месяц в формате: Продукты$102520
-    public List<ExpensesDataUnit> getCostValuesArrayOnDate_V3(int month, int year) {
+    public List<DataUnitExpenses> getCostValuesArrayOnDate_V3(int month, int year) {
         String query = "SELECT " +
                 TABLE_COST_NAMES + "." + COST_NAME +
                 ", SUM(" + TABLE_COST_VALUES + "." + COST_VALUE + ") AS SUM, " +
@@ -545,14 +728,14 @@ public class CostsDB extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        List<ExpensesDataUnit> dataUnitList = new ArrayList<>();
+        List<DataUnitExpenses> dataUnitList = new ArrayList<>();
 
         try {
             c = db.rawQuery(query, null);
             c.moveToFirst();
 
             while (!c.isAfterLast()) {
-                ExpensesDataUnit dataUnit = new ExpensesDataUnit();
+                DataUnitExpenses dataUnit = new DataUnitExpenses();
                 dataUnit.setExpenseName(c.getString(c.getColumnIndex(COST_NAME)));
                 dataUnit.setExpenseValueDouble(c.getDouble(c.getColumnIndex("SUM")));
                 dataUnit.setExpenseValueString(Constants.formatDigit(c.getDouble(c.getColumnIndex("SUM"))));
@@ -576,7 +759,7 @@ public class CostsDB extends SQLiteOpenHelper {
     }
 
 
-    public List<ExpensesDataUnit> getCostValuesArrayOnDateAndCostName_V2(int month, int year, int id_n, String expenseName) {
+    public List<DataUnitExpenses> getCostValuesArrayOnDateAndCostName_V2(int month, int year, int id_n, String expenseName) {
         String query = "SELECT " +
                 COST_VALUE + ", " +
                 DAY + ", " +
@@ -590,14 +773,14 @@ public class CostsDB extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        List<ExpensesDataUnit> dataUnitList = new ArrayList<>();
+        List<DataUnitExpenses> dataUnitList = new ArrayList<>();
 
         try {
             c = db.rawQuery(query, null);
             c.moveToFirst();
 
             while (!c.isAfterLast()) {
-                ExpensesDataUnit dataUnit = new ExpensesDataUnit();
+                DataUnitExpenses dataUnit = new DataUnitExpenses();
                 dataUnit.setExpenseId_N(id_n);
                 dataUnit.setExpenseName(expenseName);
                 dataUnit.setMonth(month);
@@ -623,7 +806,7 @@ public class CostsDB extends SQLiteOpenHelper {
         return dataUnitList;
     }
 
-    public List<ExpensesDataUnit> getCostsBetweenDatesByName_V2(long initialDateInMilliseconds, long endingDateInMilliseconds, String expenseName, int id_n) {
+    public List<DataUnitExpenses> getCostsBetweenDatesByName_V2(long initialDateInMilliseconds, long endingDateInMilliseconds, String expenseName, int id_n) {
         String query = "SELECT " +
                 COST_VALUE + ", " +
                 DAY + ", " +
@@ -638,14 +821,14 @@ public class CostsDB extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        List<ExpensesDataUnit> expensesDataUnitList = new ArrayList<>();
+        List<DataUnitExpenses> expensesDataUnitList = new ArrayList<>();
 
         try {
             c = db.rawQuery(query, null);
             c.moveToFirst();
 
             while (!c.isAfterLast()) {
-                ExpensesDataUnit dataUnit = new ExpensesDataUnit();
+                DataUnitExpenses dataUnit = new DataUnitExpenses();
                 dataUnit.setExpenseId_N(id_n);
                 dataUnit.setExpenseName(expenseName);
                 dataUnit.setMonth(c.getInt(c.getColumnIndex(MONTH)));
@@ -725,7 +908,7 @@ public class CostsDB extends SQLiteOpenHelper {
 
         return arrayOfEntries;
     }
-    public List<ExpensesDataUnit> getCostsBetweenDates_V3(long initialDateInMilliseconds, long endingDateInMilliseconds) {
+    public List<DataUnitExpenses> getCostsBetweenDates_V3(long initialDateInMilliseconds, long endingDateInMilliseconds) {
         String query = "SELECT " +
                 TABLE_COST_NAMES + "." + COST_NAME +
                 ", SUM(" + TABLE_COST_VALUES + "." + COST_VALUE + ") AS SUM, " +
@@ -743,14 +926,14 @@ public class CostsDB extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = null;
-        List<ExpensesDataUnit> expensesDataUnitList = new ArrayList<>();
+        List<DataUnitExpenses> expensesDataUnitList = new ArrayList<>();
 
         try {
             c = db.rawQuery(query, null);
             c.moveToFirst();
 
             while (!c.isAfterLast()) {
-                ExpensesDataUnit dataUnit = new ExpensesDataUnit();
+                DataUnitExpenses dataUnit = new DataUnitExpenses();
                 dataUnit.setExpenseName(c.getString(c.getColumnIndex(COST_NAME)));
                 dataUnit.setExpenseValueDouble(c.getDouble(c.getColumnIndex("SUM")));
                 dataUnit.setExpenseValueString(Constants.formatDigit(c.getDouble(c.getColumnIndex("SUM"))));

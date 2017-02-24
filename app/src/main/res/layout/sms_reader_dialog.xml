@@ -167,7 +167,7 @@
             android:id="@+id/sms_reader_dialog_ok_button"
             android:layout_weight="1"
             android:background="@drawable/keyboard_buttons_custom"
-            android:textColor="@drawable/button_text_color" />
+            android:textColor="@drawable/button_text_color_black" />
 
         <LinearLayout
             android:orientation="horizontal"
@@ -182,7 +182,7 @@
             android:id="@+id/sms_reader_dialog_cancel_button"
             android:layout_weight="1"
             android:background="@drawable/keyboard_buttons_custom"
-            android:textColor="@drawable/button_text_color" />
+            android:textColor="@drawable/button_text_color_black" />
     </LinearLayout>
 
 </RelativeLayout>

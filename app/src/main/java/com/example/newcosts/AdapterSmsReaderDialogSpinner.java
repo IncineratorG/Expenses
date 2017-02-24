@@ -17,11 +17,11 @@ import java.util.List;
 public class AdapterSmsReaderDialogSpinner extends BaseAdapter implements SpinnerAdapter {
 
     private Context context;
-    private List<ExpensesDataUnit> dataUnitList;
+    private List<DataUnitExpenses> dataUnitList;
     private LayoutInflater inflater;
 
 
-    public AdapterSmsReaderDialogSpinner(Context context, List<ExpensesDataUnit> dataUnitList) {
+    public AdapterSmsReaderDialogSpinner(Context context, List<DataUnitExpenses> dataUnitList) {
         this.context = context;
         this.dataUnitList = dataUnitList;
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             app:srcCompat="@drawable/arrow_right"
-            android:id="@+id/imageView" />
+            android:id="@+id/current_month_screen_arrow_right_imageview" />
 
         <LinearLayout
             android:orientation="vertical"
@@ -65,7 +65,8 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/deeperGrey"></LinearLayout>
+                android:background="@color/deeperGrey"
+                android:id="@+id/current_month_screen_overall_value_underline"></LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

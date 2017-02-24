@@ -87,15 +87,14 @@
         android:layout_height="match_parent"
         android:padding="1dp"
         android:clickable="false"
-        android:focusable="false"
-        android:background="@drawable/fragment_last_entered_values_single_item_border">
+        android:focusable="false">
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:id="@+id/fragment_statistic_main_screen_layout_with_text">
+            android:id="@+id/fragment_statistic_main_screen_layout_with_text"
+            android:background="@drawable/fragment_statistic_main_screen_single_item_style">
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -117,7 +116,8 @@
                     android:textStyle="normal|bold"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5sp"
-                    android:layout_marginRight="5sp" />
+                    android:layout_marginRight="5sp"
+                    android:textColor="@drawable/button_text_color_black" />
             </LinearLayout>
 
             <LinearLayout
@@ -147,7 +147,7 @@
                         android:layout_marginRight="5sp"
                         android:layout_marginLeft="5sp"
                         android:layout_marginStart="5sp"
-                        android:textColor="@color/darkGrey" />
+                        android:textColor="@drawable/button_text_color_grey" />
                 </LinearLayout>
 
             </LinearLayout>

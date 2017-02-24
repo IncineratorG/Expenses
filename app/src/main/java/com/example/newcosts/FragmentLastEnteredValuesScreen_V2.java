@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,18 +20,15 @@ import java.util.List;
  */
 
 public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
+
+
     private Context context;
     private RecyclerView recyclerView;
-    private List<ExpensesDataUnit> listOfLastEntries;
+    private List<DataUnitExpenses> listOfLastEntries;
     private AdapterLastEnteredValuesRecyclerView_V2 lastEnteredValuesFragmentAdapter;
     private int selectedItemPosition = -1;
-    private CostsDB cdb;
-
+    private DB_Costs cdb;
     private Snackbar deleteItemSnackbar;
-
-
-
-
 
 
     @Override
@@ -53,7 +51,16 @@ public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
         super.onResume();
 
         // Получаем последние введённые значения
-        cdb = CostsDB.getInstance(context);
+        cdb = DB_Costs.getInstance(context);
+//        new AsyncTaskLoadMainActivityFragmentsData(cdb, Constants.FRAGMENT_LAST_ENTERED_VALUES_SCREEN, new CallbackValuesLoaded() {
+//            @Override
+//            public void valuesLoaded(int callingFragmentCode, List<DataUnitExpenses> data, double overallValue) {
+//                if (callingFragmentCode == Constants.FRAGMENT_LAST_ENTERED_VALUES_SCREEN) {
+//                    listOfLastEntries = data;
+//                    init();
+//                }
+//            }
+//        }).execute();
         listOfLastEntries = cdb.getLastEntries_V3(100);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
@@ -73,6 +80,29 @@ public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
             }
         });
         recyclerView.setAdapter(lastEnteredValuesFragmentAdapter);
+        Constants.lastEnteredValuesFragmentDataIsActual(true);
+    }
+
+
+    private void init() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        // При нажатии на элемент списка появляется диалоговое окно, из которого можно
+        // удалить или изменить выбранную запись
+        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView_V2(listOfLastEntries, context);
+        lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener() {
+            @Override
+            public void onItemClick(View itemView, final int position) {
+                selectedItemPosition = position;
+
+                DialogFragmentEditExpenses editDialogFragment = DialogFragmentEditExpenses.newInstance(listOfLastEntries.get(position));
+                editDialogFragment.setTargetFragment(FragmentLastEnteredValuesScreen_V2.this, Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE);
+                editDialogFragment.show(getFragmentManager(), Constants.EDIT_DIALOG_TAG);
+            }
+        });
+        recyclerView.setAdapter(lastEnteredValuesFragmentAdapter);
+        Constants.lastEnteredValuesFragmentDataIsActual(true);
     }
 
     // Обработка результата нажатия кнопок в диалоговом окне, отображающемся
@@ -84,7 +114,8 @@ public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
         if (requestCode == Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE) {
             switch (resultCode) {
                 case Constants.DELETE_ITEM:
-                    final ExpensesDataUnit deletedItem = listOfLastEntries.get(selectedItemPosition);
+                    Constants.lastEnteredValuesFragmentDataIsActual(false);
+                    final DataUnitExpenses deletedItem = listOfLastEntries.get(selectedItemPosition);
 
                     // Удаляем выбранный элемент
                     listOfLastEntries.remove(selectedItemPosition);
@@ -121,7 +152,8 @@ public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
 
                     break;
                 case Constants.EDIT_ITEM:
-                    ExpensesDataUnit editedItem = listOfLastEntries.get(selectedItemPosition);
+                    Constants.lastEnteredValuesFragmentDataIsActual(false);
+                    DataUnitExpenses editedItem = listOfLastEntries.get(selectedItemPosition);
                     Intent inputDataActivityIntent = new Intent(context, ActivityInputData.class);
                     inputDataActivityIntent.putExtra(Constants.EXPENSE_DATA_UNIT_LABEL, editedItem);
                     inputDataActivityIntent.putExtra(Constants.ACTIVITY_INPUT_DATA_MODE, Constants.EDIT_MODE);
@@ -140,57 +172,4 @@ public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
         if (deleteItemSnackbar != null)
             deleteItemSnackbar.dismiss();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    public void alertDialogCreate() {
-//                AlertDialog.Builder aBuilder = new AlertDialog.Builder(context);
-//                aBuilder.setView(R.layout.edit_cost_value_dialog);
-//
-//                aBuilder.setNegativeButton("Редактировать", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        System.out.println("EDIT");
-//                    }
-//                });
-//                aBuilder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        listOfLastEntries.remove(position);
-//                        lastEnteredValuesFragmentAdapter.notifyItemRemoved(position);
-//                    }
-//                });
-//
-//                AlertDialog dialog = aBuilder.create();
-//                dialog.show();
-//
-//                TextView dialogExpenseName = (TextView) dialog.findViewById(R.id.edit_cost_value_dialog_costName);
-//                dialogExpenseName.setText(listOfLastEntries.get(position).getExpenseName());
-//
-//                TextView dialogExpenseValue = (TextView) dialog.findViewById(R.id.edit_cost_value_dialog_costValue);
-//                dialogExpenseValue.setText(listOfLastEntries.get(position).getExpenseValueString());
-//
-//                TextView dialogExpenseNote = (TextView) dialog.findViewById(R.id.edit_cost_value_dialog_costNote);
-//                if (listOfLastEntries.get(position).HAS_NOTE)
-//                    dialogExpenseNote.setText(listOfLastEntries.get(position).getExpenseNoteString());
-//                else
-//                    dialogExpenseNote.setVisibility(View.GONE);
-//    }
 }

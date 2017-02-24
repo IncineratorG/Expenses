@@ -8,11 +8,11 @@ import android.util.Log;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DecimalDigitsInputFilter implements InputFilter {
+public class FilterDecimalDigitsInput implements InputFilter {
 
     private Pattern mPattern;
 
-    public DecimalDigitsInputFilter() {
+    public FilterDecimalDigitsInput() {
         mPattern = Pattern.compile("[0-9]*+((\\.[0-9]?)?)||(\\.)?");
     }
 

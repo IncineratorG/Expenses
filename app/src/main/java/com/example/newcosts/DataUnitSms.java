@@ -7,7 +7,7 @@ import java.util.GregorianCalendar;
  * TODO: Add a class header comment
  */
 
-public class SmsDataUnit {
+public class DataUnitSms {
 
     private String smsAddress = "";
     private String smsBody = "";

@@ -8,57 +8,72 @@
     android:background="@android:color/white"
     android:id="@+id/activity_input_data_root_layout">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/activity_input_data_toolbar"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:background="@color/orange"
-        android:elevation="6dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        android:id="@+id/activity_input_data_toolbar"
+        android:background="@color/orange">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
             app:srcCompat="@drawable/ic_arrow_back_white_36dp"
             android:id="@+id/activity_input_data_arrow_back"
             android:background="@drawable/activity_input_data_buttons_style"
-            android:clickable="true" />
+            android:clickable="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_expand_more_white_36dp"
-            android:id="@+id/activity_input_data_expand_expenses_list"
-            android:background="@drawable/activity_input_data_buttons_style"
-            android:layout_gravity="end"
-            android:layout_marginRight="10dp"
-            android:layout_marginEnd="10dp"
-            android:clickable="true" />
+            android:id="@+id/activity_input_data_toolbar_data_top_layout"
+            android:layout_toRightOf="@+id/activity_input_data_arrow_back"
+            android:layout_toEndOf="@+id/activity_input_data_arrow_back">
 
-        <TextView
-            android:text="TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textSize="20sp"
-            android:id="@+id/activity_input_data_toolbar_text_view"
-            android:paddingLeft="10dp"
-            android:paddingStart="10dp"
-            android:paddingRight="10dp"
-            android:paddingEnd="10dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:textStyle="normal|bold"
-            android:layout_gravity="end"
-            android:background="@drawable/activity_input_data_buttons_style" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="54dp"
+                android:id="@+id/activity_input_data_toolbar_data_layout"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/activity_input_data_buttons_style">
 
+                <TextView
+                    android:text="TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textAppearance="@style/TextAppearance.AppCompat"
+                    android:textSize="20sp"
+                    android:id="@+id/activity_input_data_toolbar_text_view"
+                    android:paddingLeft="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingEnd="10dp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:textStyle="normal|bold"
+                    android:layout_gravity="end"
+                    android:background="@drawable/activity_input_data_buttons_style"
+                    android:textColor="@android:color/white" />
 
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="54dp"
+                    app:srcCompat="@drawable/ic_expand_more_white_36dp"
+                    android:id="@+id/activity_input_data_expand_expenses_list"
+                    android:background="@drawable/activity_input_data_buttons_style"
+                    android:layout_gravity="end"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:clickable="false"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </RelativeLayout>
 
-    </android.support.v7.widget.Toolbar>
+    </RelativeLayout>
 
 
     <RelativeLayout
@@ -137,7 +152,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:id="@+id/activity_input_data_sign_textview"
-                android:layout_weight="1"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentTop="true"
                 android:background="@android:color/white"
@@ -221,7 +235,7 @@
 
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <Button
@@ -266,7 +280,7 @@
 
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <Button
@@ -311,7 +325,7 @@
 
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <Button
@@ -356,7 +370,7 @@
 
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <Button

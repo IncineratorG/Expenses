@@ -16,9 +16,9 @@ import android.widget.TextView;
  */
 
 public class DialogFragmentEditExpenseName extends DialogFragment implements View.OnClickListener {
-    private static ExpensesDataUnit dataUnit;
+    private static DataUnitExpenses dataUnit;
 
-    static DialogFragmentEditExpenseName newInstance(ExpensesDataUnit data) {
+    static DialogFragmentEditExpenseName newInstance(DataUnitExpenses data) {
         dataUnit = data;
         return new DialogFragmentEditExpenseName();
     }

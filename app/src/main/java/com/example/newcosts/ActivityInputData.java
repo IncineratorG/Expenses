@@ -33,10 +33,10 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
     private int MODE = -1;
     private int PREVIOUS_ACTIVITY_INDEX = -1;
 
-    private ExpensesDataUnit dataUnit;
+    private DataUnitExpenses dataUnit;
     private TextView toolbarTextView;
 
-    private ExpensesDataUnit selectedDataUnit;
+    private DataUnitExpenses selectedDataUnit;
     private Button choseDateButton;
     private String savedValue = "";
     private long editItemMilliseconds = -1;
@@ -74,11 +74,8 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
         inputValueEditTextCursor.setAnimation(startBlinking());
 
         inputValueEditText = (EditText) findViewById(R.id.activity_input_data_input_value_edittext);
-        inputValueEditText.setFilters(new DecimalDigitsInputFilter[] {new DecimalDigitsInputFilter()});
+        inputValueEditText.setFilters(new FilterDecimalDigitsInput[] {new FilterDecimalDigitsInput()});
         inputNoteEditText = (EditText) findViewById(R.id.activity_input_data_input_note_edittext);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
-        setSupportActionBar(toolbar);
 
         // При нажатии на стрелку - возвращаемся к предыдущему экрану, ничего не сохраняя
         ImageView toolbarBackArrow = (ImageView) findViewById(R.id.activity_input_data_arrow_back);
@@ -89,8 +86,11 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
             }
         });
 
+        // Инициализируем элементы Toolbar'а
         ImageView toolbarExpandExpensesList = (ImageView) findViewById(R.id.activity_input_data_expand_expenses_list);
         toolbarTextView = (TextView) findViewById(R.id.activity_input_data_toolbar_text_view);
+        LinearLayout toolbarDataLayout = (LinearLayout) findViewById(R.id.activity_input_data_toolbar_data_layout);
+
 
         // Toolbar имеет разное наполнение в зависимости от того, редактируется ли элемент
         // или вводится новое значение расходов
@@ -105,11 +105,13 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
             // При редактировании элемента названием выбранного элемента и
             // возможностью открыть список всех существующих категорий расходов
             toolbarTextView.setText(costNameString);
-            toolbarTextView.setOnClickListener(new View.OnClickListener() {
+            // При нажатии на "стрелку вниз" появляется диалоговое окно, в котором можно изменить
+            // название выбранного элемента расходов
+            toolbarDataLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    CostsDB cdb = CostsDB.getInstance(ActivityInputData.this);
-                    ExpensesDataUnit[] dataForExpensesListDialog = cdb.getActiveCostNames_V3();
+                    DB_Costs cdb = DB_Costs.getInstance(ActivityInputData.this);
+                    DataUnitExpenses[] dataForExpensesListDialog = cdb.getActiveCostNames_V3();
 
                     DialogFragmentExpensesList expensesListDialogFragment = DialogFragmentExpensesList.newInstance(dataForExpensesListDialog);
                     expensesListDialogFragment.show(getSupportFragmentManager(), Constants.EXPENSES_LIST_DIALOG_TAG);
@@ -139,19 +141,6 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
 
             dateTodayButton.setVisibility(View.GONE);
             dateYesterdayButton.setVisibility(View.GONE);
-
-            // При нажатии на "стрелку вниз" появляется диалоговое окно, в котором можно изменить
-            // название выбранного элемента расходов
-            toolbarExpandExpensesList.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    CostsDB cdb = CostsDB.getInstance(ActivityInputData.this);
-                    ExpensesDataUnit[] dataForExpensesListDialog = cdb.getActiveCostNames_V3();
-
-                    DialogFragmentExpensesList expensesListDialogFragment = DialogFragmentExpensesList.newInstance(dataForExpensesListDialog);
-                    expensesListDialogFragment.show(getSupportFragmentManager(), Constants.EXPENSES_LIST_DIALOG_TAG);
-                }
-            });
 
             // Если у выбранного элемента есть заметка - устанавливаем её в соответсвующее поле
             if (dataUnit.HAS_NOTE) {
@@ -309,7 +298,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
     private boolean saveData(long milliseconds) {
         String inputValueString = inputValueEditText.getText().toString();
         String inputNoteString = inputNoteEditText.getText().toString();
-        CostsDB cdb = CostsDB.getInstance(this);
+        DB_Costs cdb = DB_Costs.getInstance(this);
         double inputValue = 0.0;
 
         try {
@@ -345,7 +334,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
             }
         }
         if (MODE == Constants.EDIT_MODE) {
-            cdb = CostsDB.getInstance(this);
+            cdb = DB_Costs.getInstance(this);
             cdb.removeCostValue(editItemMilliseconds);
             cdb.addCostInMilliseconds(selectedDataUnit.getExpenseId_N(), inputValueString, selectedDataUnit.getMilliseconds(), inputNoteString);
             returnToPreviousActivity();
@@ -415,7 +404,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
     // При редактировании существующего элемента получаем название выбранной
     // статьи расходов из списка статей расходов при нажатии на "стрелку вниз"
     @Override
-    public void getSelectedExpense(ExpensesDataUnit dataUnit) {
+    public void getSelectedExpense(DataUnitExpenses dataUnit) {
         toolbarTextView.setText(dataUnit.getExpenseName());
         selectedDataUnit.setExpenseId_N(dataUnit.getExpenseId_N());
         selectedDataUnit.setExpenseName(dataUnit.getExpenseName());

@@ -350,13 +350,13 @@ public class DialogFragmentChooseStatisticPeriod extends DialogFragment implemen
                         }
                     });
                 } else {
-                    ExpensesDataUnit startingDateDataUnit = new ExpensesDataUnit();
+                    DataUnitExpenses startingDateDataUnit = new DataUnitExpenses();
                     startingDateDataUnit.setDay(startingPickedDay);
                     startingDateDataUnit.setMonth(startingPickedMonth);
                     startingDateDataUnit.setYear(startingPickedYear);
                     startingDateDataUnit.setMilliseconds(startingDateInMillis);
 
-                    ExpensesDataUnit endingDateDataUnit = new ExpensesDataUnit();
+                    DataUnitExpenses endingDateDataUnit = new DataUnitExpenses();
                     endingDateDataUnit.setDay(endingPickedDay);
                     endingDateDataUnit.setMonth(endingPickedMonth);
                     endingDateDataUnit.setYear(endingPickedYear);

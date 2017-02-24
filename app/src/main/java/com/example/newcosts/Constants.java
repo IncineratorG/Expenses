@@ -1,8 +1,5 @@
 package com.example.newcosts;
 
-
-import android.graphics.Color;
-
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -17,22 +14,11 @@ public class Constants {
             "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
     public static final String[] SHORT_MONTH_NAMES = { "Янв.", "Фев.", "Мар.", "Апр.", "Май", "Июн.",
             "Июл.", "Авг.", "Сен.", "Окт.", "Нояб.", "Дек." };
-//    public static final String[] DAY_NAMES_ORDINAL = {"", "Первый", "Второй", "Третий", "Четвёртый", "Пятый", "Шестой", "Седьмой",
-//            "Восьмой", "Девятый", "Десятый", "Одиннадцатый", "Двенадцатый", "Тринадцатый", "Четырнадцатый", "Пятнадцатый",
-//            "Шестнадцатый", "Семнадцатый", "Восемнадцатый", "Девятнадцатый", "Двадцатый", "Двадцать первый", "Двадцать второй",
-//            "Двадцать третий", "Двадцать четвёртый", "Двадцать пятый", "Двадцать шестой", "Двадцать седьмой", "Двадцать восьмой",
-//            "Двадцать девятый", "Тридцатый", "Тридцать первый"};
     public static final String[] DAY_NAMES = {"", "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"};
 
     public static final String SEPARATOR_VALUE = "$";
     public static final String SEPARATOR_DATE = "#";
-    public static final String SEPARATOR_ID = "&";
-    public static final String SEPARATOR_MILLISECONDS = "%";
-    public static final String SEPARATOR_NOTE = "~";
 
-    public static final int HEADER_SYSTEM_COLOR = Color.parseColor("#FF9800");
-    public static final String tag = "tag";
-    public static final String DATA_ARRAY_LABEL = "dataArray";
     public static final String EXPENSE_DATA_UNIT_LABEL = "expense_data_unit";
     public static final String EDIT_DIALOG_TAG = "edit_dialog_tag";
     public static final String CHOOSE_STATISTIC_PERIOD_DIALOG_TAG = "choose_period_dialog_tag";
@@ -52,17 +38,6 @@ public class Constants {
     public static final int STATISTIC_CHOSEN_PERIOD_ACTIVITY = 107;
 
     public static final String SAVED_VALUE = "savedvalue";
-    public static final int INITIAL_DATE_IN_MILLISECONDS_INDEX = 0;
-    public static final int ENDING_DATE_IN_MILLISECONDS_INDEX = 1;
-    public static final int INITIAL_DATE_STRING_INDEX = 2;
-    public static final int ENDING_DATE_STRING_INDEX = 3;
-    public static final int COST_NAME_INDEX = 4;
-    public static final int COST_VALUE_INDEX = 5;
-    public static final int CHOSEN_MONTH_INDEX = 6;
-    public static final int CHOSEN_YEAR_INDEX = 7;
-    public static final int COST_ID_INDEX = 8;
-    public static final int COST_NOTE_INDEX = 9;
-    public static final int DATA_ARRAY_SIZE = 10;
 
     public static final int EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE = 777;
     public static final int DELETE_ITEM = 11;
@@ -85,6 +60,33 @@ public class Constants {
     public static final String DATA_FOR_STATISTIC_DETAILED_ACTIVITY = "for_statistic_detailed_activity";
     public static final String DATA_FOR_STATISTIC_COST_TYPE_DETAILED_ACTIVITY = "for_cost_type_detailed_activity";
 
+    public static final String BACKUP_FOLDER_NAME_DELIMITER = "@#@";
+
+
+    public static boolean mainActivityFragmentsDataIsActual = false;
+    private static boolean currentMonthFragmentDataIsLoaded = false;
+    private static boolean lastEnteredValuesFragmentDataIsLoaded = false;
+    private static boolean statisticMainScreenFragmentDataIsLoaded = false;
+
+    public static void currentMonthFragmentDataIsActual(boolean isActual) {
+        currentMonthFragmentDataIsLoaded = isActual;
+        setMainActivityFragmentsDataIsActual();
+    }
+    public static void lastEnteredValuesFragmentDataIsActual(boolean isActual) {
+        lastEnteredValuesFragmentDataIsLoaded = isActual;
+        setMainActivityFragmentsDataIsActual();
+    }
+    public static void statisticMainScreenFragmentDataIsActual(boolean isActual) {
+        statisticMainScreenFragmentDataIsLoaded = isActual;
+        setMainActivityFragmentsDataIsActual();
+    }
+
+    private static void setMainActivityFragmentsDataIsActual() {
+        if (currentMonthFragmentDataIsLoaded && lastEnteredValuesFragmentDataIsLoaded && statisticMainScreenFragmentDataIsLoaded)
+            mainActivityFragmentsDataIsActual = true;
+        else
+            mainActivityFragmentsDataIsActual = false;
+    }
 
 
 

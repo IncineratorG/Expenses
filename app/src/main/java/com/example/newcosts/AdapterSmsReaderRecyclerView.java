@@ -19,7 +19,7 @@ import java.util.List;
 public class AdapterSmsReaderRecyclerView extends RecyclerView.Adapter<AdapterSmsReaderRecyclerView.SmsReaderViewHolder> {
     private OnItemClickListener clickListener;
     private Cursor cursor;
-    private List<SmsDataUnit> dataList;
+    private List<DataUnitSms> dataList;
     private Calendar calendar;
     private long currentTimeInMillis = -1;
 //    private List<String> dataList;
@@ -30,7 +30,7 @@ public class AdapterSmsReaderRecyclerView extends RecyclerView.Adapter<AdapterSm
     }
 
 
-    public AdapterSmsReaderRecyclerView(List<SmsDataUnit> data) {
+    public AdapterSmsReaderRecyclerView(List<DataUnitSms> data) {
         dataList = data;
         calendar = new GregorianCalendar();
         currentTimeInMillis = calendar.getTimeInMillis();

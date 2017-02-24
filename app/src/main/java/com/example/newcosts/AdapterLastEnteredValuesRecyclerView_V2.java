@@ -18,7 +18,7 @@ import java.util.List;
 public class AdapterLastEnteredValuesRecyclerView_V2 extends RecyclerView.Adapter<AdapterLastEnteredValuesRecyclerView_V2.FragmentLastEnteredValuesViewHolder_V2> {
 
     private OnItemClickListener clickListener;
-    private List<ExpensesDataUnit> data;
+    private List<DataUnitExpenses> data;
     private Context context;
     private Calendar calendar;
 
@@ -27,7 +27,7 @@ public class AdapterLastEnteredValuesRecyclerView_V2 extends RecyclerView.Adapte
     }
 
 
-    public AdapterLastEnteredValuesRecyclerView_V2(List<ExpensesDataUnit> data, Context context) {
+    public AdapterLastEnteredValuesRecyclerView_V2(List<DataUnitExpenses> data, Context context) {
         this.data = data;
         this.context = context;
         calendar = Calendar.getInstance();

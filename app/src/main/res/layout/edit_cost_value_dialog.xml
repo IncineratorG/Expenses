@@ -39,7 +39,9 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textSize="36sp"
             android:textColor="@android:color/white"
-            android:textStyle="normal|bold" />
+            android:textStyle="normal|bold"
+            android:maxLines="5"
+            android:ellipsize="end"/>
 
         <TextView
             android:text="TextView"
@@ -53,7 +55,8 @@
             android:layout_marginRight="5dp"
             android:layout_marginLeft="5dp"
             android:textSize="36sp"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:ellipsize="end"/>
 
         <TextView
             android:text="TextView"
@@ -66,7 +69,9 @@
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textSize="24sp"
             android:textColor="@android:color/white"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="10dp"
+            android:maxLines="5"
+            android:ellipsize="end"/>
     </LinearLayout>
 
     <LinearLayout
@@ -95,8 +100,7 @@
             style="?android:attr/borderlessButtonStyle"
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textSize="18sp"
-            android:textColor="@drawable/button_text_color"
-            android:fontFamily="sans-serif" />
+            android:textColor="@drawable/button_text_color_black" />
 
         <Button
             android:text="@string/delete_btn"
@@ -108,7 +112,7 @@
             style="?android:attr/borderlessButtonStyle"
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textSize="18sp"
-            android:textColor="@drawable/button_text_color" />
+            android:textColor="@drawable/button_text_color_black" />
 
         <Button
             android:text="@string/cancel_btn"
@@ -120,6 +124,6 @@
             style="?android:attr/borderlessButtonStyle"
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textSize="18sp"
-            android:textColor="@drawable/button_text_color" />
+            android:textColor="@drawable/button_text_color_black" />
     </LinearLayout>
 </LinearLayout>

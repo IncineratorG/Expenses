@@ -17,9 +17,11 @@ import java.util.List;
 public class FragmentStatisticMainScreen extends Fragment {
 
     private Context context;
-//    private ListView periodsListView;
     private RecyclerView recyclerView;
     private Button chooseStatisticPeriodButton;
+    private DB_Costs cdb;
+    private List<DataUnitExpenses> sumByMonthList;
+
 
     @Override
     public void onAttach(Context context) {
@@ -46,10 +48,18 @@ public class FragmentStatisticMainScreen extends Fragment {
     public void onResume() {
         super.onResume();
 
-        CostsDB cdb = CostsDB.getInstance(context);
-
+        cdb = DB_Costs.getInstance(context);
+//        new AsyncTaskLoadMainActivityFragmentsData(cdb, Constants.FRAGMENT_STATISTIC_MAIN_SCREEN, new CallbackValuesLoaded() {
+//            @Override
+//            public void valuesLoaded(int callingFragmentCode, List<DataUnitExpenses> data, double overallValue) {
+//                if (callingFragmentCode == Constants.FRAGMENT_STATISTIC_MAIN_SCREEN) {
+//                    sumByMonthList = data;
+//                    init();
+//                }
+//            }
+//        }).execute();
         // Получаем суммарные значения за месяц и год
-        final List<ExpensesDataUnit> sumByMonthList = cdb.getSumByMonthsList();
+        final List<DataUnitExpenses> sumByMonthList = cdb.getSumByMonthsList();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -65,6 +75,25 @@ public class FragmentStatisticMainScreen extends Fragment {
             }
         });
         recyclerView.setAdapter(statisticMainScreenRecyclerViewAdapter);
+        Constants.statisticMainScreenFragmentDataIsActual(true);
+    }
+
+    public void init() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        AdapterStatisticMainScreenRecyclerView statisticMainScreenRecyclerViewAdapter = new AdapterStatisticMainScreenRecyclerView(sumByMonthList, context);
+        statisticMainScreenRecyclerViewAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener() {
+            @Override
+            public void onItemClick(View itemView, int position) {
+                Intent statisticDetailedActivityIntent = new Intent(context, ActivityStatisticDetailed.class);
+                statisticDetailedActivityIntent.putExtra(Constants.STATISTIC_DETAILED_ACTIVITY_MODE, Constants.STATISTIC_DETAILED_ACTIVITY_MODE_BY_MONTHS);
+                statisticDetailedActivityIntent.putExtra(Constants.DATA_FOR_STATISTIC_DETAILED_ACTIVITY, sumByMonthList.get(position));
+                startActivity(statisticDetailedActivityIntent);
+            }
+        });
+        recyclerView.setAdapter(statisticMainScreenRecyclerViewAdapter);
+        Constants.statisticMainScreenFragmentDataIsActual(true);
     }
 
     // Вызов диалога ручного задания периода просмотра статистики расходов
@@ -82,8 +111,8 @@ public class FragmentStatisticMainScreen extends Fragment {
 
         if (requestCode == Constants.CHOOSE_STATISTIC_PERIOD_REQUEST_CODE) {
             if (resultCode == Constants.CHOOSE_STATISTIC_PERIOD_RESULT_CODE) {
-                ExpensesDataUnit startingDateDataUnit = null;
-                ExpensesDataUnit endingDateDataUnit = null;
+                DataUnitExpenses startingDateDataUnit = null;
+                DataUnitExpenses endingDateDataUnit = null;
 
                 if (data == null)
                     return;

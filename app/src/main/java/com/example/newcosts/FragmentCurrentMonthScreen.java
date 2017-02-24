@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,12 +34,14 @@ public class FragmentCurrentMonthScreen extends Fragment {
     private RecyclerView recyclerView;
     private TextView currentMonthTextView;
     private TextView overallValueTextView;
+    private LinearLayout overallValueUnderlineLayout;
+    private ImageView arrowRightImageView;
     private AdapterCurrentMonthScreenRecyclerView currentMonthScreenAdapter;
     private int currentMonth;
     private int currentYear;
     private int currentDay;
-    private CostsDB cdb;
-    private List<ExpensesDataUnit> listOfActiveCostNames;
+    private DB_Costs cdb;
+    private List<DataUnitExpenses> listOfActiveCostNames;
     private Snackbar deleteCategorySnackbar;
     private double overallValueForCurrentMonth;
 
@@ -51,7 +57,15 @@ public class FragmentCurrentMonthScreen extends Fragment {
         View currentMonthScreenView = inflater.inflate(R.layout.fragment_current_month_screen, container, false);
         recyclerView = (RecyclerView) currentMonthScreenView.findViewById(R.id.current_month_screen_recycler_view);
         currentMonthTextView = (TextView) currentMonthScreenView.findViewById(R.id.curren_month_screen_month_textview);
+//        currentMonthTextView.setVisibility(View.INVISIBLE);
         overallValueTextView = (TextView) currentMonthScreenView.findViewById(R.id.current_month_screen_overall_value_textview);
+//        overallValueTextView.setVisibility(View.INVISIBLE);
+
+        arrowRightImageView = (ImageView) currentMonthScreenView.findViewById(R.id.current_month_screen_arrow_right_imageview);
+//        arrowRightImageView.setVisibility(View.INVISIBLE);
+
+        overallValueUnderlineLayout = (LinearLayout) currentMonthScreenView.findViewById(R.id.current_month_screen_overall_value_underline);
+//        overallValueUnderlineLayout.setVisibility(View.INVISIBLE);
 
         return currentMonthScreenView;
     }
@@ -61,7 +75,7 @@ public class FragmentCurrentMonthScreen extends Fragment {
     public void onResume() {
         super.onResume();
 
-        cdb = CostsDB.getInstance(context);
+        cdb = DB_Costs.getInstance(context);
 
         // Получаем и устанавливаем текущую дату
         Calendar calendar = Calendar.getInstance();
@@ -69,12 +83,21 @@ public class FragmentCurrentMonthScreen extends Fragment {
         currentYear = calendar.get(Calendar.YEAR);
         currentDay = calendar.get(Calendar.DAY_OF_MONTH);
 
-        currentMonthTextView.setText("Всего за " + Constants.MONTH_NAMES[currentMonth]);
+//        new AsyncTaskLoadMainActivityFragmentsData(cdb, Constants.FRAGMENT_CURRENT_MONTH_SCREEN, new CallbackValuesLoaded() {
+//            @Override
+//            public void valuesLoaded(int callingFragmentCode, List<DataUnitExpenses> data, double overallValue) {
+//                if (callingFragmentCode == Constants.FRAGMENT_CURRENT_MONTH_SCREEN) {
+//                    overallValueForCurrentMonth = overallValue;
+//                    listOfActiveCostNames = data;
+//                    init();
+//                }
+//            }
+//        }).execute();
 
         // Получаем массив активных категорий расходов, получаем сумму расходов по
         // каждой категории в текущем месяце и суммарное значение затрат за текущий месяц
         overallValueForCurrentMonth = 0.0;
-        ExpensesDataUnit[] activeExpenseNamesArray = cdb.getActiveCostNames_V3();
+        DataUnitExpenses[] activeExpenseNamesArray = cdb.getActiveCostNames_V3();
         listOfActiveCostNames = new ArrayList<>();
         for (int i = 0; i < activeExpenseNamesArray.length; ++i) {
             double singleUnitExpenseValue = cdb.getCostValue(-1, currentMonth, currentYear, activeExpenseNamesArray[i].getExpenseId_N());
@@ -84,12 +107,144 @@ public class FragmentCurrentMonthScreen extends Fragment {
             overallValueForCurrentMonth = overallValueForCurrentMonth + singleUnitExpenseValue;
         }
         // Последним элементом списка явлеятся пункт "Добавить новую категорию"
-        ExpensesDataUnit addNewCategoryDataUnit = new ExpensesDataUnit();
+        DataUnitExpenses addNewCategoryDataUnit = new DataUnitExpenses();
         addNewCategoryDataUnit.setExpenseId_N(Integer.MIN_VALUE);
         addNewCategoryDataUnit.setExpenseName("Добавить новую категорию");
         addNewCategoryDataUnit.setExpenseValueString("+");
         listOfActiveCostNames.add(addNewCategoryDataUnit);
+
         // Устанавливаем суммарное значение затрат за текущий месяц
+        overallValueTextView.setText(Constants.formatDigit(overallValueForCurrentMonth) + " руб.");
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        currentMonthScreenAdapter = new AdapterCurrentMonthScreenRecyclerView(listOfActiveCostNames, context, this);
+        // При нажатии на элемент списка расходов - переходим на экран ввода затрат по
+        // выбранной категории расходов. При нажатии на пункт "Добавить новую категорию" -
+        // появляется всплываюшее окно, в котором можно ввести название новой категории расходов
+        currentMonthScreenAdapter.setClickListener(new AdapterCurrentMonthScreenRecyclerView.OnItemClickListener() {
+            @Override
+            public void onItemClick(View itemView, int position) {
+                onRecyclerViewItemClick(itemView, position);
+            }
+        });
+
+        // При длительном нажатии на элемент спика расходов появляется всплывающее окно, в котором
+        // можно изменить название выбранной категории или удалить категорию, если по данной категории
+        // нет записей расходов в текущем месяце
+        currentMonthScreenAdapter.setLongClickListener(new AdapterCurrentMonthScreenRecyclerView.OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(View itemView, int position) {
+                onRecyclerViewItemLongClick(itemView, position);
+            }
+        });
+
+        recyclerView.setAdapter(currentMonthScreenAdapter);
+        Constants.currentMonthFragmentDataIsActual(true);
+    }
+
+    // Обрабатываем кратковременное нажатие на элемент списка расходов
+    public void onRecyclerViewItemClick(View itemView, int position) {
+        DataUnitExpenses selectedDataUnit = listOfActiveCostNames.get(position);
+        // Переходим на экран ввода затрат по выбранной категории
+        if (selectedDataUnit.getExpenseId_N() != Integer.MIN_VALUE) {
+            Intent inputDataActivityIntent = new Intent(context, ActivityInputData.class);
+            inputDataActivityIntent.putExtra(Constants.EXPENSE_DATA_UNIT_LABEL, selectedDataUnit);
+            inputDataActivityIntent.putExtra(Constants.ACTIVITY_INPUT_DATA_MODE, Constants.INPUT_MODE);
+            inputDataActivityIntent.putExtra(Constants.PREVIOUS_ACTIVITY_INDEX, Constants.FRAGMENT_CURRENT_MONTH_SCREEN);
+            startActivity(inputDataActivityIntent);
+        }
+        // Добавляем новую статью расходов
+        else if (selectedDataUnit.getExpenseId_N() == Integer.MIN_VALUE) {
+            // Далог добавления новой категории расходов
+            final Dialog dialog = new Dialog(context);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.edit_expense_type_popup);
+
+            // Инициализируем поле ввода названия новой статьи расходов
+            final AutoCompleteTextView inputTextField = (AutoCompleteTextView) dialog.findViewById(R.id.edit_expense_type_popup_expense_type_textview);
+            inputTextField.setFocusable(true);
+            inputTextField.setCursorVisible(true);
+            inputTextField.requestFocus();
+
+            // Отображаем клавиатуру
+            final InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
+            // Получаем неактивные названия категорий
+            String[] nonActiveCostNames = cdb.getNonActiveCostNames();
+            ArrayAdapter<String> autoCompleteTextViewAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, nonActiveCostNames);
+            inputTextField.setAdapter(autoCompleteTextViewAdapter);
+
+            // Инициализируем кнопки всплывающего окна
+            Button addNewCostTypeButton = (Button) dialog.findViewById(R.id.edit_expense_type_popup_rename_expense_type_button);
+            Button cancelButton = (Button) dialog.findViewById(R.id.edit_expense_type_popup_cancel_button);
+
+            // Устанавливаем слушатели на кнопки
+            addNewCostTypeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String newExpenseName = inputTextField.getText().toString();
+
+                    // Добавляем новую запись в базу
+                    cdb.addCostName(newExpenseName);
+
+                    // Создаём элемент расходов с только что созданным названием
+                    // и инициализируем его
+                    DataUnitExpenses createdExpenseCategory = new DataUnitExpenses();
+                    createdExpenseCategory.setExpenseName(newExpenseName);
+                    createdExpenseCategory.setExpenseId_N(cdb.getExpenseIdByName(newExpenseName));
+                    createdExpenseCategory.setExpenseValueDouble(0);
+                    createdExpenseCategory.setExpenseValueString("0");
+
+                    // Вставляем созданный элемент на последнюю позицию в списке
+                    // статей расходов и обновляем представление
+                    int positionInListToInsert = listOfActiveCostNames.size() - 1;
+                    listOfActiveCostNames.add(positionInListToInsert, createdExpenseCategory);
+
+                    currentMonthScreenAdapter.notifyItemInserted(positionInListToInsert);
+                    currentMonthScreenAdapter.notifyDataSetChanged();
+
+                    // Скрываем клавиатуру
+                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                    dialog.dismiss();
+
+                    // Сообщаем пользователю о добавлении новой категории
+                    Snackbar newCategoryCreatedSnackbar = Snackbar
+                            .make(recyclerView, "Категория '" + newExpenseName + "' создана", Snackbar.LENGTH_LONG);
+                    newCategoryCreatedSnackbar.show();
+                }
+            });
+
+            cancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                    dialog.cancel();
+                }
+            });
+
+            dialog.show();
+        }
+    }
+
+    // Обрабатываем длительное нажатие на элемент списка расходов
+    public void onRecyclerViewItemLongClick(View itemView, int position) {
+        DialogFragmentEditExpenseName editExpenseNameDialogFragment = DialogFragmentEditExpenseName.newInstance(listOfActiveCostNames.get(position));
+        editExpenseNameDialogFragment.setTargetFragment(FragmentCurrentMonthScreen.this, Constants.EDIT_EXPENSE_NAME_REQUEST_CODE);
+        editExpenseNameDialogFragment.show(getFragmentManager(), Constants.EDIT_DIALOG_TAG);
+    }
+
+    public void init() {
+        arrowRightImageView.setVisibility(View.VISIBLE);
+        overallValueUnderlineLayout.setVisibility(View.VISIBLE);
+
+        currentMonthTextView.setVisibility(View.VISIBLE);
+        currentMonthTextView.setText("Всего за " + Constants.MONTH_NAMES[currentMonth]);
+
+        // Устанавливаем суммарное значение затрат за текущий месяц
+        overallValueTextView.setVisibility(View.VISIBLE);
         overallValueTextView.setText(Constants.formatDigit(overallValueForCurrentMonth) + " руб.");
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
@@ -99,9 +254,10 @@ public class FragmentCurrentMonthScreen extends Fragment {
         currentMonthScreenAdapter.setClickListener(new AdapterCurrentMonthScreenRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position) {
-                ExpensesDataUnit selectedDataUnit = listOfActiveCostNames.get(position);
+                DataUnitExpenses selectedDataUnit = listOfActiveCostNames.get(position);
                 // Переходим на экран ввода затрат по выбранной категории
                 if (selectedDataUnit.getExpenseId_N() != Integer.MIN_VALUE) {
+                    Constants.mainActivityFragmentsDataIsActual = false;
                     Intent inputDataActivityIntent = new Intent(context, ActivityInputData.class);
                     inputDataActivityIntent.putExtra(Constants.EXPENSE_DATA_UNIT_LABEL, selectedDataUnit);
                     inputDataActivityIntent.putExtra(Constants.ACTIVITY_INPUT_DATA_MODE, Constants.INPUT_MODE);
@@ -110,13 +266,14 @@ public class FragmentCurrentMonthScreen extends Fragment {
                 }
                 // Добавляем новую статью расходов
                 else if (selectedDataUnit.getExpenseId_N() == Integer.MIN_VALUE) {
+                    Constants.mainActivityFragmentsDataIsActual = false;
                     // Далог добавления новой категории расходов
                     final Dialog dialog = new Dialog(context);
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    dialog.setContentView(R.layout.add_new_expense_type_popup);
+                    dialog.setContentView(R.layout.edit_expense_type_popup);
 
                     // Инициализируем поле ввода названия новой статьи расходов
-                    final AutoCompleteTextView inputTextField = (AutoCompleteTextView) dialog.findViewById(R.id.costTypeTextViewInAddNewCostTypePopup);
+                    final AutoCompleteTextView inputTextField = (AutoCompleteTextView) dialog.findViewById(R.id.edit_expense_type_popup_expense_type_textview);
                     inputTextField.setFocusable(true);
                     inputTextField.setCursorVisible(true);
                     inputTextField.requestFocus();
@@ -131,8 +288,8 @@ public class FragmentCurrentMonthScreen extends Fragment {
                     inputTextField.setAdapter(autoCompleteTextViewAdapter);
 
                     // Инициализируем кнопки всплывающего окна
-                    Button addNewCostTypeButton = (Button) dialog.findViewById(R.id.addNewCostTypeButton);
-                    Button cancelButton = (Button) dialog.findViewById(R.id.cancelButton);
+                    Button addNewCostTypeButton = (Button) dialog.findViewById(R.id.edit_expense_type_popup_rename_expense_type_button);
+                    Button cancelButton = (Button) dialog.findViewById(R.id.edit_expense_type_popup_cancel_button);
 
                     // Устанавливаем слушатели на кнопки
                     addNewCostTypeButton.setOnClickListener(new View.OnClickListener() {
@@ -145,7 +302,7 @@ public class FragmentCurrentMonthScreen extends Fragment {
 
                             // Создаём элемент расходов с только что созданным названием
                             // и инициализируем его
-                            ExpensesDataUnit createdExpenseCategory = new ExpensesDataUnit();
+                            DataUnitExpenses createdExpenseCategory = new DataUnitExpenses();
                             createdExpenseCategory.setExpenseName(newExpenseName);
                             createdExpenseCategory.setExpenseId_N(cdb.getExpenseIdByName(newExpenseName));
                             createdExpenseCategory.setExpenseValueDouble(0);
@@ -183,6 +340,7 @@ public class FragmentCurrentMonthScreen extends Fragment {
             }
         });
         recyclerView.setAdapter(currentMonthScreenAdapter);
+        Constants.currentMonthFragmentDataIsActual(true);
     }
 
 
@@ -194,13 +352,14 @@ public class FragmentCurrentMonthScreen extends Fragment {
 
         if (requestCode == Constants.EDIT_EXPENSE_NAME_REQUEST_CODE) {
             // Получаем название и ID выбранной категории
-            ExpensesDataUnit selectedCategory = null;
+            DataUnitExpenses selectedCategory = null;
             if (data != null) {
                 selectedCategory = data.getExtras().getParcelable(Constants.EXPENSE_DATA_UNIT_LABEL);
             }
 
             switch (resultCode) {
                 case Constants.DELETE_ITEM:
+                    Constants.currentMonthFragmentDataIsActual(false);
                     if (selectedCategory != null) {
                         // Если по выбранной на удаление категории нет записей в
                         //  текущем месяце - её можно удалить
@@ -217,7 +376,7 @@ public class FragmentCurrentMonthScreen extends Fragment {
 
                             // Отображаем сообщение об удалении выбранного элемента
                             // с возможностью его восстановления при нажатии кнопки "Отмена"
-                            final ExpensesDataUnit finalSelectedCategory = selectedCategory;
+                            final DataUnitExpenses finalSelectedCategory = selectedCategory;
                             deleteCategorySnackbar = Snackbar
                                     .make(recyclerView, "Запись удалена", Snackbar.LENGTH_LONG)
                                     .setAction("Отмена", new View.OnClickListener() {
@@ -240,14 +399,15 @@ public class FragmentCurrentMonthScreen extends Fragment {
                     }
                     break;
                 case Constants.EDIT_ITEM:
+                    Constants.currentMonthFragmentDataIsActual(false);
                     if (selectedCategory != null) {
                         // Далог редактирования категории расходов
                         final Dialog dialog = new Dialog(context);
                         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        dialog.setContentView(R.layout.add_new_expense_type_popup);
+                        dialog.setContentView(R.layout.edit_expense_type_popup);
 
                         // Инициализируем поле переименования статьи расходов
-                        final AutoCompleteTextView inputTextField = (AutoCompleteTextView) dialog.findViewById(R.id.costTypeTextViewInAddNewCostTypePopup);
+                        final AutoCompleteTextView inputTextField = (AutoCompleteTextView) dialog.findViewById(R.id.edit_expense_type_popup_expense_type_textview);
                         inputTextField.setText(selectedCategory.getExpenseName());
                         inputTextField.setSelection(inputTextField.getText().length());
                         inputTextField.setFocusable(true);
@@ -259,13 +419,13 @@ public class FragmentCurrentMonthScreen extends Fragment {
                         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
                         // Инициализируем кнопки всплывающего окна
-                        Button addNewCostTypeButton = (Button) dialog.findViewById(R.id.addNewCostTypeButton);
-                        addNewCostTypeButton.setText("Переименовать");
-                        Button cancelButton = (Button) dialog.findViewById(R.id.cancelButton);
+                        Button renameButton = (Button) dialog.findViewById(R.id.edit_expense_type_popup_rename_expense_type_button);
+                        renameButton.setText("Переименовать");
+                        Button cancelButton = (Button) dialog.findViewById(R.id.edit_expense_type_popup_cancel_button);
 
                         // Устанавливаем слушатели на кнопки
-                        final ExpensesDataUnit finalSelectedCategory1 = selectedCategory;
-                        addNewCostTypeButton.setOnClickListener(new View.OnClickListener() {
+                        final DataUnitExpenses finalSelectedCategory1 = selectedCategory;
+                        renameButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 String oldCategoryName = finalSelectedCategory1.getExpenseName();
@@ -320,8 +480,6 @@ public class FragmentCurrentMonthScreen extends Fragment {
             }
         }
     }
-
-
 
 
 

@@ -17,7 +17,7 @@ import java.util.List;
 
 public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter<AdapterStatisticMainScreenRecyclerView.FragmentStatisticMainScreenViewHolder> {
     private AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener clickListener;
-    private List<ExpensesDataUnit> data;
+    private List<DataUnitExpenses> data;
     private Context context;
     private Calendar calendar;
 
@@ -26,7 +26,7 @@ public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter
     }
 
 
-    public AdapterStatisticMainScreenRecyclerView(List<ExpensesDataUnit> data, Context context) {
+    public AdapterStatisticMainScreenRecyclerView(List<DataUnitExpenses> data, Context context) {
         this.data = data;
         this.context = context;
         calendar = Calendar.getInstance();

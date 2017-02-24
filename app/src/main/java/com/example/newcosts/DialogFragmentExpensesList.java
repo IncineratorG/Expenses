@@ -16,15 +16,15 @@ import android.widget.ListView;
  */
 
 public class DialogFragmentExpensesList extends DialogFragment {
-    static ExpensesDataUnit[] data;
+    static DataUnitExpenses[] data;
 
     public interface ExpenseListDialogCallback {
-        void getSelectedExpense(ExpensesDataUnit dataUnit);
+        void getSelectedExpense(DataUnitExpenses dataUnit);
     }
 
     public ExpenseListDialogCallback callback;
 
-    static DialogFragmentExpensesList newInstance(ExpensesDataUnit[] d) {
+    static DialogFragmentExpensesList newInstance(DataUnitExpenses[] d) {
         data = d;
         return new DialogFragmentExpensesList();
     }

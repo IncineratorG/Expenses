@@ -3,39 +3,47 @@ package com.example.newcosts;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.Calendar;
 
 public class ActivityMainWithFragments extends AppCompatActivity {
 
     private int PREVIOUS_ACTIVITY_INDEX = -1;
     private int TARGET_TAB = -1;
     private String savedValue = "";
+    private static final String TAG = "tag";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_with_fragments);
+        setContentView(R.layout.activity_main_with_fragments_v2);
+//        Constants.mainActivityFragmentsDataIsActual = false;
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
-        toolbar.setTitle("Мои расходы");
-        setSupportActionBar(toolbar);
-
+        // Переходим на экран чтения данных из СМС
         ImageView creditCardImageView = (ImageView) findViewById(R.id.activity_main_credit_card_imageview);
         creditCardImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent smsExpensesReaderActitvityIntent = new Intent(ActivityMainWithFragments.this, ActivitySmsExpensesReader.class);
-                startActivity(smsExpensesReaderActitvityIntent);
+                Intent smsExpensesReaderActivityIntent = new Intent(ActivityMainWithFragments.this, ActivitySmsExpensesReader.class);
+                startActivity(smsExpensesReaderActivityIntent);
+            }
+        });
+
+        // Переходим на экран сохранение данных на Google Drive
+        ImageView backupDataImageView = (ImageView) findViewById(R.id.activity_main_backup_data_imageview);
+        backupDataImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent backupDataActivity = new Intent(ActivityMainWithFragments.this, ActivityBackupData.class);
+                startActivity(backupDataActivity);
             }
         });
 
@@ -65,6 +73,7 @@ public class ActivityMainWithFragments extends AppCompatActivity {
 
 
         final ViewPager mainActivityViewPager = (ViewPager) findViewById(R.id.activity_main_viewpager);
+        mainActivityViewPager.setOffscreenPageLimit(mainActivityTabLayout.getTabCount());
         final AdapterMainActivityPager mainActivityViewPagerAdapter = new AdapterMainActivityPager
                 (getSupportFragmentManager(), mainActivityTabLayout.getTabCount());
         mainActivityViewPager.setAdapter(mainActivityViewPagerAdapter);
@@ -73,7 +82,8 @@ public class ActivityMainWithFragments extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mainActivityViewPager.setCurrentItem(tab.getPosition());
-                mainActivityViewPagerAdapter.notifyDataSetChanged();
+                if (!Constants.mainActivityFragmentsDataIsActual)
+                    mainActivityViewPagerAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -86,7 +96,6 @@ public class ActivityMainWithFragments extends AppCompatActivity {
 
             }
         });
-
 
 
 
@@ -105,15 +114,20 @@ public class ActivityMainWithFragments extends AppCompatActivity {
             switch (TARGET_TAB) {
                 case Constants.FRAGMENT_CURRENT_MONTH_SCREEN:
                     selectedTab = mainActivityTabLayout.getTabAt(0);
-                    selectedTab.select();
+                    if (selectedTab != null)
+                        selectedTab.select();
                     break;
                 case Constants.FRAGMENT_LAST_ENTERED_VALUES_SCREEN:
                     selectedTab = mainActivityTabLayout.getTabAt(1);
-                    selectedTab.select();
+                    if (selectedTab != null)
+                        selectedTab.select();
                     break;
                 case Constants.FRAGMENT_STATISTIC_MAIN_SCREEN:
+                    Constants.mainActivityFragmentsDataIsActual = true;
                     selectedTab = mainActivityTabLayout.getTabAt(2);
-                    selectedTab.select();
+
+                    if (selectedTab != null)
+                        selectedTab.select();
             }
         }
     }

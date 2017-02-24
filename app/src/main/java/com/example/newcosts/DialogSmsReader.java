@@ -1,6 +1,5 @@
 package com.example.newcosts;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -8,16 +7,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -35,10 +30,10 @@ public class DialogSmsReader extends Dialog {
     private TextView smsBodyTextView;
     private Spinner expenseNamesSpinner;
 
-    private SmsDataUnit sms;
+    private DataUnitSms sms;
     private String expenseValueString;
-    private List<ExpensesDataUnit> activeExpenseNamesList;
-    private ExpensesDataUnit selectedExpenseNameDataUnit;
+    private List<DataUnitExpenses> activeExpenseNamesList;
+    private DataUnitExpenses selectedExpenseNameDataUnit;
     private String noteString;
     private Toast wrongValueToast;
 
@@ -49,9 +44,9 @@ public class DialogSmsReader extends Dialog {
     }
 
 
-    public DialogSmsReader(Context context, SmsDataUnit sms,
+    public DialogSmsReader(Context context, DataUnitSms sms,
                            String expenseValueString,
-                           List<ExpensesDataUnit> activeExpenseNamesList,
+                           List<DataUnitExpenses> activeExpenseNamesList,
                            String noteString) {
         super(context);
         this.context = context;
@@ -75,7 +70,7 @@ public class DialogSmsReader extends Dialog {
         expenseNamesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedExpenseNameDataUnit = (ExpensesDataUnit) parent.getItemAtPosition(position);
+                selectedExpenseNameDataUnit = (DataUnitExpenses) parent.getItemAtPosition(position);
             }
 
             @Override
@@ -98,8 +93,8 @@ public class DialogSmsReader extends Dialog {
             @Override
             public void onClick(View v) {
                 if (!expenseValueEditText.getText().toString().isEmpty()) {
-                    CostsDB cdb = CostsDB.getInstance(context);
-                    SmsNotesDB smsNotesDB = SmsNotesDB.getInstance(context);
+                    DB_Costs cdb = DB_Costs.getInstance(context);
+                    DB_SmsNotes smsNotesDB = DB_SmsNotes.getInstance(context);
 
                     cdb.addCostInMilliseconds(selectedExpenseNameDataUnit.getExpenseId_N(),
                             expenseValueEditText.getText().toString(),

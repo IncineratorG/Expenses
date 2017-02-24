@@ -10,9 +10,9 @@ import android.widget.TextView;
 import java.util.List;
 
 
-class AdapterStatisticDetailedActivityListView extends ArrayAdapter<ExpensesDataUnit> {
+class AdapterStatisticDetailedActivityListView extends ArrayAdapter<DataUnitExpenses> {
 
-    public AdapterStatisticDetailedActivityListView(Context context, List<ExpensesDataUnit> dataUnitList) {
+    public AdapterStatisticDetailedActivityListView(Context context, List<DataUnitExpenses> dataUnitList) {
         super(context, R.layout.activity_statistic_detailed_single_item, dataUnitList);
     }
 
@@ -21,7 +21,7 @@ class AdapterStatisticDetailedActivityListView extends ArrayAdapter<ExpensesData
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View singleCostsRow = inflater.inflate(R.layout.activity_statistic_detailed_single_item, parent, false);
 
-        ExpensesDataUnit dataUnit = getItem(position);
+        DataUnitExpenses dataUnit = getItem(position);
 
         TextView expenseNameTextView = (TextView) singleCostsRow.findViewById(R.id.activity_statistic_detailed_single_item_expense_name_textview);
         TextView expenseValueTextView = (TextView) singleCostsRow.findViewById(R.id.activity_statistic_detailed_single_item_expense_value_textview);

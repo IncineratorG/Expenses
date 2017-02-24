@@ -2,7 +2,6 @@ package com.example.newcosts;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -15,11 +14,11 @@ import java.util.List;
  * TODO: Add a class header comment
  */
 
-public class SmsNotesDB extends SQLiteOpenHelper {
+public class DB_SmsNotes extends SQLiteOpenHelper {
 
 
     private static final String tag = "DB_Tag";
-    private static SmsNotesDB dbInstance;
+    private static DB_SmsNotes dbInstance;
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "smsnotes.db";
@@ -35,15 +34,15 @@ public class SmsNotesDB extends SQLiteOpenHelper {
 
 
 
-    private SmsNotesDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    private DB_SmsNotes(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
     }
 
-    public static SmsNotesDB getInstance(Context context) {
+    public static DB_SmsNotes getInstance(Context context) {
         if (dbInstance != null)
             return dbInstance;
         else {
-            dbInstance = new SmsNotesDB(context.getApplicationContext(), null, null, 1);
+            dbInstance = new DB_SmsNotes(context.getApplicationContext(), null, null, 1);
             return dbInstance;
         }
     }

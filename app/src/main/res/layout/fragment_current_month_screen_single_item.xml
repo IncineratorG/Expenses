@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:weightSum="2"
-    android:background="@drawable/bottom_border"
+    android:background="@drawable/fragment_current_month_screen_single_item_style"
     android:paddingTop="10dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
@@ -15,7 +15,8 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/current_month_single_item_top_layout">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -23,12 +24,13 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="22dp"
                 android:layout_height="wrap_content"
                 app:srcCompat="@android:drawable/ic_menu_edit"
                 android:id="@+id/current_month_single_item_edit_category_imageview"
-                android:layout_weight="1"
-                android:background="@drawable/activity_input_data_buttons_style" />
+                android:background="@drawable/activity_input_data_buttons_style"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp" />
 
             <TextView
                 android:text="Электроника"
@@ -40,7 +42,8 @@
                 android:layout_weight="1"
                 android:layout_marginLeft="20dp"
                 android:layout_marginStart="20dp"
-                android:textStyle="normal|bold" />
+                android:textStyle="normal|bold"
+                android:textColor="@drawable/button_text_color_black" />
         </LinearLayout>
 
         <LinearLayout
@@ -60,7 +63,8 @@
                     android:text="В текущем месяце"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:id="@+id/current_month_single_item_in_current_month_textview" />
+                    android:id="@+id/current_month_single_item_in_current_month_textview"
+                    android:textColor="@drawable/button_text_color_grey" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -73,7 +77,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:id="@+id/current_month_single_item_value_textview"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textColor="@drawable/button_text_color_grey" />
             </LinearLayout>
 
         </LinearLayout>

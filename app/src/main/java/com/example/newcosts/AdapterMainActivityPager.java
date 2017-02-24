@@ -1,6 +1,5 @@
 package com.example.newcosts;
 
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -11,12 +10,12 @@ import java.util.List;
 
 
 public class AdapterMainActivityPager extends FragmentStatePagerAdapter {
-    private int mNumOfTabs;
+    private int numOfTubs;
     private List<Fragment> fragmentsList;
 
     public AdapterMainActivityPager(FragmentManager fm, int NumOfTabs) {
         super(fm);
-        this.mNumOfTabs = NumOfTabs;
+        this.numOfTubs = NumOfTabs;
 
         fragmentsList = new ArrayList<>(3);
         fragmentsList.add(new FragmentCurrentMonthScreen());
@@ -45,13 +44,14 @@ public class AdapterMainActivityPager extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return mNumOfTabs;
+        return numOfTubs;
     }
 
     // ================= !!Переделать!! ===================
     @Override
     public int getItemPosition(Object object) {
         return POSITION_NONE;
+//        return POSITION_UNCHANGED;
     }
     // ====================================================
 

@@ -39,12 +39,12 @@ public class ActivitySmsExpensesReader extends AppCompatActivity implements Load
 
     private RecyclerView smsReaderRecyclerView;
     private AdapterSmsReaderRecyclerView smsReaderRecyclerViewAdapter;
-    private List<SmsDataUnit> smsDataList = new ArrayList<>();
+    private List<DataUnitSms> smsDataList = new ArrayList<>();
     private List<Long> lastEnteredValuesMillisecondsList = new ArrayList<>();
-    private CostsDB costsDB;
-    private SmsNotesDB smsNotesDB;
+    private DB_Costs costsDB;
+    private DB_SmsNotes smsNotesDB;
     private Long millis;
-    private SmsDataUnit chosenSms;
+    private DataUnitSms chosenSms;
     private int chosenSmsPosition = -1;
 
     @Override
@@ -52,9 +52,9 @@ public class ActivitySmsExpensesReader extends AppCompatActivity implements Load
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms_expenses_reader);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_sms_expenses_reader_toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_sms_expenses_reader_toolbar);
+//        toolbar.setTitle("");
+//        setSupportActionBar(toolbar);
 
         // Стрелка "Назад"
         ImageView arrowBackImageView = (ImageView) findViewById(R.id.activity_sms_expenses_reader_arrow_back);
@@ -80,8 +80,8 @@ public class ActivitySmsExpensesReader extends AppCompatActivity implements Load
 
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
 
-        costsDB = CostsDB.getInstance(this);
-        smsNotesDB = SmsNotesDB.getInstance(this);
+        costsDB = DB_Costs.getInstance(this);
+        smsNotesDB = DB_SmsNotes.getInstance(this);
     }
 
 
@@ -159,8 +159,8 @@ public class ActivitySmsExpensesReader extends AppCompatActivity implements Load
 
                 // Получаем из базы активные статьи расходов и делаем предположение,
                 // к какому типу расходов относится сумма из выбранного сообщения
-                ExpensesDataUnit[] activeExpenseNamesArray = costsDB.getActiveCostNames_V3();
-                List<ExpensesDataUnit> activeExpenseNamesList = expenseNamesArrayToList(activeExpenseNamesArray, expenseNoteString);
+                DataUnitExpenses[] activeExpenseNamesArray = costsDB.getActiveCostNames_V3();
+                List<DataUnitExpenses> activeExpenseNamesList = expenseNamesArrayToList(activeExpenseNamesArray, expenseNoteString);
 
                 // Показываем диалоговое окно с полученной из SMS информацией
                 DialogSmsReader smsReaderDialog = new DialogSmsReader(ActivitySmsExpensesReader.this,
@@ -181,14 +181,14 @@ public class ActivitySmsExpensesReader extends AppCompatActivity implements Load
     }
 
 
-    private List<ExpensesDataUnit> expenseNamesArrayToList(ExpensesDataUnit[] expenseNamesArray, String expenseNoteString) {
-        List<ExpensesDataUnit> activeExpenseNamesList = new ArrayList<>(expenseNamesArray.length);
+    private List<DataUnitExpenses> expenseNamesArrayToList(DataUnitExpenses[] expenseNamesArray, String expenseNoteString) {
+        List<DataUnitExpenses> activeExpenseNamesList = new ArrayList<>(expenseNamesArray.length);
         int expectedExpenseID = getExpectedID(expenseNoteString);
 
         for (int i = 0; i < expenseNamesArray.length; ++i) {
             if (expenseNamesArray[i].getExpenseId_N() == expectedExpenseID) {
                 if (i != 0) {
-                    ExpensesDataUnit tempDataUnit = new ExpensesDataUnit(expenseNamesArray[0]);
+                    DataUnitExpenses tempDataUnit = new DataUnitExpenses(expenseNamesArray[0]);
                     expenseNamesArray[0] = expenseNamesArray[i];
                     expenseNamesArray[i] = tempDataUnit;
                 }
@@ -252,7 +252,7 @@ public class ActivitySmsExpensesReader extends AppCompatActivity implements Load
             String smsBodyString = c.getString(c.getColumnIndexOrThrow(SMS_BODY));
             if (smsBodyString.toLowerCase().contains("оплата") || smsBodyString.toLowerCase().contains("покупка")) {
 
-                SmsDataUnit smsDataUnit = new SmsDataUnit();
+                DataUnitSms smsDataUnit = new DataUnitSms();
                 smsDataUnit.setSmsAddress(c.getString(c.getColumnIndexOrThrow(SMS_ADDRESS)));
                 smsDataUnit.setSmsBody(c.getString(c.getColumnIndexOrThrow(SMS_BODY)));
                 smsDataUnit.setSmsDateInMillis(c.getString(c.getColumnIndexOrThrow(SMS_DATE)));

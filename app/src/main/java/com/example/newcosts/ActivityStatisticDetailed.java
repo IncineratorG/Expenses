@@ -23,21 +23,17 @@ public class ActivityStatisticDetailed extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_detailed);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.activity_statistic_cost_type_detailed_toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
-
         Bundle expenseDataBundle = getIntent().getExtras();
         if (expenseDataBundle == null)
             return;
 
-        TextView toolBarTextView = (TextView) toolbar.findViewById(R.id.activity_statistic_detailed_toolbar_textview);
+        TextView toolBarTextView = (TextView) findViewById(R.id.activity_statistic_detailed_toolbar_textview);
         TextView overallValueTextView = (TextView) findViewById(R.id.activity_statistic_detailed_overall_value_textview);
         TextView perDayExpensesTextView = (TextView) findViewById(R.id.activity_statistic_detailed_per_day_textview);
         ListView statisticDetailedListView = (ListView) findViewById(R.id.activity_statistic_detailed_list_view);
 
         // При нажатии на стрелку назад - возвращаемся к предыдущему экрану
-        ImageView toolbarBackArrowImageView = (ImageView) toolbar.findViewById(R.id.activity_statistic_detailed_arrow_back);
+        ImageView toolbarBackArrowImageView = (ImageView) findViewById(R.id.activity_statistic_detailed_arrow_back);
         toolbarBackArrowImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,12 +41,12 @@ public class ActivityStatisticDetailed extends AppCompatActivity {
             }
         });
 
-        CostsDB cdb = CostsDB.getInstance(this);
+        DB_Costs cdb = DB_Costs.getInstance(this);
 
         final int MODE = expenseDataBundle.getInt(Constants.STATISTIC_DETAILED_ACTIVITY_MODE);
         switch (MODE) {
             case Constants.STATISTIC_DETAILED_ACTIVITY_MODE_BY_MONTHS: {
-                ExpensesDataUnit chosenMonthDataUnit = expenseDataBundle.getParcelable(Constants.DATA_FOR_STATISTIC_DETAILED_ACTIVITY);
+                DataUnitExpenses chosenMonthDataUnit = expenseDataBundle.getParcelable(Constants.DATA_FOR_STATISTIC_DETAILED_ACTIVITY);
                 if (chosenMonthDataUnit != null) {
                     // Определяем количество дней в выбранном месяце. Если выбран
                     // текущий месяц - оиспользуем количество дней, прошедших с начала месяца
@@ -69,9 +65,9 @@ public class ActivityStatisticDetailed extends AppCompatActivity {
                     toolBarTextView.setText(Constants.MONTH_NAMES[chosenMonthDataUnit.getMonth()] + " " + chosenMonthDataUnit.getYear());
 
                     // Получаем список статей расходов и суммарные значения по ним за выбранный месяц
-                    final List<ExpensesDataUnit> expensesDataUnitList = cdb.getCostValuesArrayOnDate_V3(chosenMonthDataUnit.getMonth(), chosenMonthDataUnit.getYear());
+                    final List<DataUnitExpenses> expensesDataUnitList = cdb.getCostValuesArrayOnDate_V3(chosenMonthDataUnit.getMonth(), chosenMonthDataUnit.getYear());
                     double overallExpensesValueForChosenPeriod = 0.0;
-                    for (ExpensesDataUnit dataUnit : expensesDataUnitList)
+                    for (DataUnitExpenses dataUnit : expensesDataUnitList)
                         overallExpensesValueForChosenPeriod = overallExpensesValueForChosenPeriod + dataUnit.getExpenseValueDouble();
 
                     // Устанавливаем средний расход в день
@@ -88,7 +84,7 @@ public class ActivityStatisticDetailed extends AppCompatActivity {
 
                     // При нажатии на элемент списка статей расходов происходит переход на экран
                     // детального просмотра затрат по выбранной статье за выбранный месяц
-                    final ExpensesDataUnit finalChosenMonthDataUnit = chosenMonthDataUnit;
+                    final DataUnitExpenses finalChosenMonthDataUnit = chosenMonthDataUnit;
                     statisticDetailedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -105,8 +101,8 @@ public class ActivityStatisticDetailed extends AppCompatActivity {
             break;
 
             case Constants.STATISTIC_DETAILED_ACTIVITY_MODE_CUSTOM_DATE: {
-                final ExpensesDataUnit startingDateDataUnit = expenseDataBundle.getParcelable(Constants.STARTING_DATE_LABEL);
-                final ExpensesDataUnit endingDateDataUnit = expenseDataBundle.getParcelable(Constants.ENDING_DATE_LABEL);
+                final DataUnitExpenses startingDateDataUnit = expenseDataBundle.getParcelable(Constants.STARTING_DATE_LABEL);
+                final DataUnitExpenses endingDateDataUnit = expenseDataBundle.getParcelable(Constants.ENDING_DATE_LABEL);
                 if (startingDateDataUnit == null ||  endingDateDataUnit == null)
                     return;
 
@@ -131,10 +127,10 @@ public class ActivityStatisticDetailed extends AppCompatActivity {
                                         .toString());
 
                 // Получаем список статей расходов и суммарные значения по ним за выбранный период
-                final List<ExpensesDataUnit> expensesDataUnitList = cdb.getCostsBetweenDates_V3(startingDateDataUnit.getMilliseconds(),
+                final List<DataUnitExpenses> expensesDataUnitList = cdb.getCostsBetweenDates_V3(startingDateDataUnit.getMilliseconds(),
                                                                                             endingDateDataUnit.getMilliseconds());
                 double overallExpensesValueForChosenPeriod = 0.0;
-                for (ExpensesDataUnit dataUnit : expensesDataUnitList)
+                for (DataUnitExpenses dataUnit : expensesDataUnitList)
                     overallExpensesValueForChosenPeriod = overallExpensesValueForChosenPeriod + dataUnit.getExpenseValueDouble();
 
                 // Устанавливаем средний расход в день

@@ -40,14 +40,13 @@
         android:layout_height="match_parent"
         android:padding="1dp"
         android:clickable="false"
-        android:focusable="false"
-        android:background="@drawable/fragment_last_entered_values_single_item_border">
+        android:focusable="false">
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
+            android:background="@drawable/fragment_last_entered_values_single_item_style"
             android:id="@+id/fragment_last_entered_values_layout_with_text">
 
             <LinearLayout
@@ -70,7 +69,8 @@
                     android:textStyle="normal|bold"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
-                    android:layout_marginRight="5dp" />
+                    android:layout_marginRight="5dp"
+                    android:textColor="@drawable/button_text_color_black" />
             </LinearLayout>
 
             <LinearLayout
@@ -106,7 +106,8 @@
                         android:layout_marginEnd="5sp"
                         android:layout_marginRight="5sp"
                         android:layout_marginLeft="5sp"
-                        android:layout_marginStart="5sp" />
+                        android:layout_marginStart="5sp"
+                        android:textColor="@drawable/button_text_color_black" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -134,7 +135,8 @@
                         android:text="Note"
                         android:layout_gravity="center_vertical"
                         android:maxLines="1"
-                        android:ellipsize="end"/>
+                        android:ellipsize="end"
+                        android:textColor="@drawable/button_text_color_grey" />
                 </LinearLayout>
 
             </LinearLayout>

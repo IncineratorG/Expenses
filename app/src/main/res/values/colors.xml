@@ -3,6 +3,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#FF9800</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="veryLightOrange">#FFE0B2</color>
+    <color name="lightOrange">#FFCC80</color>
     <color name="orange">#FF9800</color>
     <color name="darkOrange">#FF6D00</color>
     <color name="veryDarkOrange">#FF5722</color>
