@@ -1,14 +1,10 @@
 package com.example.newcosts;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -19,7 +15,7 @@ import java.util.List;
  * TODO: Add a class header comment
  */
 
-public class AdapterActivityBackupDataRecyclerView_V2 extends RecyclerView.Adapter<AdapterActivityBackupDataRecyclerView_V2.ViewHolder> {
+public class AdapterActivityBackupDataRecyclerView extends RecyclerView.Adapter<AdapterActivityBackupDataRecyclerView.ViewHolder> {
 
     private List<DataUnitBackupFolder> dataList;
     private int selectedItemPosition = -1;
@@ -34,7 +30,7 @@ public class AdapterActivityBackupDataRecyclerView_V2 extends RecyclerView.Adapt
 
 
 
-    public AdapterActivityBackupDataRecyclerView_V2(Context context, List<DataUnitBackupFolder> dataList) {
+    public AdapterActivityBackupDataRecyclerView(Context context, List<DataUnitBackupFolder> dataList) {
         this.context = context;
         calendar = new GregorianCalendar();
 
@@ -54,7 +50,7 @@ public class AdapterActivityBackupDataRecyclerView_V2 extends RecyclerView.Adapt
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_backup_data_single_item_v2, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_backup_data_single_item, parent, false);
         return new ViewHolder(v);
     }
 

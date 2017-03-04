@@ -247,7 +247,6 @@ public class DB_Costs extends SQLiteOpenHelper {
 
     public void restoreTableCostValues(DataUnitTableCostValues restoringData) {
 //        deleteTableCostValues();
-
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues(8);

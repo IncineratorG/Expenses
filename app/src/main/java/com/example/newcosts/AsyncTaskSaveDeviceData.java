@@ -52,7 +52,7 @@ public class AsyncTaskSaveDeviceData extends AsyncTask<Void, Integer, Void> {
 
     private DataSavedCallback completeSavingDataListener;
     public interface DataSavedCallback {
-        void dataSaved(int i);
+        void dataSaved(boolean dataSavedSuccessful);
     }
 
 
@@ -264,6 +264,7 @@ public class AsyncTaskSaveDeviceData extends AsyncTask<Void, Integer, Void> {
             Log.i(TAG, "CREATING BACKUP DATA STOPPED");
             Log.i(TAG, "COST_NAMES: " + String.valueOf(tableCostNamesDataGenerated));
             Log.i(TAG, "COST_VALUES: " + String.valueOf(tableCostValuesDataGenerated));
+            completeSavingDataListener.dataSaved(false);
             return;
         }
         Log.i(TAG, "SENDING BACKUP DATA TO DRIVE");
@@ -278,6 +279,7 @@ public class AsyncTaskSaveDeviceData extends AsyncTask<Void, Integer, Void> {
                         if (!driveFileResult.getStatus().isSuccess()) {
                             Log.i(TAG, "!!ERROR CREATING TABLE_COST_NAMES BACKUP DATA!!");
                             Log.i(TAG, "CREATING BACKUP DATA STOPPED");
+                            completeSavingDataListener.dataSaved(false);
                             return;
                         }
                         tableCostNamesBackupCreated = true;
@@ -290,6 +292,7 @@ public class AsyncTaskSaveDeviceData extends AsyncTask<Void, Integer, Void> {
                                         if (!driveFileResult.getStatus().isSuccess()) {
                                             Log.i(TAG, "!!ERROR CREATING TABLE_COST_VALUES BACKUP DATA!!");
                                             Log.i(TAG, "CREATING BACKUP DATA STOPPED");
+                                            completeSavingDataListener.dataSaved(false);
                                             return;
                                         }
                                         tableCostValuesBackupCreated = true;
@@ -311,7 +314,7 @@ public class AsyncTaskSaveDeviceData extends AsyncTask<Void, Integer, Void> {
                                                         else
                                                             Log.i(TAG, "!!ERROR CREATING REFERENCE FILE!!");
                                                         Log.i(TAG, "TIME SPENT FOR SAVING DATA: " + (System.currentTimeMillis() - startTime) + " MILLISECONDS");
-                                                        completeSavingDataListener.dataSaved(1);
+                                                        completeSavingDataListener.dataSaved(true);
                                                     }
                                                 });
                                     }

@@ -1,8 +1,11 @@
 package com.example.newcosts;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Xml;
 import android.widget.TextView;
@@ -47,10 +50,14 @@ public class AsyncTaskRestoreData extends AsyncTask<Void, String, Void> {
     private List<DataUnitTableCostValues> tableCostValuesDataList;
 
     private String errorString = "";
+    private boolean taskCancelled = false;
+    private Context context;
+    private TextView restoringDialogTextView;
+    private AlertDialog restoringProgressDialog;
 
 
     public interface DataRestoredCallback {
-        void dataRestored(int i);
+        void dataRestored(boolean b);
     }
 
 
@@ -64,10 +71,30 @@ public class AsyncTaskRestoreData extends AsyncTask<Void, String, Void> {
         this.tableCostValuesBackupFile = tableCostValuesBackupFile;
         this.statusTextView = statusTextView;
         dataRestoredCallback = (DataRestoredCallback) context;
+        this.context = context;
 
         countDownLatch = new CountDownLatch(2);
     }
 
+
+    @Override
+    protected void onPreExecute() {
+        AlertDialog.Builder restoringProgressDialogBuilder = new AlertDialog.Builder(context);
+        restoringProgressDialogBuilder.setCancelable(false);
+        restoringProgressDialogBuilder.setTitle("Восстановление...");
+        restoringProgressDialogBuilder.setMessage("Подготовка.");
+        restoringProgressDialogBuilder.setPositiveButton("Отменить", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                AsyncTaskRestoreData.this.cancel(true);
+            }
+        });
+
+        restoringProgressDialog = restoringProgressDialogBuilder.create();
+        restoringProgressDialog.show();
+
+        restoringDialogTextView = (TextView) restoringProgressDialog.findViewById(android.R.id.message);
+    }
 
     @Override
     protected Void doInBackground(Void... params) {
@@ -86,6 +113,12 @@ public class AsyncTaskRestoreData extends AsyncTask<Void, String, Void> {
 
     // Получаем данные таблицы TABLE_COST_NAMES из резервной копии
     private void restoreCostNamesData() {
+        if (tableCostNamesBackupFile == null) {
+            countDownLatch.countDown();
+            Log.i(TAG, "tableCostNamesBackupFile IS NULL");
+            return;
+        }
+
         tableCostNamesBackupFile.open(googleApiClient, DriveFile.MODE_READ_ONLY, null).setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
             @Override
             public void onResult(@NonNull DriveApi.DriveContentsResult driveContentsResult) {
@@ -163,6 +196,12 @@ public class AsyncTaskRestoreData extends AsyncTask<Void, String, Void> {
 
     // Получаем данные таблицы TABLE_COST_VALUES из резервной копии
     private void restoreCostValuesData() {
+        if (tableCostValuesBackupFile == null) {
+            Log.i(TAG, "tableCostValuesBackupFile IS NULL");
+            countDownLatch.countDown();
+            return;
+        }
+
         tableCostValuesBackupFile.open(googleApiClient, DriveFile.MODE_READ_ONLY, null).setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
             @Override
             public void onResult(@NonNull DriveApi.DriveContentsResult driveContentsResult) {
@@ -256,47 +295,46 @@ public class AsyncTaskRestoreData extends AsyncTask<Void, String, Void> {
     // Заменяеем содержимое базы данных DB_Costs полученными данными
     private void insertRetrievedDataInDb() {
         if (!tableCostNamesRetrieved || !tableCostValuesRetrieved) {
-//            Log.i(TAG, "!!ERROR RETRIEVING DATA FROM DRIVE!!");
-//            Log.i(TAG, "RESTORING DATA STOPPED");
             return;
         }
 
-//        Log.i(TAG, "DATA RETRIEVED SUCCESSFUL");
-//        Log.i(TAG, "tableCostNamesDataList SIZE: " + tableCostNamesDataList.size());
-//        Log.i(TAG, "tableCostValuesDataList SIZE: " + tableCostValuesDataList.size());
-
-//        Log.i(TAG, "INSERTING DATA IN TABLE_COST_NAMES");
         cdb.restoreTableCostNames(tableCostNamesDataList);
-//        Log.i(TAG, "TABLE_COST_NAMES RESTORED");
-
-//        Log.i(TAG, "INSERTING DATA IN TABLE_COST_VALUES");
         cdb.deleteTableCostValues();
-        boolean taskCancelled = false;
         for (int i = 0; i < tableCostValuesDataList.size(); ++i) {
             if (!isCancelled()) {
                 cdb.restoreTableCostValues(tableCostValuesDataList.get(i));
-                if (i == 0 || (i % 100 == 1 && i != 1) || i == tableCostValuesDataList.size() - 1)
+                if (i == 0 || (i % 10 == 1 && i != 1) || i == tableCostValuesDataList.size() - 1) {
                     publishProgress("Этап 3/3: " + i + "/" + (tableCostValuesDataList.size() - 1));
+                }
             } else {
+                Log.i(TAG, "TASK_CANCELLED i = " + i);
                 taskCancelled = true;
                 break;
             }
         }
         dataRestored = !taskCancelled;
-//        Log.i(TAG, "TABLE_COST_VALUES RESTORED");
+    }
+
+    @Override
+    protected void onCancelled() {
+        Log.i(TAG, "isCancelled");
+        dataRestoredCallback.dataRestored(false);
     }
 
     @Override
     protected void onProgressUpdate(String... values) {
         super.onProgressUpdate(values);
-        statusTextView.setText(values[0]);
+        restoringDialogTextView.setText(values[0]);
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
+        Log.i(TAG, "onPostExecute");
         if (dataRestored)
-            dataRestoredCallback.dataRestored(1);
+            dataRestoredCallback.dataRestored(true);
         else
-            dataRestoredCallback.dataRestored(0);
+            dataRestoredCallback.dataRestored(false);
+
+        restoringProgressDialog.dismiss();
     }
 }

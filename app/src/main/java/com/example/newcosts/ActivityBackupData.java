@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,7 +25,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -58,6 +58,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     private GoogleApiClient googleApiClient;
     private static final int REQUEST_CODE_RESOLUTION = 123;
     private DB_Costs cdb;
+    private ImageView arrowBackImageView;
     
     private Button createBackupDataButton;
 
@@ -65,32 +66,29 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     private String TABLE_COST_VALUES_FILE_NAME = "cost_values_data.xml";
     private String DEVICE_BACKUP_FOLDER_NAME;
     private DriveId DEVICE_BACKUP_FOLDER_ID;
-    private DriveId BACKUP_FILE_TABLE_COST_NAMES_ID;
-    private DriveId BACKUP_FILE_TABLE_COST_VALUES_ID;
-
     private String REFERENCE_FILE_NAME = "reference_file";
-
     private DriveFolder DEVICE_BACKUP_FOLDER_FOLDER;
-    private DriveFile BACKUP_DATA_TABLE_COST_NAMES_FILE;
-    private DriveFile BACKUP_DATA_TABLE_COST_VALUES_FILE;
 
     private String ROOT_BACKUP_FOLDER_NAME = "EXPENSES_BACKUP";
     private DriveId ROOT_BACKUP_FOLDER_ID;
     private DriveFolder ROOT_BACKUP_FOLDER_FOLDER;
     private List<DataUnitBackupFolder> existingDeviceBackupFolders = new ArrayList<>();
 
-    private List<DataUnitTableCostNames> tableCostNamesBackupDataList = null;
-    private List<DataUnitTableCostValues> tableCostValuesBackupDataList = null;
-
     private Calendar calendar;
     private String BACKUP_USER_COMMENT = "";
 
     private RecyclerView backupListRecyclerView;
-    private AdapterActivityBackupDataRecyclerView_V2 backupDataRecyclerViewAdapter;
+    private AdapterActivityBackupDataRecyclerView backupDataRecyclerViewAdapter;
     private LinearLayoutManager linearLayoutManager;
 
     private TextView statusTextView;
-    private String currentDefaultString = "";
+//    private String currentDefaultString = "";
+
+    private AsyncTask asyncTaskRestoreData;
+    private ImageView selectGoogleAccountImageView;
+
+    private boolean chooseAccountDialogShown = false;
+    private boolean connectedToGoogleDrive = false;
 
 
 
@@ -98,7 +96,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_backup_data_v3);
+        setContentView(R.layout.activity_backup_data);
 
 
         calendar = new GregorianCalendar();
@@ -108,7 +106,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
         linearLayoutManager = new LinearLayoutManager(this);
         backupListRecyclerView = (RecyclerView) findViewById(R.id.backup_data_recycler_view);
 
-
+        // Кнопка создания резервной копии
         createBackupDataButton = (Button) findViewById(R.id.backup_data_backup_button);
         createBackupDataButton.setEnabled(false);
         createBackupDataButton.setTextColor(ContextCompat.getColor(this, R.color.lightGrey));
@@ -124,7 +122,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
         });
 
         // При нажатии стрелки назад - возвращаемся к предыдущему экрану
-        ImageView arrowBackImageView = (ImageView) findViewById(R.id.backup_data_arrow_back_imageview);
+        arrowBackImageView = (ImageView) findViewById(R.id.backup_data_arrow_back_imageview);
         arrowBackImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,6 +130,17 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
             }
         });
 
+        // Открываем диалоговое окно, в котором можно выбрать аккаунт Google
+        selectGoogleAccountImageView = (ImageView) findViewById(R.id.backup_data_account_imageview);
+        selectGoogleAccountImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectGoogleAccount();
+//                deleteAllBackupData();
+            }
+        });
+
+        // Создаём googleApiClient
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(this)
                     .addApi(Drive.API)
@@ -141,9 +150,9 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                     .build();
         }
 
-        currentDefaultString = "Нет соединения с сетью";
+//        currentDefaultString = "Нет соединения с сетью";
         statusTextView = (TextView) findViewById(R.id.backup_data_status_textview);
-        statusTextView.setText(currentDefaultString);
+        statusTextView.setText("Нет соединения с сетью");
     }
 
     @Override
@@ -151,8 +160,8 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
         super.onResume();
 
         if (!hasNetworkConnection()) {
-            currentDefaultString = "Нет соединения с сетью";
-            statusTextView.setText(currentDefaultString);
+//            currentDefaultString = "Нет соединения с сетью";
+            statusTextView.setText("Нет соединения с сетью");
         } else
             connectToGoogleDrive();
     }
@@ -161,6 +170,8 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     protected void onStop() {
         super.onStop();
 
+        if (asyncTaskRestoreData != null)
+            asyncTaskRestoreData.cancel(true);
         disconnectFromGoogleDrive();
     }
 
@@ -168,6 +179,35 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
 
 
     // ============================ MY FUNCTIONS =================================
+    // Выбираем аккаунт Google
+    private void selectGoogleAccount() {
+        connectedToGoogleDrive = false;
+
+        // Очищаем список доступных резервных копий
+        if (existingDeviceBackupFolders != null)
+            existingDeviceBackupFolders.clear();
+        if (backupDataRecyclerViewAdapter != null)
+            backupDataRecyclerViewAdapter.notifyDataSetChanged();
+
+        // Отключаем возможность создания резервной копии
+        createBackupDataButton.setEnabled(false);
+        createBackupDataButton.setTextColor(ContextCompat.getColor(ActivityBackupData.this, R.color.lightGrey));
+
+        // Показываем диалоговое окно с возможностью выбора аккаунта Google. Если пользователь ничего
+        // не выберет, то повторно вызвать данное диалоговое окно можно либо нажав на значок выбора
+        // аккаунта, либо заново зайдя в данную активность
+        if (googleApiClient != null) {
+            if (!chooseAccountDialogShown) {
+                if (googleApiClient.isConnected())
+                    googleApiClient.clearDefaultAccountAndReconnect();
+            } else {
+                chooseAccountDialogShown = false;
+                connectToGoogleDrive();
+            }
+        }
+
+    }
+
     // Проверяем есть ли соединение с интернетом
     private boolean hasNetworkConnection() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(ActivityBackupData.CONNECTIVITY_SERVICE);
@@ -179,7 +219,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     // Соединяемся с Google Drive
     private void connectToGoogleDrive() {
         if (googleApiClient != null) {
-            statusTextView.setText("Устанавливаю соединение с сетью");
+            statusTextView.setText("Устанавливаю соединение с сетью...");
             googleApiClient.connect();
         }
     }
@@ -213,14 +253,18 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                 DriveFile tableCostValuesBackupFile = null;
                 MetadataBuffer backupFilesMetadata = metadataBufferResult.getMetadataBuffer();
                 for (int i = 0; i < backupFilesMetadata.getCount(); ++i) {
-                    if (TABLE_COST_NAMES_FILE_NAME.equals(backupFilesMetadata.get(i).getTitle()))
+                    if (TABLE_COST_NAMES_FILE_NAME.equals(backupFilesMetadata.get(i).getTitle())) {
                         tableCostNamesBackupFile = backupFilesMetadata.get(i).getDriveId().asDriveFile();
-                    else if (TABLE_COST_VALUES_FILE_NAME.equals(backupFilesMetadata.get(i).getTitle()))
+                        Log.i(TAG, tableCostNamesBackupFile.toString());
+                    }
+                    else if (TABLE_COST_VALUES_FILE_NAME.equals(backupFilesMetadata.get(i).getTitle())) {
                         tableCostValuesBackupFile = backupFilesMetadata.get(i).getDriveId().asDriveFile();
+                        Log.i(TAG, tableCostValuesBackupFile.toString());
+                    }
                 }
 
                 // Восстанавливаем данные из резервной копии в отдельном потоке
-                new AsyncTaskRestoreData(googleApiClient,
+                asyncTaskRestoreData = new AsyncTaskRestoreData(googleApiClient,
                                         ActivityBackupData.this,
                                         tableCostNamesBackupFile,
                                         tableCostValuesBackupFile,
@@ -264,6 +308,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                     public void onResult(@NonNull DriveFolder.DriveFolderResult driveFolderResult) {
                         if (!driveFolderResult.getStatus().isSuccess()) {
                             Log.i(TAG, "ERROR CREATING ROOT BACKUP FOLDER");
+                            dataSaved(false);
                             return;
                         }
                         Log.i(TAG, "ROOT BACKUP FOLDER CREATED");
@@ -295,6 +340,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                     public void onResult(@NonNull DriveFolder.DriveFolderResult driveFolderResult) {
                         if (!driveFolderResult.getStatus().isSuccess()) {
                             Log.i(TAG, "ERROR CREATING DEVICE BACKUP FOLDER");
+                            dataSaved(false);
                             return;
                         }
 
@@ -343,26 +389,20 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                     backupFolderDeletedToast.show();
                 }
 
-                statusTextView.setText(currentDefaultString);
+//                statusTextView.setText(currentDefaultString);
                 searchForBackupData();
             }
         });
     }
 
-    // Ищем данные резервной копии
-    private void searchForBackupData() {
-        // Ищем папку с сохранёнными данными
+    private void deleteAllBackupData() {
+        // Ищем корневую папку с сохранёнными данными
         Query searchRootBackupFolder = new Query.Builder()
                 .addFilter(Filters.eq(SearchableField.TITLE, ROOT_BACKUP_FOLDER_NAME))
                 .build();
         Drive.DriveApi.query(googleApiClient, searchRootBackupFolder).setResultCallback(new ResultCallback<DriveApi.MetadataBufferResult>() {
             @Override
             public void onResult(@NonNull DriveApi.MetadataBufferResult metadataBufferResult) {
-//                int statusCode = metadataBufferResult.getStatus().getStatusCode();
-//                boolean b = statusCode == CommonStatusCodes.SUCCESS_CACHE;
-//                Log.i(TAG, String.valueOf(statusCode));
-//                Log.i(TAG, String.valueOf(b));
-
                 if (!metadataBufferResult.getStatus().isSuccess()) {
                     Log.i(TAG, "ERROR TRYING TO FIND ROOT BACKUP FOLDER");
                     statusTextView.setText("ERROR TRYING TO FIND ROOT BACKUP FOLDER");
@@ -375,8 +415,75 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                 // Если папка не найдена - прекращаем обработку
                 if (metadataBuffer.getCount() <= 0) {
                     Log.i(TAG, "NO BACKUP DATA FOUND");
-                    currentDefaultString = "Данные резервной копии не найдены";
-                    statusTextView.setText(currentDefaultString);
+//                    currentDefaultString = "Данные резервной копии не найдены";
+                    statusTextView.setText("Резервные копии не найдены");
+                    createBackupDataButton.setEnabled(true);
+                    createBackupDataButton.setTextColor(getResources().getColorStateList(R.color.button_text_color));
+                    return;
+                }
+
+                // Считаем первую найденную не удалённую папку папкой с резервной копией данных
+                for (int i = 0; i < metadataBuffer.getCount(); ++i) {
+                    Metadata metadata = metadataBuffer.get(i);
+                    if (!metadata.isTrashed()) {
+                        ROOT_BACKUP_FOLDER_ID = metadata.getDriveId();
+                        break;
+                    }
+                }
+
+                if (ROOT_BACKUP_FOLDER_ID == null) {
+                    Log.i(TAG, "ROOT_BACKUP_FOLDER_ID == NULL");
+                    return;
+                }
+                Log.i(TAG, "ROOT BACKUP FOLDER FOUND");
+
+                ROOT_BACKUP_FOLDER_FOLDER = ROOT_BACKUP_FOLDER_ID.asDriveFolder();
+
+                ROOT_BACKUP_FOLDER_FOLDER.delete(googleApiClient).setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+                        if (status.isSuccess())
+                            Log.i(TAG, "SUCCESS");
+                        else
+                            Log.i(TAG, "ERROR");
+                    }
+                });
+            }
+        });
+    }
+
+    // Ищем данные резервной копии
+    private void searchForBackupData() {
+        if (existingDeviceBackupFolders != null)
+            existingDeviceBackupFolders.clear();
+        if (backupDataRecyclerViewAdapter != null)
+            backupDataRecyclerViewAdapter.notifyDataSetChanged();
+
+        statusTextView.setText("Поиск резервных копий...");
+
+        // Ищем папку с сохранёнными данными
+        Query searchRootBackupFolder = new Query.Builder()
+                .addFilter(Filters.eq(SearchableField.TITLE, ROOT_BACKUP_FOLDER_NAME))
+                .build();
+        Drive.DriveApi.query(googleApiClient, searchRootBackupFolder).setResultCallback(new ResultCallback<DriveApi.MetadataBufferResult>() {
+            @Override
+            public void onResult(@NonNull DriveApi.MetadataBufferResult metadataBufferResult) {
+                if (!metadataBufferResult.getStatus().isSuccess()) {
+                    Log.i(TAG, "ERROR TRYING TO FIND ROOT BACKUP FOLDER");
+                    statusTextView.setText("ERROR TRYING TO FIND ROOT BACKUP FOLDER");
+                    return;
+                }
+
+                MetadataBuffer metadataBuffer = metadataBufferResult.getMetadataBuffer();
+                ROOT_BACKUP_FOLDER_ID = null;
+
+                // Если папка не найдена - прекращаем обработку
+                if (metadataBuffer.getCount() <= 0) {
+                    Log.i(TAG, "NO BACKUP DATA FOUND");
+//                    currentDefaultString = "Данные резервной копии не найдены";
+                    statusTextView.setText("Резервные копии не найдены");
+                    createBackupDataButton.setEnabled(true);
+                    createBackupDataButton.setTextColor(getResources().getColorStateList(R.color.button_text_color));
                     return;
                 }
 
@@ -394,8 +501,8 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                 // Если папка с резервной копией найдена - ищем подпапки
                 // резервной копии внутри этой папки
                 Log.i(TAG, "ROOT BACKUP FOLDER FOUND");
-                currentDefaultString = "Папка резервной копии найдена";
-                statusTextView.setText(currentDefaultString);
+//                currentDefaultString = "Папка резервной копии найдена";
+//                statusTextView.setText("Данные резервной копии найдены");
                 ROOT_BACKUP_FOLDER_FOLDER = ROOT_BACKUP_FOLDER_ID.asDriveFolder();
                 ROOT_BACKUP_FOLDER_FOLDER.listChildren(googleApiClient).setResultCallback(new ResultCallback<DriveApi.MetadataBufferResult>() {
                     @Override
@@ -421,14 +528,23 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
 
                         // Отображаем полученный список резервных копий
                         backupListRecyclerView.setLayoutManager(linearLayoutManager);
-                        backupDataRecyclerViewAdapter = new AdapterActivityBackupDataRecyclerView_V2(ActivityBackupData.this, existingDeviceBackupFolders);
-                        backupDataRecyclerViewAdapter.setClickListener(new AdapterActivityBackupDataRecyclerView_V2.OnItemClickListener() {
+                        backupDataRecyclerViewAdapter = new AdapterActivityBackupDataRecyclerView(ActivityBackupData.this, existingDeviceBackupFolders);
+                        backupDataRecyclerViewAdapter.setClickListener(new AdapterActivityBackupDataRecyclerView.OnItemClickListener() {
                             @Override
                             public void onItemClick(View itemView, int position) {
                                 onBackupItemClick(position);
                             }
                         });
                         backupListRecyclerView.setAdapter(backupDataRecyclerViewAdapter);
+
+                        createBackupDataButton.setEnabled(true);
+                        createBackupDataButton.setTextColor(getResources().getColorStateList(R.color.button_text_color));
+
+                        if (existingDeviceBackupFolders.size() > 0) {
+                            statusTextView.setText("Резервные копии найдены");
+                        } else {
+                            statusTextView.setText("Резервные копии не найдены");
+                        }
                     }
                 });
 
@@ -458,7 +574,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                 calendar.get(Calendar.HOUR_OF_DAY) + ":" +
                 calendar.get(Calendar.MINUTE));
 
-        // Устанавливаем устройство, на котром была создана выбранная резервная копия
+        // Устанавливаем название устройства, на котром была создана выбранная резервная копия
         TextView descriptionTextView = (TextView) dialogView.findViewById(R.id.edit_cost_value_dialog_costName);
         descriptionTextView.setText(selectedBackupItem.getDeviceManufacturer() + " " +
                 selectedBackupItem.getDeviceModel());
@@ -489,8 +605,12 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         backupDataRecyclerViewAdapter.setClickListener(null);
+
                         createBackupDataButton.setEnabled(false);
                         createBackupDataButton.setTextColor(ContextCompat.getColor(ActivityBackupData.this, R.color.lightGrey));
+
+                        arrowBackImageView.setEnabled(false);
+
                         restoreDataFromBackup(position);
                     }
                 });
@@ -537,6 +657,8 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
 
     // Возвращаемся к предыдущему экрану
     private void returnToPreviousActivity() {
+        if (asyncTaskRestoreData != null)
+            asyncTaskRestoreData.cancel(true);
         Intent mainActivityWithFragmentsIntent = new Intent(ActivityBackupData.this, ActivityMainWithFragments.class);
         mainActivityWithFragmentsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(mainActivityWithFragmentsIntent);
@@ -550,9 +672,10 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     // Если есть - инициализируем ID папки и файлов с резервной копией
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        chooseAccountDialogShown = false;
         statusTextView.setText("Соединение установлено");
-        createBackupDataButton.setEnabled(true);
-        createBackupDataButton.setTextColor(getResources().getColorStateList(R.color.button_text_color));
+//        createBackupDataButton.setEnabled(true);
+//        createBackupDataButton.setTextColor(getResources().getColorStateList(R.color.button_text_color));
         Log.i(TAG, "CONNECTED");
         Log.i(TAG, "TRYING TO FIND ROOT BACKUP FOLDER");
 
@@ -569,6 +692,11 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i(TAG, "CONNECTION_FAILED: " + connectionResult.toString());
+        statusTextView.setText("Выберите учётную запись Google");
+
+        // Окно с выбором аккаунта Google показывается только один раз.
+        if (chooseAccountDialogShown)
+            return;
 
         if (!connectionResult.hasResolution()) {
             // show the localized error dialog.
@@ -577,6 +705,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
         }
 
         try {
+            chooseAccountDialogShown = true;
             connectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLUTION);
         } catch (IntentSender.SendIntentException e) {
             Log.e(TAG, "EXCEPTION WHILE STARING RESOLUTION ACTIVITY", e);
@@ -609,8 +738,17 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
 
     // ============ AdapterActivityBackupDataRecyclerView, AsyncTaskRestoreData CALLBACK ===========
     @Override
-    public void dataSaved(int i) {
-        statusTextView.setText("Сохранение завершено");
+    public void dataSaved(boolean dateSavedSuccessful) {
+        Toast dataSavedToast;
+        if (dateSavedSuccessful) {
+            statusTextView.setText("Сохранение завершено");
+            dataSavedToast = Toast.makeText(this, "Сохранение завершено", Toast.LENGTH_SHORT);
+        } else {
+            statusTextView.setText("Данные не сохранены");
+            dataSavedToast = Toast.makeText(this, "Данные не сохранены", Toast.LENGTH_SHORT);
+        }
+        dataSavedToast.show();
+
         createBackupDataButton.setEnabled(true);
         createBackupDataButton.setBackgroundResource(R.drawable.keyboard_buttons_custom);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -622,17 +760,36 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     }
 
     @Override
-    public void dataRestored(int i) {
-        statusTextView.setText("Данные восстановлены");
+    public void dataRestored(boolean b) {
+        Log.i(TAG, "dateRestored(): " + String.valueOf(b));
+        Toast dataRestoredToast;
+        if (b) {
+            statusTextView.setText("Данные восстановлены");
+            dataRestoredToast = Toast.makeText(this, "Данные восстановлены", Toast.LENGTH_SHORT);
+        } else {
+            statusTextView.setText("Данные не восстановлены!");
+            dataRestoredToast = Toast.makeText(this, "Данные не восстановлены!", Toast.LENGTH_SHORT);
+        }
+        dataRestoredToast.show();
+
         createBackupDataButton.setEnabled(true);
         createBackupDataButton.setBackgroundResource(R.drawable.keyboard_buttons_custom);
         createBackupDataButton.setTextColor(getResources().getColorStateList(R.color.button_text_color));
-        backupDataRecyclerViewAdapter.setClickListener(new AdapterActivityBackupDataRecyclerView_V2.OnItemClickListener() {
+
+        backupDataRecyclerViewAdapter.setClickListener(new AdapterActivityBackupDataRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position) {
                 onBackupItemClick(position);
             }
         });
+
+        arrowBackImageView.setEnabled(true);
     }
     // ===============================================================================
+
+
+    @Override
+    public void onBackPressed() {
+        returnToPreviousActivity();
+    }
 }

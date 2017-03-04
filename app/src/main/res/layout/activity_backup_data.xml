@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:keepScreenOn="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -36,12 +37,22 @@
             android:textColor="@android:color/white"
             android:layout_gravity="center"
             android:gravity="center"
+            android:layout_alignParentTop="true"
+            android:layout_alignBottom="@+id/backup_data_arrow_back_imageview"
+            android:layout_toLeftOf="@+id/backup_data_account_imageview"
+            android:layout_toRightOf="@+id/backup_data_arrow_back_imageview"
+            android:layout_toEndOf="@+id/backup_data_arrow_back_imageview" />
+
+        <ImageView
+            android:layout_height="54dp"
+            app:srcCompat="@drawable/ic_account_box_white_36dp"
+            android:id="@+id/backup_data_account_imageview"
+            android:layout_width="54dp"
+            android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_toRightOf="@+id/backup_data_arrow_back_imageview"
-            android:layout_toEndOf="@+id/backup_data_arrow_back_imageview"
-            android:layout_alignParentTop="true"
-            android:layout_alignBottom="@+id/backup_data_arrow_back_imageview" />
+            android:background="@drawable/activity_input_data_buttons_style"
+            android:clickable="true" />
 
     </RelativeLayout>
 
