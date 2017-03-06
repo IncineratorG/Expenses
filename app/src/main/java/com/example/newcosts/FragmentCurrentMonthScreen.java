@@ -113,6 +113,7 @@ public class FragmentCurrentMonthScreen extends Fragment {
         addNewCategoryDataUnit.setExpenseValueString("+");
         listOfActiveCostNames.add(addNewCategoryDataUnit);
 
+        currentMonthTextView.setText("Всего за " + Constants.MONTH_NAMES[currentMonth]);
         // Устанавливаем суммарное значение затрат за текущий месяц
         overallValueTextView.setText(Constants.formatDigit(overallValueForCurrentMonth) + " руб.");
 
