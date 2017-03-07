@@ -72,11 +72,16 @@ public class ActivityStatisticDetailed extends AppCompatActivity {
 
                     // Устанавливаем средний расход в день
                     double averageExpensesPerDay = overallExpensesValueForChosenPeriod / daysInMonth;
-                    perDayExpensesTextView.setText(Constants.formatDigit(averageExpensesPerDay) + " руб./день");
+                    perDayExpensesTextView.setText(Constants.formatDigit(averageExpensesPerDay) + " " +
+                            getResources().getString(R.string.rur_string) +
+                            getResources().getString(R.string.dot_sign_string) + "/" +
+                            getResources().getString(R.string.asd_perDayExpensesTextView_day_string));
 
 
                     // Устанавливаем суммарное значение за выбранный период
-                    overallValueTextView.setText(Constants.formatDigit(overallExpensesValueForChosenPeriod) + " руб.");
+                    overallValueTextView.setText(Constants.formatDigit(overallExpensesValueForChosenPeriod) + " " +
+                            getResources().getString(R.string.rur_string) +
+                            getResources().getString(R.string.dot_sign_string));
 
                     // Инициализируем ListView полученным списком статей расходов
                     ListAdapter statisticDetailedListViewAdapter = new AdapterStatisticDetailedActivityListView(this, expensesDataUnitList);
@@ -135,10 +140,15 @@ public class ActivityStatisticDetailed extends AppCompatActivity {
 
                 // Устанавливаем средний расход в день
                 double averageExpensesPerDay = overallExpensesValueForChosenPeriod / chosenAmountOfDays;
-                perDayExpensesTextView.setText(Constants.formatDigit(averageExpensesPerDay) + " руб./день");
+                perDayExpensesTextView.setText(Constants.formatDigit(averageExpensesPerDay) + " " +
+                        getResources().getString(R.string.rur_string) +
+                        getResources().getString(R.string.dot_sign_string) + "/" +
+                        getResources().getString(R.string.asd_perDayExpensesTextView_day_string));
 
                 // Устанавливаем суммарное значение за выбранный период
-                overallValueTextView.setText(Constants.formatDigit(overallExpensesValueForChosenPeriod) + " руб.");
+                overallValueTextView.setText(Constants.formatDigit(overallExpensesValueForChosenPeriod) + " " +
+                        getResources().getString(R.string.rur_string) +
+                        getResources().getString(R.string.dot_sign_string));
 
                 // Инициализируем ListView полученным списком статей расходов
                 ListAdapter statisticDetailedListViewAdapter = new AdapterStatisticDetailedActivityListView(this, expensesDataUnitList);

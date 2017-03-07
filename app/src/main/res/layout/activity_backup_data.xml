@@ -22,26 +22,26 @@
             android:clickable="true" />
 
         <TextView
-            android:text="Резервное копирование"
+            android:id="@+id/backup_data_toolbar_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textSize="20sp"
-            android:id="@+id/backup_data_toolbar_text_view"
-            android:paddingLeft="10dp"
-            android:paddingStart="10dp"
-            android:paddingRight="10dp"
-            android:paddingEnd="10dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textColor="@android:color/white"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:layout_alignParentTop="true"
             android:layout_alignBottom="@+id/backup_data_arrow_back_imageview"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center"
+            android:layout_toEndOf="@+id/backup_data_arrow_back_imageview"
             android:layout_toLeftOf="@+id/backup_data_account_imageview"
             android:layout_toRightOf="@+id/backup_data_arrow_back_imageview"
-            android:layout_toEndOf="@+id/backup_data_arrow_back_imageview" />
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingEnd="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingStart="10dp"
+            android:text="@string/backup_data_toolbar_text_view_string"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
 
         <ImageView
             android:layout_height="54dp"
@@ -65,14 +65,14 @@
         android:background="@color/orange" >
 
         <TextView
+            android:id="@+id/backup_data_status_textview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/backup_data_status_textview"
+            android:gravity="center"
+            android:text="@string/backup_data_status_textview_string"
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:text="Status: none"
-            android:gravity="center" />
+            android:textSize="18sp" />
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
@@ -103,11 +103,11 @@
         android:id="@+id/backup_data_buttons_layout">
 
         <Button
-            android:text="Создать резервную копию"
+            android:id="@+id/backup_data_backup_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/backup_data_backup_button"
             android:background="@drawable/keyboard_buttons_custom"
+            android:text="@string/backup_data_backup_button_string"
             android:textColor="@color/button_text_color" />
 
     </LinearLayout>

@@ -178,14 +178,14 @@
         android:weightSum="2">
 
         <Button
-            android:text="@string/calendar_ok"
+            android:id="@+id/calendar_ok"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/calendar_ok"
             android:layout_weight="1"
             android:background="@drawable/calendar_buttons_style"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:textColor="@drawable/calendar_button_text_color"/>
+            android:text="@string/datepicker_ok_button_string"
+            android:textColor="@drawable/calendar_button_text_color" />
 
         <LinearLayout
             android:orientation="horizontal"
@@ -194,14 +194,14 @@
             android:background="#FF9800"/>
 
         <Button
-            android:text="@string/calendar_cancel"
+            android:id="@+id/calendar_cancel"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/calendar_cancel"
             android:layout_weight="1"
             android:background="@drawable/calendar_buttons_style"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:textColor="@drawable/calendar_button_text_color"/>
+            android:text="@string/datepicker_cancel_button_string"
+            android:textColor="@drawable/calendar_button_text_color" />
     </LinearLayout>
 
 </LinearLayout>

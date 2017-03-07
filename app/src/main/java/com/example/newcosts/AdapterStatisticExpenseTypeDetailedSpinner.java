@@ -28,10 +28,10 @@ public class AdapterStatisticExpenseTypeDetailedSpinner extends BaseAdapter impl
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         sortingTypesList = new ArrayList<>(4);
-        sortingTypesList.add("по дате");
-        sortingTypesList.add("по дате");
-        sortingTypesList.add("по сумме за день");
-        sortingTypesList.add("по сумме за день");
+        sortingTypesList.add(context.getResources().getString(R.string.sortingTypesList_byDate_string));
+        sortingTypesList.add(context.getResources().getString(R.string.sortingTypesList_byDate_string));
+        sortingTypesList.add(context.getResources().getString(R.string.sortingTypesList_byDailySum_string));
+        sortingTypesList.add(context.getResources().getString(R.string.sortingTypesList_byDailySum_string));
 
         arrowImagesList = new ArrayList<>(2);
         arrowImagesList.add(R.drawable.ic_arrow_upward_black_18dp);

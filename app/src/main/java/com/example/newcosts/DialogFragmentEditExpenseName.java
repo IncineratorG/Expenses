@@ -29,7 +29,7 @@ public class DialogFragmentEditExpenseName extends DialogFragment implements Vie
         View v = inflater.inflate(R.layout.edit_cost_value_dialog, container, false);
 
         TextView categoryTextView = (TextView) v.findViewById(R.id.edit_cost_value_dialog_costDate);
-        categoryTextView.setText("Категория");
+        categoryTextView.setText(getResources().getString(R.string.dfeen_categoryTextView_string));
         TextView costNameTextView = (TextView) v.findViewById(R.id.edit_cost_value_dialog_costName);
         costNameTextView.setText(dataUnit.getExpenseName());
         TextView costValueTextView = (TextView) v.findViewById(R.id.edit_cost_value_dialog_costValue);

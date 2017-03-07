@@ -33,7 +33,6 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
     private static final int SORT_BY_DATE_DESCENDING = 1;
     private static final int SORT_BY_DAILY_SUM_ASCENDING = 2;
     private static final int SORT_BY_DAILY_SUM_DESCENDING = 3;
-//    private List<List<ExpensesDataUnit>> sortedListsList = new ArrayList<>(4);
 
     private List<DataUnitExpenses> currentDataUnitList;
 
@@ -41,11 +40,6 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_expense_type_detailed);
-
-//        final Toolbar toolbar = (Toolbar) findViewById(R.id.activity_statistic_cost_type_detailed_toolbar);
-//        toolbar.setTitle("");
-//        setSupportActionBar(toolbar);
-
 
         // При нажатии стрелки назад - возвращаемся к предыдущему экрану
         ImageView arrowBackImageView = (ImageView) findViewById(R.id.activity_statistic_cost_type_detailed_arrow_back);
@@ -78,7 +72,9 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
         expenseNameTextView.setText(chosenExpenseTypeDataUnit.getExpenseName());
 
         // Отображаем суммарные расходоы по выбранной категории за выбранный период
-        expenseValueTextView.setText(chosenExpenseTypeDataUnit.getExpenseValueString() + " руб.");
+        expenseValueTextView.setText(chosenExpenseTypeDataUnit.getExpenseValueString() + " " +
+                getResources().getString(R.string.rur_string) +
+                getResources().getString(R.string.dot_sign_string));
 
         switch (STATISTIC_DETAILED_ACTIVITY_MODE) {
             case Constants.STATISTIC_DETAILED_ACTIVITY_MODE_BY_MONTHS: {
@@ -101,7 +97,10 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
 
                 // Устанавливаем средний расход в день
                 double averageExpensesPerDay = chosenExpenseTypeDataUnit.getExpenseValueDouble() / daysInMonth;
-                perDayExpensesTextView.setText(Constants.formatDigit(averageExpensesPerDay) + " руб./день");
+                perDayExpensesTextView.setText(Constants.formatDigit(averageExpensesPerDay) + " " +
+                        getResources().getString(R.string.rur_string) +
+                        getResources().getString(R.string.dot_sign_string) + "/" +
+                        getResources().getString(R.string.asetd_perDayExpensesTextView_day_string));
 
                 // Отображаем выбранный период просмотра
                 toolBarTextView.setText(Constants.MONTH_NAMES[chosenExpenseTypeDataUnit.getMonth()] + " " +
@@ -133,7 +132,10 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
 
                 // Устанавливаем средний расход в день
                 double averageExpensesPerDay = chosenExpenseTypeDataUnit.getExpenseValueDouble() / chosenAmountOfDays;
-                perDayExpensesTextView.setText(Constants.formatDigit(averageExpensesPerDay) + " руб./день");
+                perDayExpensesTextView.setText(Constants.formatDigit(averageExpensesPerDay) + " " +
+                        getResources().getString(R.string.rur_string) +
+                        getResources().getString(R.string.dot_sign_string) + "/" +
+                        getResources().getString(R.string.asetd_perDayExpensesTextView_day_string));
 
                 // Отображаем выбранный период просмотра
                 toolBarTextView.setText(new StringBuilder()

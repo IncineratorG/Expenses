@@ -16,25 +16,25 @@
         android:paddingTop="10dp">
 
         <TextView
-            android:text="Мои расходы"
+            android:id="@+id/activity_main_toolbar_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textSize="20sp"
-            android:id="@+id/activity_main_toolbar_text_view"
-            android:paddingLeft="10dp"
-            android:paddingStart="10dp"
-            android:paddingRight="10dp"
-            android:paddingEnd="10dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textColor="@android:color/white"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:layout_alignParentTop="true"
             android:layout_alignBottom="@+id/activity_main_credit_card_imageview"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"/>
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingEnd="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingStart="10dp"
+            android:text="@string/activity_main_toolbar_text_view_string"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
 
         <ImageView
             app:srcCompat="@drawable/ic_credit_card_white_24dp"

@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +18,13 @@ import java.util.List;
  * TODO: Add a class header comment
  */
 
-public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
+public class FragmentLastEnteredValuesScreen extends Fragment {
 
 
     private Context context;
     private RecyclerView recyclerView;
     private List<DataUnitExpenses> listOfLastEntries;
-    private AdapterLastEnteredValuesRecyclerView_V2 lastEnteredValuesFragmentAdapter;
+    private AdapterLastEnteredValuesRecyclerView lastEnteredValuesFragmentAdapter;
     private int selectedItemPosition = -1;
     private DB_Costs cdb;
     private Snackbar deleteItemSnackbar;
@@ -68,14 +67,14 @@ public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
 
         // При нажатии на элемент списка появляется диалоговое окно, из которого можно
         // удалить или изменить выбранную запись
-        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView_V2(listOfLastEntries, context);
-        lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener() {
+        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView(listOfLastEntries, context);
+        lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, final int position) {
                 selectedItemPosition = position;
 
                 DialogFragmentEditExpenses editDialogFragment = DialogFragmentEditExpenses.newInstance(listOfLastEntries.get(position));
-                editDialogFragment.setTargetFragment(FragmentLastEnteredValuesScreen_V2.this, Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE);
+                editDialogFragment.setTargetFragment(FragmentLastEnteredValuesScreen.this, Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE);
                 editDialogFragment.show(getFragmentManager(), Constants.EDIT_DIALOG_TAG);
             }
         });
@@ -90,14 +89,14 @@ public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
 
         // При нажатии на элемент списка появляется диалоговое окно, из которого можно
         // удалить или изменить выбранную запись
-        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView_V2(listOfLastEntries, context);
-        lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener() {
+        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView(listOfLastEntries, context);
+        lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, final int position) {
                 selectedItemPosition = position;
 
                 DialogFragmentEditExpenses editDialogFragment = DialogFragmentEditExpenses.newInstance(listOfLastEntries.get(position));
-                editDialogFragment.setTargetFragment(FragmentLastEnteredValuesScreen_V2.this, Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE);
+                editDialogFragment.setTargetFragment(FragmentLastEnteredValuesScreen.this, Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE);
                 editDialogFragment.show(getFragmentManager(), Constants.EDIT_DIALOG_TAG);
             }
         });
@@ -128,8 +127,10 @@ public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
                     // Отображаем сообщение об удалении выбранного элемента
                     // с возможностью его восстановления при нажатии кнопки "Отмена"
                     deleteItemSnackbar = Snackbar
-                            .make(recyclerView, "Запись удалена", Snackbar.LENGTH_LONG)
-                            .setAction("Отмена", new View.OnClickListener() {
+                            .make(recyclerView,
+                                    getResources().getString(R.string.flev_deleteItemSnackbar_string),
+                                    Snackbar.LENGTH_LONG)
+                            .setAction(getResources().getString(R.string.flev_deleteItemSnackbar_action_cancel_string), new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     listOfLastEntries.add(selectedItemPosition, deletedItem);
@@ -138,12 +139,14 @@ public class FragmentLastEnteredValuesScreen_V2 extends Fragment {
                                     recyclerView.scrollToPosition(selectedItemPosition);
 
                                     cdb.addCostInMilliseconds(deletedItem.getExpenseId_N(),
-                                                              deletedItem.getExpenseValueString(),
-                                                              deletedItem.getMilliseconds(),
-                                                              deletedItem.getExpenseNoteString());
+                                            deletedItem.getExpenseValueString(),
+                                            deletedItem.getMilliseconds(),
+                                            deletedItem.getExpenseNoteString());
 
                                     Snackbar restoreItemSnackbar = Snackbar
-                                            .make(recyclerView, "Запись восстановлена", Snackbar.LENGTH_LONG);
+                                            .make(recyclerView,
+                                                    getResources().getString(R.string.flev_restoreItemSnackbar_string),
+                                                    Snackbar.LENGTH_LONG);
                                     restoreItemSnackbar.show();
                                 }
                             })

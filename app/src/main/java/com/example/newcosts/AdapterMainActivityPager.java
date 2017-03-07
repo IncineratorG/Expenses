@@ -19,7 +19,7 @@ public class AdapterMainActivityPager extends FragmentStatePagerAdapter {
 
         fragmentsList = new ArrayList<>(3);
         fragmentsList.add(new FragmentCurrentMonthScreen());
-        fragmentsList.add(new FragmentLastEnteredValuesScreen_V2());
+        fragmentsList.add(new FragmentLastEnteredValuesScreen());
         fragmentsList.add(new FragmentStatisticMainScreen());
     }
 

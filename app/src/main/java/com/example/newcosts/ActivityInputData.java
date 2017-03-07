@@ -98,7 +98,9 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
             // При вводе нового значения заполняем toolbar название выбранной
             // категории расходов и суммарным значением расходов по этой
             // категории за текущий месяц
-            toolbarTextView.setText(costNameString + ": " + costValueString + " руб.");
+            toolbarTextView.setText(costNameString + ": " +
+                    costValueString + " " +
+                    getResources().getString(R.string.rur_string) + getResources().getString(R.string.dot_sign_string));
             toolbarExpandExpensesList.setVisibility(View.GONE);
         }
         if (MODE == Constants.EDIT_MODE) {
@@ -284,7 +286,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
             currentValue = Double.parseDouble(currentInputEditTextValueString);
             previousValue = Double.parseDouble(previousValueString);
         } catch (NumberFormatException e) {
-            showAlertDialogWithMessage("Что-то пошло не так");
+            showAlertDialogWithMessage(getResources().getString(R.string.aid_showAlertDialogWithMessage_string));
             return;
         }
         currentValue = currentValue + previousValue;
@@ -304,13 +306,13 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
         try {
             inputValue = Double.parseDouble(inputValueString);
         } catch (NumberFormatException e) {
-            showAlertDialogWithMessage("Что-то пошло не так");
+            showAlertDialogWithMessage(getResources().getString(R.string.aid_showAlertDialogWithMessage_string));
             return false;
         }
 
         // Если введённое значение = 0 - не сохраняем его
         if (Double.compare(inputValue, 0.0) == 0) {
-            showAlertDialogWithMessage("Введите значение");
+            showAlertDialogWithMessage(getResources().getString(R.string.aid_showAlertDialogWithMessage_v2_string));
             return false;
         }
 
@@ -348,7 +350,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder.setMessage(message);
         dialogBuilder.setCancelable(true);
-        dialogBuilder.setPositiveButton("Ok", null);
+        dialogBuilder.setPositiveButton(getResources().getString(R.string.aid_dialogBuilder_positive_button_string), null);
 
         AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
@@ -358,7 +360,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
     // После сохранения введённого значения возвращаемся к предыдущему экрану
     private void returnToPreviousActivity() {
         if (PREVIOUS_ACTIVITY_INDEX == -1) {
-            showAlertDialogWithMessage("Всё очень плохо!");
+            showAlertDialogWithMessage(getResources().getString(R.string.aid_showAlertDialogWithMessage_v3_string));
             return;
         }
 
@@ -427,7 +429,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
         final long pickedTimeInMilliseconds = calendar.getTimeInMillis();
 
         if (pickedTimeInMilliseconds > currentTimeInMilliseconds) {
-            String message = "Выбранная дата ещё не наступила";
+            String message = getResources().getString(R.string.aid_wrongPickedDateMessage_string);
             showAlertDialogWithMessage(message);
         } else {
             if (MODE == Constants.INPUT_MODE) {

@@ -65,7 +65,7 @@ public class FragmentStatisticMainScreen extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         AdapterStatisticMainScreenRecyclerView statisticMainScreenRecyclerViewAdapter = new AdapterStatisticMainScreenRecyclerView(sumByMonthList, context);
-        statisticMainScreenRecyclerViewAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener() {
+        statisticMainScreenRecyclerViewAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position) {
                 Intent statisticDetailedActivityIntent = new Intent(context, ActivityStatisticDetailed.class);
@@ -83,7 +83,7 @@ public class FragmentStatisticMainScreen extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         AdapterStatisticMainScreenRecyclerView statisticMainScreenRecyclerViewAdapter = new AdapterStatisticMainScreenRecyclerView(sumByMonthList, context);
-        statisticMainScreenRecyclerViewAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener() {
+        statisticMainScreenRecyclerViewAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position) {
                 Intent statisticDetailedActivityIntent = new Intent(context, ActivityStatisticDetailed.class);

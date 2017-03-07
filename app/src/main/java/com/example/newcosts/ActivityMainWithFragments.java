@@ -6,8 +6,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -24,8 +22,7 @@ public class ActivityMainWithFragments extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_with_fragments_v2);
-//        Constants.mainActivityFragmentsDataIsActual = false;
+        setContentView(R.layout.activity_main_with_fragments);
 
         // Переходим на экран чтения данных из СМС
         ImageView creditCardImageView = (ImageView) findViewById(R.id.activity_main_credit_card_imageview);
@@ -55,20 +52,20 @@ public class ActivityMainWithFragments extends AppCompatActivity {
 
 
 
-        TextView tabTextView = (TextView) LayoutInflater.from(this).inflate(R.layout.activity_main_with_fragments_custom_tab, null);
-        tabTextView.setText("Ввод");
-        tabTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_mode_edit_white_24dp, 0, 0);
-        mainActivityTabLayout.getTabAt(0).setCustomView(tabTextView);
+        TextView fragmentCurrentMonthScreenTab = (TextView) LayoutInflater.from(this).inflate(R.layout.activity_main_with_fragments_custom_tab, null);
+        fragmentCurrentMonthScreenTab.setText(getResources().getString(R.string.fragmentCurrentMonthScreenTab_string));
+        fragmentCurrentMonthScreenTab.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_mode_edit_white_24dp, 0, 0);
+        mainActivityTabLayout.getTabAt(0).setCustomView(fragmentCurrentMonthScreenTab);
 
-        TextView tabTextView_1 = (TextView) LayoutInflater.from(this).inflate(R.layout.activity_main_with_fragments_custom_tab, null);
-        tabTextView_1.setText("Недавнее");
-        tabTextView_1.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_history_white_24dp, 0, 0);
-        mainActivityTabLayout.getTabAt(1).setCustomView(tabTextView_1);
+        TextView fragmentLastEnteredValuesTab = (TextView) LayoutInflater.from(this).inflate(R.layout.activity_main_with_fragments_custom_tab, null);
+        fragmentLastEnteredValuesTab.setText(getResources().getString(R.string.fragmentLastEnteredValuesTab_string));
+        fragmentLastEnteredValuesTab.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_history_white_24dp, 0, 0);
+        mainActivityTabLayout.getTabAt(1).setCustomView(fragmentLastEnteredValuesTab);
 
-        TextView tabTextView_2 = (TextView) LayoutInflater.from(this).inflate(R.layout.activity_main_with_fragments_custom_tab, null);
-        tabTextView_2.setText("Статистика");
-        tabTextView_2.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_pie_chart_white_24dp, 0, 0);
-        mainActivityTabLayout.getTabAt(2).setCustomView(tabTextView_2);
+        TextView fragmentStatisticMainScreenTab = (TextView) LayoutInflater.from(this).inflate(R.layout.activity_main_with_fragments_custom_tab, null);
+        fragmentStatisticMainScreenTab.setText(getResources().getString(R.string.fragmentStatisticMainScreenTab_string));
+        fragmentStatisticMainScreenTab.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_pie_chart_white_24dp, 0, 0);
+        mainActivityTabLayout.getTabAt(2).setCustomView(fragmentStatisticMainScreenTab);
 
 
 
@@ -106,7 +103,12 @@ public class ActivityMainWithFragments extends AppCompatActivity {
             savedValue = bundle.getString(Constants.SAVED_VALUE);
 
             if (savedValue != null && !"".equals(savedValue)) {
-                Snackbar savedValueSnackbar = Snackbar.make(mainActivityViewPager, savedValue + " руб. сохранено", Snackbar.LENGTH_LONG);
+                Snackbar savedValueSnackbar = Snackbar.make(mainActivityViewPager,
+                        savedValue + " " +                                                              // 250
+                                getResources().getString(R.string.rur_string) +                                // руб
+                                getResources().getString(R.string.dot_sign_string) + " " +                   // .
+                                getResources().getString(R.string.savedValueSnackbar_saved_string),     // сохранено
+                        Snackbar.LENGTH_LONG);
                 savedValueSnackbar.show();
             }
 

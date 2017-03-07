@@ -37,13 +37,13 @@
         android:id="@+id/button_divider"></LinearLayout>
 
     <Button
+        android:id="@+id/chosePeriodButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Задать период"
-        android:textColor="@drawable/button_text_color_black"
-        android:id="@+id/chosePeriodButton"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/keyboard_buttons_custom"
-        android:layout_alignParentBottom="true" />
+        android:text="@string/statistic_main_screen_chose_period_button_string"
+        android:textColor="@drawable/button_text_color_black" />
 
 </RelativeLayout>

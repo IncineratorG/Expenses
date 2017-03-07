@@ -60,7 +60,7 @@ public class DialogFragmentChooseStatisticPeriod extends DialogFragment implemen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.choose_period_dialog_v2, container, false);
+        View v = inflater.inflate(R.layout.choose_period_dialog, container, false);
 
         // Получаем текущую дату
         startingDateCalendar = new GregorianCalendar();
@@ -344,7 +344,9 @@ public class DialogFragmentChooseStatisticPeriod extends DialogFragment implemen
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            wrongDateToast = Toast.makeText(getActivity(), "Конечная дата раньше начальной", Toast.LENGTH_LONG);
+                            wrongDateToast = Toast.makeText(getActivity(),
+                                    getResources().getString(R.string.dfcsp_wrongDateToast_string),
+                                    Toast.LENGTH_LONG);
                             wrongDateToast.setGravity(Gravity.CENTER, 0, 0);
                             wrongDateToast.show();
                         }

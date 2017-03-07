@@ -81,9 +81,9 @@ public class AsyncTaskRestoreData extends AsyncTask<Void, String, Void> {
     protected void onPreExecute() {
         AlertDialog.Builder restoringProgressDialogBuilder = new AlertDialog.Builder(context);
         restoringProgressDialogBuilder.setCancelable(false);
-        restoringProgressDialogBuilder.setTitle("Восстановление...");
-        restoringProgressDialogBuilder.setMessage("Подготовка.");
-        restoringProgressDialogBuilder.setPositiveButton("Отменить", new DialogInterface.OnClickListener() {
+        restoringProgressDialogBuilder.setTitle(context.getResources().getString(R.string.atrd_restoringProgressDialogBuilder_Title_string));
+        restoringProgressDialogBuilder.setMessage(context.getResources().getString(R.string.atrd_restoringProgressDialogBuilder_Message_string));
+        restoringProgressDialogBuilder.setPositiveButton(context.getResources().getString(R.string.atrd_restoringProgressDialogBuilder_Cancel_string), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 AsyncTaskRestoreData.this.cancel(true);
@@ -128,7 +128,7 @@ public class AsyncTaskRestoreData extends AsyncTask<Void, String, Void> {
                     countDownLatch.countDown();
                     return;
                 }
-                publishProgress("Этап 1/3");
+                publishProgress(context.getResources().getString(R.string.atrd_publishProgress_StageOne_string));
 
                 tableCostNamesDataList = new ArrayList<>();
 
@@ -211,7 +211,7 @@ public class AsyncTaskRestoreData extends AsyncTask<Void, String, Void> {
                     countDownLatch.countDown();
                     return;
                 }
-                publishProgress("Этап 2/3");
+                publishProgress(context.getResources().getString(R.string.atrd_publishProgress_StageTwo_string));
 
                 tableCostValuesDataList = new ArrayList<>();
 
@@ -304,7 +304,9 @@ public class AsyncTaskRestoreData extends AsyncTask<Void, String, Void> {
             if (!isCancelled()) {
                 cdb.restoreTableCostValues(tableCostValuesDataList.get(i));
                 if (i == 0 || (i % 10 == 1 && i != 1) || i == tableCostValuesDataList.size() - 1) {
-                    publishProgress("Этап 3/3: " + i + "/" + (tableCostValuesDataList.size() - 1));
+                    publishProgress(context.getResources().getString(R.string.atrd_publishProgress_StageThree_string) +
+                            " " +
+                            i + "/" + (tableCostValuesDataList.size() - 1));
                 }
             } else {
                 Log.i(TAG, "TASK_CANCELLED i = " + i);

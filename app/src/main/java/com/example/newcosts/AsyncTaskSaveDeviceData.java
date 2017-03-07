@@ -32,6 +32,7 @@ public class AsyncTaskSaveDeviceData extends AsyncTask<Void, Integer, Void> {
     private GoogleApiClient googleApiClient;
     private DriveFolder DEVICE_BACKUP_FOLDER_FOLDER;
     private DB_Costs cdb;
+    private Context context;
 
 
     private String TABLE_COST_NAMES_FILE_NAME;
@@ -70,6 +71,7 @@ public class AsyncTaskSaveDeviceData extends AsyncTask<Void, Integer, Void> {
         this.REFERENCE_FILE_NAME = REFERENCE_FILE_NAME;
         this.TABLE_COST_VALUES_FILE_NAME = TABLE_COST_VALUES_FILE_NAME;
         this.statusTextView = statusTextView;
+        this.context = context;
         completeSavingDataListener = (DataSavedCallback) context;
 
         cdb = DB_Costs.getInstance(context);
@@ -100,7 +102,7 @@ public class AsyncTaskSaveDeviceData extends AsyncTask<Void, Integer, Void> {
     @Override
     protected void onProgressUpdate(Integer... values) {
         super.onProgressUpdate(values);
-        statusTextView.setText("Сохранение " + values[0]);
+        statusTextView.setText(context.getResources().getString(R.string.atsdd_statusTextView_savingData_string) + values[0]);
     }
 
     // Генерируем xml из TABLE_COST_NAMES
@@ -268,7 +270,7 @@ public class AsyncTaskSaveDeviceData extends AsyncTask<Void, Integer, Void> {
             return;
         }
         Log.i(TAG, "SENDING BACKUP DATA TO DRIVE");
-        statusTextView.setText("Сохраняю данные на диск");
+        statusTextView.setText(context.getResources().getString(R.string.atsdd_statusTextView_savingDataOnDisk_string));
 
         // Сохраняем данные на Google Disk.
         // Последовательно сохраняем TABLE_COST_NAMES -> TABLE_COST_VALUES -> REFERENCE_FILE

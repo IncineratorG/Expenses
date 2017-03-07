@@ -152,7 +152,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
 
 //        currentDefaultString = "Нет соединения с сетью";
         statusTextView = (TextView) findViewById(R.id.backup_data_status_textview);
-        statusTextView.setText("Нет соединения с сетью");
+        statusTextView.setText(getResources().getString(R.string.abd_statusTextView_noConnection_string));
     }
 
     @Override
@@ -161,7 +161,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
 
         if (!hasNetworkConnection()) {
 //            currentDefaultString = "Нет соединения с сетью";
-            statusTextView.setText("Нет соединения с сетью");
+            statusTextView.setText(getResources().getString(R.string.abd_statusTextView_noConnection_string));
         } else
             connectToGoogleDrive();
     }
@@ -219,7 +219,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     // Соединяемся с Google Drive
     private void connectToGoogleDrive() {
         if (googleApiClient != null) {
-            statusTextView.setText("Устанавливаю соединение с сетью...");
+            statusTextView.setText(getResources().getString(R.string.abd_statusTextView_acquiringConnection_string));
             googleApiClient.connect();
         }
     }
@@ -371,7 +371,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
 
     // Удаляем выбранный элемент списка резервных копий
     private void deleteBackupItem(int selectedBackupListPosition) {
-        statusTextView.setText("Удаление...");
+        statusTextView.setText(getResources().getString(R.string.abd_statusTextView_deleting_string));
 
         DriveFolder folderToDelete = existingDeviceBackupFolders.get(selectedBackupListPosition).getDriveId().asDriveFolder();
         folderToDelete.delete(googleApiClient).setResultCallback(new ResultCallback<Status>() {
@@ -379,75 +379,15 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
             public void onResult(@NonNull Status status) {
                 if (!status.isSuccess()) {
                     Toast errorDeletingBackupFolderToast = Toast.makeText(ActivityBackupData.this,
-                            "При удалении возникла проблема", Toast.LENGTH_LONG);
-//                    errorDeletingBackupFolderToast.setGravity(Gravity.CENTER, 0, 0);
+                            getResources().getString(R.string.abd_errorDeletingBackupFolderToast_string), Toast.LENGTH_LONG);
                     errorDeletingBackupFolderToast.show();
                 } else {
                     Toast backupFolderDeletedToast = Toast.makeText(ActivityBackupData.this,
-                            "Резервная копия удалена", Toast.LENGTH_SHORT);
-//                    backupFolderDeletedToast.setGravity(Gravity.CENTER, 0, 0);
+                            getResources().getString(R.string.abd_backupFolderDeletedToast_string), Toast.LENGTH_SHORT);
                     backupFolderDeletedToast.show();
                 }
 
-//                statusTextView.setText(currentDefaultString);
                 searchForBackupData();
-            }
-        });
-    }
-
-    private void deleteAllBackupData() {
-        // Ищем корневую папку с сохранёнными данными
-        Query searchRootBackupFolder = new Query.Builder()
-                .addFilter(Filters.eq(SearchableField.TITLE, ROOT_BACKUP_FOLDER_NAME))
-                .build();
-        Drive.DriveApi.query(googleApiClient, searchRootBackupFolder).setResultCallback(new ResultCallback<DriveApi.MetadataBufferResult>() {
-            @Override
-            public void onResult(@NonNull DriveApi.MetadataBufferResult metadataBufferResult) {
-                if (!metadataBufferResult.getStatus().isSuccess()) {
-                    Log.i(TAG, "ERROR TRYING TO FIND ROOT BACKUP FOLDER");
-                    statusTextView.setText("ERROR TRYING TO FIND ROOT BACKUP FOLDER");
-                    return;
-                }
-
-                MetadataBuffer metadataBuffer = metadataBufferResult.getMetadataBuffer();
-                ROOT_BACKUP_FOLDER_ID = null;
-
-                // Если папка не найдена - прекращаем обработку
-                if (metadataBuffer.getCount() <= 0) {
-                    Log.i(TAG, "NO BACKUP DATA FOUND");
-//                    currentDefaultString = "Данные резервной копии не найдены";
-                    statusTextView.setText("Резервные копии не найдены");
-                    createBackupDataButton.setEnabled(true);
-                    createBackupDataButton.setTextColor(getResources().getColorStateList(R.color.button_text_color));
-                    return;
-                }
-
-                // Считаем первую найденную не удалённую папку папкой с резервной копией данных
-                for (int i = 0; i < metadataBuffer.getCount(); ++i) {
-                    Metadata metadata = metadataBuffer.get(i);
-                    if (!metadata.isTrashed()) {
-                        ROOT_BACKUP_FOLDER_ID = metadata.getDriveId();
-                        break;
-                    }
-                }
-
-                if (ROOT_BACKUP_FOLDER_ID == null) {
-                    Log.i(TAG, "ROOT_BACKUP_FOLDER_ID == NULL");
-                    return;
-                }
-                Log.i(TAG, "ROOT BACKUP FOLDER FOUND");
-
-                ROOT_BACKUP_FOLDER_FOLDER = ROOT_BACKUP_FOLDER_ID.asDriveFolder();
-
-                ROOT_BACKUP_FOLDER_FOLDER.delete(googleApiClient).setResultCallback(new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(@NonNull Status status) {
-                        if (status.isSuccess())
-                            Log.i(TAG, "SUCCESS");
-                        else
-                            Log.i(TAG, "ERROR");
-                    }
-                });
             }
         });
     }
@@ -459,7 +399,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
         if (backupDataRecyclerViewAdapter != null)
             backupDataRecyclerViewAdapter.notifyDataSetChanged();
 
-        statusTextView.setText("Поиск резервных копий...");
+        statusTextView.setText(getResources().getString(R.string.abd_statusTextView_searchBackupData_string));
 
         // Ищем папку с сохранёнными данными
         Query searchRootBackupFolder = new Query.Builder()
@@ -481,7 +421,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                 if (metadataBuffer.getCount() <= 0) {
                     Log.i(TAG, "NO BACKUP DATA FOUND");
 //                    currentDefaultString = "Данные резервной копии не найдены";
-                    statusTextView.setText("Резервные копии не найдены");
+                    statusTextView.setText(getResources().getString(R.string.abd_statusTextView_noBackupDataFound_string));
                     createBackupDataButton.setEnabled(true);
                     createBackupDataButton.setTextColor(getResources().getColorStateList(R.color.button_text_color));
                     return;
@@ -541,9 +481,9 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                         createBackupDataButton.setTextColor(getResources().getColorStateList(R.color.button_text_color));
 
                         if (existingDeviceBackupFolders.size() > 0) {
-                            statusTextView.setText("Резервные копии найдены");
+                            statusTextView.setText(getResources().getString(R.string.abd_statusTextView_backupDataFound_string));
                         } else {
-                            statusTextView.setText("Резервные копии не найдены");
+                            statusTextView.setText(getResources().getString(R.string.abd_statusTextView_noBackupDataFound_string));
                         }
                     }
                 });
@@ -592,16 +532,16 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
         // Устанавливаем слушатели на кнопки созданного диалогового окна
         // При нажатии кнопки "Восстановить" появляется диалоговое окно, запрашивающее подтверждение восстановления
         Button restoreButton = (Button) dialogView.findViewById(R.id.edit_cost_value_dialog_editButton);
-        restoreButton.setText("Восстановить");
+        restoreButton.setText(getResources().getString(R.string.abd_restoreButton_string));
         restoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 chosenBackupItemDialog.dismiss();
 
                 AlertDialog.Builder restoreFromChosenBackupItemDialogBuilder = new AlertDialog.Builder(ActivityBackupData.this);
-                restoreFromChosenBackupItemDialogBuilder.setTitle("Внимние!");
-                restoreFromChosenBackupItemDialogBuilder.setMessage("Все записи рвсходов будут заменены записями из выбранной резервной копии.");
-                restoreFromChosenBackupItemDialogBuilder.setPositiveButton("Продолжить", new DialogInterface.OnClickListener() {
+                restoreFromChosenBackupItemDialogBuilder.setTitle(getResources().getString(R.string.abd_restoreFromChosenBackupItemDialogBuilder_Title_string));
+                restoreFromChosenBackupItemDialogBuilder.setMessage(getResources().getString(R.string.abd_restoreFromChosenBackupItemDialogBuilder_Message_string));
+                restoreFromChosenBackupItemDialogBuilder.setPositiveButton(getResources().getString(R.string.abd_restoreFromChosenBackupItemDialogBuilder_continue_button_string), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         backupDataRecyclerViewAdapter.setClickListener(null);
@@ -614,7 +554,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                         restoreDataFromBackup(position);
                     }
                 });
-                restoreFromChosenBackupItemDialogBuilder.setNegativeButton("Отмена", null);
+                restoreFromChosenBackupItemDialogBuilder.setNegativeButton(getResources().getString(R.string.abd_restoreFromChosenBackupItemDialogBuilder_cancel_button_string), null);
 
                 AlertDialog restoreFromChosenBackupItemDialog = restoreFromChosenBackupItemDialogBuilder.create();
                 restoreFromChosenBackupItemDialog.show();
@@ -623,22 +563,22 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
 
         // При нажатии кнопки "Удалить" появляется диалоговое окно, запрашивающее подтверждение удаления
         Button deleteButton = (Button) dialogView.findViewById(R.id.edit_cost_value_dialog_deleteButton);
-        deleteButton.setText("Удалить");
+        deleteButton.setText(getResources().getString(R.string.abd_deleteButton_string));
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 chosenBackupItemDialog.dismiss();
 
                 AlertDialog.Builder deleteBackupItemDialogBuilder = new AlertDialog.Builder(ActivityBackupData.this);
-                deleteBackupItemDialogBuilder.setTitle("Внимние!");
-                deleteBackupItemDialogBuilder.setMessage("Удалить выбранную резервную копию?");
-                deleteBackupItemDialogBuilder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
+                deleteBackupItemDialogBuilder.setTitle(getResources().getString(R.string.abd_deleteBackupItemDialogBuilder_Title_string));
+                deleteBackupItemDialogBuilder.setMessage(getResources().getString(R.string.abd_deleteBackupItemDialogBuilder_Message_string));
+                deleteBackupItemDialogBuilder.setPositiveButton(getResources().getString(R.string.abd_deleteBackupItemDialogBuilder_delete_button_string), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         deleteBackupItem(position);
                     }
                 });
-                deleteBackupItemDialogBuilder.setNegativeButton("Отмена", null);
+                deleteBackupItemDialogBuilder.setNegativeButton(getResources().getString(R.string.abd_deleteBackupItemDialogBuilder_cancel_button_string), null);
 
                 AlertDialog deleteBackupItemDialog = deleteBackupItemDialogBuilder.create();
                 deleteBackupItemDialog.show();
@@ -646,7 +586,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
         });
 
         Button cancelButton = (Button) dialogView.findViewById(R.id.edit_cost_value_dialog_cancelButton);
-        cancelButton.setText("Отмена");
+        cancelButton.setText(getResources().getString(R.string.abd_cancelButton_string));
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -673,7 +613,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         chooseAccountDialogShown = false;
-        statusTextView.setText("Соединение установлено");
+        statusTextView.setText(getResources().getString(R.string.abd_statusTextView_connectionAcquired_string));
 //        createBackupDataButton.setEnabled(true);
 //        createBackupDataButton.setTextColor(getResources().getColorStateList(R.color.button_text_color));
         Log.i(TAG, "CONNECTED");
@@ -685,14 +625,14 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
 
     @Override
     public void onConnectionSuspended(int i) {
-        statusTextView.setText("Соединение приостановлено");
+        statusTextView.setText(getResources().getString(R.string.abd_statusTextView_connectionSuspended_string));
         Log.i(TAG, "CONNECTION_SUSPENDED");
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i(TAG, "CONNECTION_FAILED: " + connectionResult.toString());
-        statusTextView.setText("Выберите учётную запись Google");
+        statusTextView.setText(getResources().getString(R.string.abd_statusTextView_chooseGoogleAccount_string));
 
         // Окно с выбором аккаунта Google показывается только один раз.
         if (chooseAccountDialogShown)
@@ -741,11 +681,11 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     public void dataSaved(boolean dateSavedSuccessful) {
         Toast dataSavedToast;
         if (dateSavedSuccessful) {
-            statusTextView.setText("Сохранение завершено");
-            dataSavedToast = Toast.makeText(this, "Сохранение завершено", Toast.LENGTH_SHORT);
+            statusTextView.setText(getResources().getString(R.string.abd_dataSavedSuccessful_string));
+            dataSavedToast = Toast.makeText(this, getResources().getString(R.string.abd_dataSavedSuccessful_string), Toast.LENGTH_SHORT);
         } else {
-            statusTextView.setText("Данные не сохранены");
-            dataSavedToast = Toast.makeText(this, "Данные не сохранены", Toast.LENGTH_SHORT);
+            statusTextView.setText(getResources().getString(R.string.abd_dataNotSaved_string));
+            dataSavedToast = Toast.makeText(this, getResources().getString(R.string.abd_dataNotSaved_string), Toast.LENGTH_SHORT);
         }
         dataSavedToast.show();
 
@@ -764,11 +704,11 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
         Log.i(TAG, "dateRestored(): " + String.valueOf(b));
         Toast dataRestoredToast;
         if (b) {
-            statusTextView.setText("Данные восстановлены");
-            dataRestoredToast = Toast.makeText(this, "Данные восстановлены", Toast.LENGTH_SHORT);
+            statusTextView.setText(getResources().getString(R.string.abd_dataRestoredSuccessful_string));
+            dataRestoredToast = Toast.makeText(this, getResources().getString(R.string.abd_dataRestoredSuccessful_string), Toast.LENGTH_SHORT);
         } else {
-            statusTextView.setText("Данные не восстановлены!");
-            dataRestoredToast = Toast.makeText(this, "Данные не восстановлены!", Toast.LENGTH_SHORT);
+            statusTextView.setText(getResources().getString(R.string.abd_dataNotRestored_string));
+            dataRestoredToast = Toast.makeText(this, getResources().getString(R.string.abd_dataNotRestored_string), Toast.LENGTH_SHORT);
         }
         dataRestoredToast.show();
 

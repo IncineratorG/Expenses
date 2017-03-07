@@ -15,7 +15,7 @@ import java.util.List;
  * TODO: Add a class header comment
  */
 
-public class AdapterLastEnteredValuesRecyclerView_V2 extends RecyclerView.Adapter<AdapterLastEnteredValuesRecyclerView_V2.FragmentLastEnteredValuesViewHolder_V2> {
+public class AdapterLastEnteredValuesRecyclerView extends RecyclerView.Adapter<AdapterLastEnteredValuesRecyclerView.FragmentLastEnteredValuesViewHolder_V2> {
 
     private OnItemClickListener clickListener;
     private List<DataUnitExpenses> data;
@@ -27,7 +27,7 @@ public class AdapterLastEnteredValuesRecyclerView_V2 extends RecyclerView.Adapte
     }
 
 
-    public AdapterLastEnteredValuesRecyclerView_V2(List<DataUnitExpenses> data, Context context) {
+    public AdapterLastEnteredValuesRecyclerView(List<DataUnitExpenses> data, Context context) {
         this.data = data;
         this.context = context;
         calendar = Calendar.getInstance();
@@ -40,7 +40,7 @@ public class AdapterLastEnteredValuesRecyclerView_V2 extends RecyclerView.Adapte
 
     @Override
     public FragmentLastEnteredValuesViewHolder_V2 onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_last_entered_values_single_item_v2, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_last_entered_values_single_item, parent, false);
         return new FragmentLastEnteredValuesViewHolder_V2(v);
     }
 

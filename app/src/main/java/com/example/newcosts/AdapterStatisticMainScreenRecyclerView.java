@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter<AdapterStatisticMainScreenRecyclerView.FragmentStatisticMainScreenViewHolder> {
-    private AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener clickListener;
+    private AdapterLastEnteredValuesRecyclerView.OnItemClickListener clickListener;
     private List<DataUnitExpenses> data;
     private Context context;
     private Calendar calendar;
@@ -39,7 +39,7 @@ public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter
 
     @Override
     public FragmentStatisticMainScreenViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_statistic_main_screen_single_item_v2, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_statistic_main_screen_single_item, parent, false);
         return new FragmentStatisticMainScreenViewHolder(v);
     }
 
@@ -82,7 +82,7 @@ public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    public void setClickListener(AdapterLastEnteredValuesRecyclerView_V2.OnItemClickListener listener) {
+    public void setClickListener(AdapterLastEnteredValuesRecyclerView.OnItemClickListener listener) {
         this.clickListener = listener;
     }
 

@@ -10,17 +10,17 @@
         android:background="@color/orange">
 
         <TextView
-            android:text="Начальная дата"
+            android:id="@+id/choose_period_starting_date_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView2"
-            android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textSize="18sp"
-            android:textStyle="normal|bold"
-            android:textColor="@android:color/white"
             android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp" />
+            android:layout_marginStart="5dp"
+            android:layout_weight="1"
+            android:text="@string/choose_period_starting_date_textview_string"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="normal|bold" />
     </LinearLayout>
 
     <LinearLayout
@@ -152,17 +152,17 @@
         android:background="#FF9800">
 
         <TextView
-            android:text="Конечная дата"
+            android:id="@+id/choose_period_ending_date_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView4"
-            android:layout_weight="1"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textSize="18sp"
-            android:textColor="@android:color/white"
-            android:textStyle="normal|bold"
             android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp" />
+            android:layout_marginStart="5dp"
+            android:layout_weight="1"
+            android:text="@string/choose_period_ending_date_textview_string"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="normal|bold" />
     </LinearLayout>
 
     <LinearLayout
@@ -295,14 +295,14 @@
         android:weightSum="2">
 
         <Button
-            android:text="@string/calendar_ok"
+            android:id="@+id/choose_period_ok"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/choose_period_ok"
             android:layout_weight="1"
             android:background="@drawable/calendar_buttons_style"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:textColor="@drawable/calendar_button_text_color"/>
+            android:text="@string/choose_period_dialog_ok_button_string"
+            android:textColor="@drawable/calendar_button_text_color" />
 
         <LinearLayout
             android:orientation="horizontal"
@@ -311,13 +311,13 @@
             android:background="#FF9800"/>
 
         <Button
-            android:text="@string/calendar_cancel"
+            android:id="@+id/choose_period_cancel"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/choose_period_cancel"
             android:layout_weight="1"
             android:background="@drawable/calendar_buttons_style"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:textColor="@drawable/calendar_button_text_color"/>
+            android:text="@string/choose_period_dialog_cancel_button_string"
+            android:textColor="@drawable/calendar_button_text_color" />
     </LinearLayout>
 </LinearLayout>

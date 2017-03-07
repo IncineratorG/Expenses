@@ -33,17 +33,17 @@
                 android:layout_marginStart="5dp" />
 
             <TextView
-                android:text="Электроника"
+                android:id="@+id/current_month_single_item_category_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/current_month_single_item_category_textview"
-                android:textAppearance="@style/TextAppearance.AppCompat"
-                android:textSize="24sp"
-                android:layout_weight="1"
                 android:layout_marginLeft="20dp"
                 android:layout_marginStart="20dp"
-                android:textStyle="normal|bold"
-                android:textColor="@drawable/button_text_color_black" />
+                android:layout_weight="1"
+                android:text="@string/current_month_single_item_category_textview_string"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textColor="@drawable/button_text_color_black"
+                android:textSize="24sp"
+                android:textStyle="normal|bold" />
         </LinearLayout>
 
         <LinearLayout
@@ -60,10 +60,10 @@
                 android:layout_gravity="end">
 
                 <TextView
-                    android:text="В текущем месяце"
+                    android:id="@+id/current_month_single_item_in_current_month_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:id="@+id/current_month_single_item_in_current_month_textview"
+                    android:text="@string/current_month_single_item_in_current_month_textview_string"
                     android:textColor="@drawable/button_text_color_grey" />
 
                 <ImageView
@@ -73,11 +73,11 @@
                     android:id="@+id/current_month_single_item_arrow_right_imageview" />
 
                 <TextView
-                    android:text="500 руб."
+                    android:id="@+id/current_month_single_item_value_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:id="@+id/current_month_single_item_value_textview"
                     android:layout_weight="1"
+                    android:text="@string/current_month_single_item_value_textview_string"
                     android:textColor="@drawable/button_text_color_grey" />
             </LinearLayout>
 
