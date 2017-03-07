@@ -48,6 +48,9 @@ public class FragmentStatisticMainScreen extends Fragment {
     public void onResume() {
         super.onResume();
 
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(context);
+
         cdb = DB_Costs.getInstance(context);
 //        new AsyncTaskLoadMainActivityFragmentsData(cdb, Constants.FRAGMENT_STATISTIC_MAIN_SCREEN, new CallbackValuesLoaded() {
 //            @Override

@@ -49,6 +49,9 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
     public void onResume() {
         super.onResume();
 
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(context);
+
         // Получаем последние введённые значения
         cdb = DB_Costs.getInstance(context);
 //        new AsyncTaskLoadMainActivityFragmentsData(cdb, Constants.FRAGMENT_LAST_ENTERED_VALUES_SCREEN, new CallbackValuesLoaded() {
@@ -73,7 +76,7 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
             public void onItemClick(View itemView, final int position) {
                 selectedItemPosition = position;
 
-                DialogFragmentEditExpenses editDialogFragment = DialogFragmentEditExpenses.newInstance(listOfLastEntries.get(position));
+                DialogFragmentEditLastEnteredValues editDialogFragment = DialogFragmentEditLastEnteredValues.newInstance(context, listOfLastEntries.get(position));
                 editDialogFragment.setTargetFragment(FragmentLastEnteredValuesScreen.this, Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE);
                 editDialogFragment.show(getFragmentManager(), Constants.EDIT_DIALOG_TAG);
             }
@@ -95,7 +98,7 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
             public void onItemClick(View itemView, final int position) {
                 selectedItemPosition = position;
 
-                DialogFragmentEditExpenses editDialogFragment = DialogFragmentEditExpenses.newInstance(listOfLastEntries.get(position));
+                DialogFragmentEditLastEnteredValues editDialogFragment = DialogFragmentEditLastEnteredValues.newInstance(context, listOfLastEntries.get(position));
                 editDialogFragment.setTargetFragment(FragmentLastEnteredValuesScreen.this, Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE);
                 editDialogFragment.show(getFragmentManager(), Constants.EDIT_DIALOG_TAG);
             }

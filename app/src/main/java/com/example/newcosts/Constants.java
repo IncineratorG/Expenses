@@ -1,20 +1,33 @@
 package com.example.newcosts;
 
+import android.content.Context;
+import android.content.res.Resources;
+
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import com.example.newcosts.R;
+
 public class Constants {
-    public static final String[] DECLENSION_MONTH_NAMES = {"Января", "Февраля", "Марта", "Апреля",
-            "Мая", "Июня", "Июля", "Августа",
-            "Сентября", "Октября", "Ноября", "Декабря"};
-    public static final String[] MONTH_NAMES = {"Январь", "Февраль", "Март", "Апрель",
-            "Май", "Июнь", "Июль", "Август",
-            "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
-    public static final String[] SHORT_MONTH_NAMES = { "Янв.", "Фев.", "Мар.", "Апр.", "Май", "Июн.",
-            "Июл.", "Авг.", "Сен.", "Окт.", "Нояб.", "Дек." };
-    public static final String[] DAY_NAMES = {"", "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"};
+//    public static final String[] DECLENSION_MONTH_NAMES = {"Января", "Февраля", "Марта", "Апреля",
+//            "Мая", "Июня", "Июля", "Августа",
+//            "Сентября", "Октября", "Ноября", "Декабря"};
+//    public static final String[] MONTH_NAMES = {"Январь", "Февраль", "Март", "Апрель",
+//            "Май", "Июнь", "Июль", "Август",
+//            "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
+//    public static final String[] SHORT_MONTH_NAMES = { "Янв.", "Фев.", "Мар.", "Апр.", "Май", "Июн.",
+//            "Июл.", "Авг.", "Сен.", "Окт.", "Нояб.", "Дек." };
+//    public static final String[] DAY_NAMES = {"", "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"};
+
+
+    public static String[] DECLENSION_MONTH_NAMES;
+    public static String[] MONTH_NAMES;
+    public static String[] SHORT_MONTH_NAMES;
+    public static String[] DAY_NAMES;
+
+
 
     public static final String SEPARATOR_VALUE = "$";
     public static final String SEPARATOR_DATE = "#";
@@ -89,7 +102,6 @@ public class Constants {
     }
 
 
-
     public static String formatDigit(double d) {
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
         DecimalFormat format = (DecimalFormat) numberFormat;
@@ -98,5 +110,22 @@ public class Constants {
         format.setRoundingMode(RoundingMode.CEILING);
 
         return format.format(d);
+    }
+
+
+    public static boolean stringsAreNull() {
+        return DECLENSION_MONTH_NAMES == null
+                || MONTH_NAMES == null
+                || SHORT_MONTH_NAMES == null
+                || DAY_NAMES == null;
+    }
+
+    public static void loadStrings(Context context) {
+        DECLENSION_MONTH_NAMES = context.getResources().getStringArray(R.array.DECLENSION_MONTH_NAMES);
+        MONTH_NAMES = context.getResources().getStringArray(R.array.MONTH_NAMES);
+        SHORT_MONTH_NAMES = context.getResources().getStringArray(R.array.SHORT_MONTH_NAMES);
+        DAY_NAMES = context.getResources().getStringArray(R.array.DAY_NAMES);
+
+        System.out.println("STRINGS_LOADED");
     }
 }

@@ -22,8 +22,7 @@ public class AdapterSmsReaderRecyclerView extends RecyclerView.Adapter<AdapterSm
     private List<DataUnitSms> dataList;
     private Calendar calendar;
     private long currentTimeInMillis = -1;
-//    private List<String> dataList;
-//    private Calendar calendar;
+
 
     public interface OnItemClickListener {
         void onItemClick(View itemView, int position);

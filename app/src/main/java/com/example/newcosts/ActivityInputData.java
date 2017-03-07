@@ -47,6 +47,9 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_data);
 
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(this);
+
         // Получаем данные о выбранной статье расходов
         Bundle expenseDataBundle = getIntent().getExtras();
         if (expenseDataBundle == null)

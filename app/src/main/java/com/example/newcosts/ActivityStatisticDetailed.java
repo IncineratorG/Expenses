@@ -23,6 +23,9 @@ public class ActivityStatisticDetailed extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_detailed);
 
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(this);
+
         Bundle expenseDataBundle = getIntent().getExtras();
         if (expenseDataBundle == null)
             return;

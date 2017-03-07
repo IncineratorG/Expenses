@@ -1,6 +1,7 @@
 package com.example.newcosts;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -16,12 +17,14 @@ import java.util.Calendar;
  * TODO: Add a class header comment
  */
 
-public class DialogFragmentEditExpenses extends DialogFragment implements View.OnClickListener {
+public class DialogFragmentEditLastEnteredValues extends DialogFragment implements View.OnClickListener {
     private static DataUnitExpenses dataUnit;
 
-    static DialogFragmentEditExpenses newInstance(DataUnitExpenses data) {
+    static DialogFragmentEditLastEnteredValues newInstance(Context context, DataUnitExpenses data) {
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(context);
         dataUnit = data;
-        return new DialogFragmentEditExpenses();
+        return new DialogFragmentEditLastEnteredValues();
     }
 
     @Override
@@ -34,7 +37,9 @@ public class DialogFragmentEditExpenses extends DialogFragment implements View.O
         calendar.setTimeInMillis(milliseconds);
 
         TextView costValueTextView = (TextView) v.findViewById(R.id.edit_cost_value_dialog_costValue);
-        costValueTextView.setText(dataUnit.getExpenseValueString() + " руб.");
+        costValueTextView.setText(dataUnit.getExpenseValueString() + " " +
+                getResources().getString(R.string.rur_string) +
+                getResources().getString(R.string.dot_sign_string));
         TextView costNameTextView = (TextView) v.findViewById(R.id.edit_cost_value_dialog_costName);
         costNameTextView.setText(dataUnit.getExpenseName());
         TextView costDateTextView = (TextView) v.findViewById(R.id.edit_cost_value_dialog_costDate);

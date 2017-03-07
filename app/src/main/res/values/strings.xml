@@ -139,6 +139,10 @@
 
     <!-- fragment_statistic_main_screen_single_item.xml -->
 
+    <!-- AdapterStatisticMainScreenRecyclerView.java -->
+    <string name="asmsrv_yearTextView_string">-й год</string>
+    <string name="asmsrv_perMonthValueTextView_string">мес</string>
+
     <!-- FragmentStatisticMainScreenScreen.java -->
     <!-- ======================================================================================= -->
 
@@ -230,5 +234,122 @@
     <string name="choose_period_dialog_cancel_button_string">Отмена</string>
     <string name="choose_period_starting_date_textview_string">Начальная дата</string>
     <string name="choose_period_ending_date_textview_string">Конечная дата</string>
+    <!-- ======================================================================================= -->
+
+
+
+
+
+
+
+
+
+
+    <!-- =================================== CONSTANTS ========================================= -->
+    <!-- Constants.java -->
+    <!-- ============================== DECLENSION_MONTH_NAMES ================================= -->
+    <string-array name="DECLENSION_MONTH_NAMES">
+        <item>@string/DECLENSION_MONTH_NAMES_january_string</item>
+        <item>@string/DECLENSION_MONTH_NAMES_february_string</item>
+        <item>@string/DECLENSION_MONTH_NAMES_march_string</item>
+        <item>@string/DECLENSION_MONTH_NAMES_april_string</item>
+        <item>@string/DECLENSION_MONTH_NAMES_may_string</item>
+        <item>@string/DECLENSION_MONTH_NAMES_june_string</item>
+        <item>@string/DECLENSION_MONTH_NAMES_july_string</item>
+        <item>@string/DECLENSION_MONTH_NAMES_august_string</item>
+        <item>@string/DECLENSION_MONTH_NAMES_september_string</item>
+        <item>@string/DECLENSION_MONTH_NAMES_october_string</item>
+        <item>@string/DECLENSION_MONTH_NAMES_november_string</item>
+        <item>@string/DECLENSION_MONTH_NAMES_december_string</item>
+    </string-array>
+    <string name="DECLENSION_MONTH_NAMES_january_string">Января</string>
+    <string name="DECLENSION_MONTH_NAMES_february_string">Февраля</string>
+    <string name="DECLENSION_MONTH_NAMES_march_string">Марта</string>
+    <string name="DECLENSION_MONTH_NAMES_april_string">Апреля</string>
+    <string name="DECLENSION_MONTH_NAMES_may_string">Мая</string>
+    <string name="DECLENSION_MONTH_NAMES_june_string">Июня</string>
+    <string name="DECLENSION_MONTH_NAMES_july_string">Июля</string>
+    <string name="DECLENSION_MONTH_NAMES_august_string">Августа</string>
+    <string name="DECLENSION_MONTH_NAMES_september_string">Сентября</string>
+    <string name="DECLENSION_MONTH_NAMES_october_string">Октября</string>
+    <string name="DECLENSION_MONTH_NAMES_november_string">Ноября</string>
+    <string name="DECLENSION_MONTH_NAMES_december_string">Декабря</string>
+    <!-- ======================================================================================= -->
+    <!-- =================================== MONTH_NAMES ======================================= -->
+    <string-array name="MONTH_NAMES">
+        <item>@string/MONTH_NAMES_january_string</item>
+        <item>@string/MONTH_NAMES_february_string</item>
+        <item>@string/MONTH_NAMES_march_string</item>
+        <item>@string/MONTH_NAMES_april_string</item>
+        <item>@string/MONTH_NAMES_may_string</item>
+        <item>@string/MONTH_NAMES_june_string</item>
+        <item>@string/MONTH_NAMES_july_string</item>
+        <item>@string/MONTH_NAMES_august_string</item>
+        <item>@string/MONTH_NAMES_september_string</item>
+        <item>@string/MONTH_NAMES_october_string</item>
+        <item>@string/MONTH_NAMES_november_string</item>
+        <item>@string/MONTH_NAMES_december_string</item>
+    </string-array>
+    <string name="MONTH_NAMES_january_string">Январь</string>
+    <string name="MONTH_NAMES_february_string">Февраль</string>
+    <string name="MONTH_NAMES_march_string">Март</string>
+    <string name="MONTH_NAMES_april_string">Апрель</string>
+    <string name="MONTH_NAMES_may_string">Май</string>
+    <string name="MONTH_NAMES_june_string">Июнь</string>
+    <string name="MONTH_NAMES_july_string">Июль</string>
+    <string name="MONTH_NAMES_august_string">Август</string>
+    <string name="MONTH_NAMES_september_string">Сентябрь</string>
+    <string name="MONTH_NAMES_october_string">Октябрь</string>
+    <string name="MONTH_NAMES_november_string">Ноябрь</string>
+    <string name="MONTH_NAMES_december_string">Декабрь</string>
+    <!-- ======================================================================================= -->
+    <!-- ================================ SHORT_MONTH_NAMES ==================================== -->
+    <string-array name="SHORT_MONTH_NAMES">
+        <item>@string/SHORT_MONTH_NAMES_january_string</item>
+        <item>@string/SHORT_MONTH_NAMES_february_string</item>
+        <item>@string/SHORT_MONTH_NAMES_march_string</item>
+        <item>@string/SHORT_MONTH_NAMES_april_string</item>
+        <item>@string/SHORT_MONTH_NAMES_may_string</item>
+        <item>@string/SHORT_MONTH_NAMES_june_string</item>
+        <item>@string/SHORT_MONTH_NAMES_july_string</item>
+        <item>@string/SHORT_MONTH_NAMES_august_string</item>
+        <item>@string/SHORT_MONTH_NAMES_september_string</item>
+        <item>@string/SHORT_MONTH_NAMES_october_string</item>
+        <item>@string/SHORT_MONTH_NAMES_november_string</item>
+        <item>@string/SHORT_MONTH_NAMES_december_string</item>
+    </string-array>
+    <string name="SHORT_MONTH_NAMES_january_string">Янв.</string>
+    <string name="SHORT_MONTH_NAMES_february_string">Фев.</string>
+    <string name="SHORT_MONTH_NAMES_march_string">Мар.</string>
+    <string name="SHORT_MONTH_NAMES_april_string">Апр.</string>
+    <string name="SHORT_MONTH_NAMES_may_string">Май</string>
+    <string name="SHORT_MONTH_NAMES_june_string">Июн.</string>
+    <string name="SHORT_MONTH_NAMES_july_string">Июл.</string>
+    <string name="SHORT_MONTH_NAMES_august_string">Авг.</string>
+    <string name="SHORT_MONTH_NAMES_september_string">Сен.</string>
+    <string name="SHORT_MONTH_NAMES_october_string">Окт.</string>
+    <string name="SHORT_MONTH_NAMES_november_string">Нояб.</string>
+    <string name="SHORT_MONTH_NAMES_december_string">Дек.</string>
+    <!-- ======================================================================================= -->
+    <!-- ==================================== DAY_NAMES ======================================== -->
+    <string-array name="DAY_NAMES">
+        <item>@string/DAY_NAMES_empty_string</item>
+        <item>@string/DAY_NAMES_sunday_string</item>
+        <item>@string/DAY_NAMS_monday_string</item>
+        <item>@string/DAY_NAMES_tuesday_string</item>
+        <item>@string/DAY_NAMES_wednesday_string</item>
+        <item>@string/DAY_NAMES_thursday_string</item>
+        <item>@string/DAY_NAMES_friday_string</item>
+        <item>@string/DAY_NAMES_saturday_string</item>
+    </string-array>
+    <string name="DAY_NAMES_empty_string"></string>
+    <string name="DAY_NAMES_sunday_string">Вс</string>
+    <string name="DAY_NAMS_monday_string">Пн</string>
+    <string name="DAY_NAMES_tuesday_string">Вт</string>
+    <string name="DAY_NAMES_wednesday_string">Ср</string>
+    <string name="DAY_NAMES_thursday_string">Чт</string>
+    <string name="DAY_NAMES_friday_string">Пт</string>
+    <string name="DAY_NAMES_saturday_string">Сб</string>
+    <!-- ======================================================================================= -->
     <!-- ======================================================================================= -->
 </resources>

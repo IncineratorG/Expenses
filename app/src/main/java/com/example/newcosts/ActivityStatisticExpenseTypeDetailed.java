@@ -41,6 +41,9 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_expense_type_detailed);
 
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(this);
+
         // При нажатии стрелки назад - возвращаемся к предыдущему экрану
         ImageView arrowBackImageView = (ImageView) findViewById(R.id.activity_statistic_cost_type_detailed_arrow_back);
         arrowBackImageView.setOnClickListener(new View.OnClickListener() {

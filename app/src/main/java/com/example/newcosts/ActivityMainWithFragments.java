@@ -24,6 +24,9 @@ public class ActivityMainWithFragments extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_with_fragments);
 
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(this);
+
         // Переходим на экран чтения данных из СМС
         ImageView creditCardImageView = (ImageView) findViewById(R.id.activity_main_credit_card_imageview);
         creditCardImageView.setOnClickListener(new View.OnClickListener() {

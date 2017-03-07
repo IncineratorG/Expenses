@@ -31,6 +31,9 @@ public class AdapterLastEnteredValuesRecyclerView extends RecyclerView.Adapter<A
         this.data = data;
         this.context = context;
         calendar = Calendar.getInstance();
+
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(context);
     }
 
     @Override

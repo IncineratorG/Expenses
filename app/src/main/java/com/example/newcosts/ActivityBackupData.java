@@ -98,6 +98,8 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_backup_data);
 
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(this);
 
         calendar = new GregorianCalendar();
         cdb = DB_Costs.getInstance(this);

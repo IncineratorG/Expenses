@@ -25,21 +25,7 @@ public class AdapterMainActivityPager extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-
         return fragmentsList.get(position);
-//        switch (position) {
-//            case 0:
-//                FragmentCurrentMonthScreen tab1 = new FragmentCurrentMonthScreen();
-//                return tab1;
-//            case 1:
-//                FragmentLastEnteredValuesScreen_V2 tab2 = new FragmentLastEnteredValuesScreen_V2();
-//                return tab2;
-//            case 2:
-//                FragmentStatisticMainScreen tab3 = new FragmentStatisticMainScreen();
-//                return tab3;
-//            default:
-//                return null;
-//        }
     }
 
     @Override

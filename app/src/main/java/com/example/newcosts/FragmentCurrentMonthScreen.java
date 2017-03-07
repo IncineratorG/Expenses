@@ -71,6 +71,9 @@ public class FragmentCurrentMonthScreen extends Fragment {
     public void onResume() {
         super.onResume();
 
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(context);
+
         cdb = DB_Costs.getInstance(context);
 
         // Получаем и устанавливаем текущую дату

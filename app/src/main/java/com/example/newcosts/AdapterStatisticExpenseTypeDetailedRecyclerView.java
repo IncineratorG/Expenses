@@ -32,6 +32,9 @@ public class AdapterStatisticExpenseTypeDetailedRecyclerView extends RecyclerVie
         this.data = data;
         this.context = context;
         calendar = Calendar.getInstance();
+
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(context);
     }
 
 

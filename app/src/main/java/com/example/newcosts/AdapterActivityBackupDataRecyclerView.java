@@ -35,6 +35,9 @@ public class AdapterActivityBackupDataRecyclerView extends RecyclerView.Adapter<
         calendar = new GregorianCalendar();
 
         this.dataList = dataList;
+
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(context);
     }
 
 

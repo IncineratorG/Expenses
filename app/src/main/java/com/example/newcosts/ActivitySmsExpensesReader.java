@@ -52,9 +52,8 @@ public class ActivitySmsExpensesReader extends AppCompatActivity implements Load
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms_expenses_reader);
 
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_sms_expenses_reader_toolbar);
-//        toolbar.setTitle("");
-//        setSupportActionBar(toolbar);
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(this);
 
         // Стрелка "Назад"
         ImageView arrowBackImageView = (ImageView) findViewById(R.id.activity_sms_expenses_reader_arrow_back);

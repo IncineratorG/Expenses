@@ -53,6 +53,8 @@ public class DialogFragmentChooseStatisticPeriod extends DialogFragment implemen
 
 
     static DialogFragmentChooseStatisticPeriod newInstance(Context context) {
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(context);
         return new DialogFragmentChooseStatisticPeriod();
     }
 

@@ -12,8 +12,11 @@ import java.util.List;
 
 class AdapterStatisticDetailedActivityListView extends ArrayAdapter<DataUnitExpenses> {
 
+    private Context context;
+
     public AdapterStatisticDetailedActivityListView(Context context, List<DataUnitExpenses> dataUnitList) {
         super(context, R.layout.activity_statistic_detailed_single_item, dataUnitList);
+        this.context = context;
     }
 
     @Override
@@ -27,7 +30,9 @@ class AdapterStatisticDetailedActivityListView extends ArrayAdapter<DataUnitExpe
         TextView expenseValueTextView = (TextView) singleCostsRow.findViewById(R.id.activity_statistic_detailed_single_item_expense_value_textview);
 
         expenseNameTextView.setText(dataUnit.getExpenseName());
-        expenseValueTextView.setText(dataUnit.getExpenseValueString() + " руб.");
+        expenseValueTextView.setText(dataUnit.getExpenseValueString() + " " +
+                context.getResources().getString(R.string.rur_string) +
+                context.getResources().getString(R.string.dot_sign_string));
 
         return singleCostsRow;
     }

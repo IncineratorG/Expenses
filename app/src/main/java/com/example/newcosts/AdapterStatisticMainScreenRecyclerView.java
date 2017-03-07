@@ -30,6 +30,9 @@ public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter
         this.data = data;
         this.context = context;
         calendar = Calendar.getInstance();
+
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(context);
     }
 
     @Override
@@ -53,7 +56,7 @@ public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter
         else
         {
             holder.dateLayout.setVisibility(View.VISIBLE);
-            holder.yearTextView.setText(data.get(position).getYear() + "-й год");
+            holder.yearTextView.setText(data.get(position).getYear() + context.getResources().getString(R.string.asmsrv_yearTextView_string));
 
             // Получаем величину расходов за год
             double overallExpenseValueForYear = data.get(position).getExpenseValueDouble();
@@ -69,12 +72,20 @@ public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter
             // Получаем величину расходов в месяц
             double expenseValuePerMonth = overallExpenseValueForYear / count;
 
-            holder.perMonthValueTextView.setText(Constants.formatDigit(expenseValuePerMonth) + " руб./мес.");
-            holder.yearValueTextView.setText(Constants.formatDigit(overallExpenseValueForYear) + " руб.");
+            holder.perMonthValueTextView.setText(Constants.formatDigit(expenseValuePerMonth) + " " +
+                    context.getResources().getString(R.string.rur_string) +
+                    context.getResources().getString(R.string.dot_sign_string) + "/" +
+                    context.getResources().getString(R.string.asmsrv_perMonthValueTextView_string) +
+                    context.getResources().getString(R.string.dot_sign_string));
+            holder.yearValueTextView.setText(Constants.formatDigit(overallExpenseValueForYear) + " " +
+                    context.getResources().getString(R.string.rur_string) +
+                    context.getResources().getString(R.string.dot_sign_string));
         }
 
         holder.expensesMonthTextView.setText(Constants.MONTH_NAMES[data.get(position).getMonth()]);
-        holder.expensesValueTextView.setText(data.get(position).getExpenseValueString() + " руб.");
+        holder.expensesValueTextView.setText(data.get(position).getExpenseValueString() + " " +
+                context.getResources().getString(R.string.rur_string) +
+                context.getResources().getString(R.string.dot_sign_string));
     }
 
     @Override

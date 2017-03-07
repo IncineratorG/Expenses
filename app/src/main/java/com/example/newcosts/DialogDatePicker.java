@@ -57,6 +57,9 @@ public class DialogDatePicker extends Dialog implements
         this.dateInMilliseconds = dateInMilliseconds;
 
         Callback = (MyDatePickerCallback) activity;
+
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(activity);
     }
 
     @Override

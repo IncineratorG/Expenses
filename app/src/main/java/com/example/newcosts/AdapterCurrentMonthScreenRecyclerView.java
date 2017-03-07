@@ -40,6 +40,9 @@ public class AdapterCurrentMonthScreenRecyclerView extends RecyclerView.Adapter<
         this.context = context;
         this.targetFragment = targetFragment;
         calendar = Calendar.getInstance();
+
+        if (Constants.stringsAreNull())
+            Constants.loadStrings(context);
     }
 
     @Override
@@ -81,7 +84,9 @@ public class AdapterCurrentMonthScreenRecyclerView extends RecyclerView.Adapter<
             holder.editCategoryImageView.setVisibility(View.VISIBLE);
             holder.categoryValueTextView.setVisibility(View.VISIBLE);
             holder.arrowRight.setVisibility(View.VISIBLE);
-            holder.categoryValueTextView.setText(data.get(position).getExpenseValueString() + " руб.");
+            holder.categoryValueTextView.setText(data.get(position).getExpenseValueString() + " " +
+                    context.getResources().getString(R.string.rur_string) +
+                    context.getResources().getString(R.string.dot_sign_string));
         }
     }
 
