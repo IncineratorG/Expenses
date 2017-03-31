@@ -164,4 +164,6 @@
     <string name="sortingTypesList_byDate_string">по дате</string>
     <string name="statistic_main_screen_chose_period_button_string">Задать период</string>
     <string name="usd_string">usd</string>
+    <string name="flev_today_string">Сегодня</string>
+    <string name="flev_yesterday_string">Вчера</string>
 </resources>

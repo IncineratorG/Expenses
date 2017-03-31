@@ -92,10 +92,14 @@ public class AdapterStatisticExpenseTypeDetailedRecyclerView extends RecyclerVie
                 ++i;
             }
 
-            holder.dateOverallValueTextView.setText(Constants.formatDigit(overallExpenseValueForDay) + " руб.");
+            holder.dateOverallValueTextView.setText(Constants.formatDigit(overallExpenseValueForDay) + " " +
+                                                    context.getResources().getString(R.string.rur_string) +
+                                                    context.getResources().getString(R.string.dot_sign_string));
         }
 
-        holder.expensesValueTextView.setText(data.get(position).getExpenseValueString() + " руб.");
+        holder.expensesValueTextView.setText(data.get(position).getExpenseValueString() + " " +
+                context.getResources().getString(R.string.rur_string) +
+                context.getResources().getString(R.string.dot_sign_string));
         holder.expensesNoteTextView.setVisibility(View.VISIBLE);
         holder.noteSeparatorLayout.setVisibility(View.VISIBLE);;
 

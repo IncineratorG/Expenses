@@ -19,7 +19,9 @@ import android.widget.TextView;
 import java.util.Calendar;
 
 
-public class ActivityInputData extends AppCompatActivity implements DialogDatePicker.MyDatePickerCallback, DialogFragmentExpensesList.ExpenseListDialogCallback {
+public class ActivityInputData extends AppCompatActivity implements DialogDatePicker.MyDatePickerCallback,
+        DialogFragmentExpensesList.ExpenseListDialogCallback,
+        DialogFragmentCurrenciesList.CurrenciesListDialogCallback {
 
     private TextView signTextView;
     private EditText inputValueEditText, inputNoteEditText;
@@ -35,6 +37,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
 
     private DataUnitExpenses dataUnit;
     private TextView toolbarTextView;
+    private TextView currencyTextView;
 
     private DataUnitExpenses selectedDataUnit;
     private Button choseDateButton;
@@ -72,6 +75,14 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
         // Инициализируем элементы интерфейса
         signTextView = (TextView) findViewById(R.id.activity_input_data_sign_textview);
         signTextView.setText("");
+
+        currencyTextView = (TextView) findViewById(R.id.activity_input_data_currency_textview);
+        currencyTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                changeInputCurrency();
+            }
+        });
 
         inputValueEditTextCursor = (LinearLayout) findViewById(R.id.activity_input_data_edit_text_cursor);
         inputValueEditTextCursor.setAnimation(startBlinking());
@@ -158,6 +169,17 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
         previousTokenWasPlus = false;
     }
 
+
+    // Выбираем валюту вводимого значения
+    private void changeInputCurrency() {
+        // Показываем диалоговое окно со списком доступных валют
+        DialogFragmentCurrenciesList currenciesListDialog = new DialogFragmentCurrenciesList();
+        currenciesListDialog.show(getSupportFragmentManager(), Constants.CURRENCIES_LIST_DIALOG_TAG);
+
+//        new AsyncTaskGetCurrencyExchangeRates().execute();
+    }
+
+
     // Обработчик нажатий кнопок выбора даты внесения расходов
     public void onDateButtonsClick(View view) {
         switch (view.getId()) {
@@ -183,6 +205,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
                 break;
         }
     }
+
 
     // Обработчик нажатий кнопок цифровой клавиатуры
     public void onKeyboardClick(View view) {
@@ -272,6 +295,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
         }
     }
 
+
     // Складывает текущее введённое значение с предыдущим
     private void calculateInputValues() {
         // Получаем и форматируем текущее и предыдущее введынные значения
@@ -298,6 +322,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
         inputValueEditText.setText(Constants.formatDigit(currentValue));
         inputValueEditText.setSelection(inputValueEditText.getText().length());
     }
+
 
     // Сохраняет введённое значение в базу
     private boolean saveData(long milliseconds) {
@@ -347,6 +372,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
 
         return true;
     }
+
 
     // Показ всплывающего окна при некорректном вводе данных
     private void showAlertDialogWithMessage(String message) {
@@ -406,6 +432,7 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
         return fadeIn;
     }
 
+
     // При редактировании существующего элемента получаем название выбранной
     // статьи расходов из списка статей расходов при нажатии на "стрелку вниз"
     @Override
@@ -454,4 +481,12 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
         }
     }
 
+    @Override
+    public void getSelectedCurrency(String currencyString) {
+        if (currencyString.equals(Constants.CURRENT_CURRENCY))
+            return;
+
+        System.out.println(Constants.CURRENT_CURRENCY + currencyString);
+        new AsyncTaskGetCurrencyExchangeRates(Constants.CURRENT_CURRENCY + currencyString).execute();
+    }
 }

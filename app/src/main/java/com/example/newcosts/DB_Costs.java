@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,7 +15,7 @@ import java.util.List;
 public class DB_Costs extends SQLiteOpenHelper {
 
     /*  В базе данных месяца начинаются с 0  */
-    private static final String tag = "CostsDbTag";
+    private static final String TAG = "TAG";
 
     private static DB_Costs dbInstance;
 
@@ -40,18 +41,19 @@ public class DB_Costs extends SQLiteOpenHelper {
     private static final String COST_VALUE = "costvalue";
     private static final String IMAGE = "image";
     private static final String TEXT = "text";
+    private static final String EXPANSION_COLUMN_1 = "expcolumn";
     // **********************************************************
 
 
     private DB_Costs(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
+        super(context, name, factory, version);
     }
 
     public static synchronized DB_Costs getInstance(Context context) {
         if (dbInstance != null)
             return dbInstance;
         else {
-            dbInstance = new DB_Costs(context.getApplicationContext(), null, null, 1);
+            dbInstance = new DB_Costs(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
             return dbInstance;
         }
     }
@@ -83,10 +85,15 @@ public class DB_Costs extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COST_NAMES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COST_VALUES);
-        onCreate(db);
+        Log.i(TAG, "UPDATING DATABASE");
+        String upgradeQuery = "ALTER TABLE " + TABLE_COST_VALUES +
+                                " ADD COLUMN " + EXPANSION_COLUMN_1 + " INTEGER";
+        db.execSQL(upgradeQuery);
     }
+
+
+
+
 
     public boolean COSTS_DB_IS_EMPTY() {
         String query = "SELECT * FROM " + TABLE_COST_NAMES;

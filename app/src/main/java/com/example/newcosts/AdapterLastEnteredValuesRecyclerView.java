@@ -15,12 +15,21 @@ import java.util.List;
  * TODO: Add a class header comment
  */
 
-public class AdapterLastEnteredValuesRecyclerView extends RecyclerView.Adapter<AdapterLastEnteredValuesRecyclerView.FragmentLastEnteredValuesViewHolder_V2> {
+public class AdapterLastEnteredValuesRecyclerView extends RecyclerView.Adapter<AdapterLastEnteredValuesRecyclerView.FragmentLastEnteredValuesViewHolder> {
 
     private OnItemClickListener clickListener;
     private List<DataUnitExpenses> data;
     private Context context;
     private Calendar calendar;
+
+    private int currentDay;
+    private int currentMonth;
+    private int currentYear;
+
+    private int yesterdayDay;
+    private int yesterdayMonth;
+    private int yesterdayYear;
+
 
     public interface OnItemClickListener {
         void onItemClick(View itemView, int position);
@@ -34,6 +43,16 @@ public class AdapterLastEnteredValuesRecyclerView extends RecyclerView.Adapter<A
 
         if (Constants.stringsAreNull())
             Constants.loadStrings(context);
+
+        currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        currentMonth = calendar.get(Calendar.MONTH);
+        currentYear = calendar.get(Calendar.YEAR);
+
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+
+        yesterdayDay = calendar.get(Calendar.DAY_OF_MONTH);
+        yesterdayMonth = calendar.get(Calendar.MONTH);
+        yesterdayYear = calendar.get(Calendar.YEAR);
     }
 
     @Override
@@ -42,33 +61,36 @@ public class AdapterLastEnteredValuesRecyclerView extends RecyclerView.Adapter<A
     }
 
     @Override
-    public FragmentLastEnteredValuesViewHolder_V2 onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FragmentLastEnteredValuesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_last_entered_values_single_item, parent, false);
-        return new FragmentLastEnteredValuesViewHolder_V2(v);
+        return new FragmentLastEnteredValuesViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(FragmentLastEnteredValuesViewHolder_V2 holder, int position) {
+    public void onBindViewHolder(FragmentLastEnteredValuesViewHolder holder, int position) {
         // Группируем список последних введённых значений по дате занесения элементов в базу
-        if (position > 0 && (data.get(position - 1).getDay() == data.get(position).getDay() &&
-                data.get(position - 1).getMonth() == data.get(position).getMonth() &&
-                data.get(position - 1).getYear() == data.get(position).getYear()))
-        {
-            holder.dateLayout.setVisibility(View.GONE);
-        }
-        else
-        {
-            calendar.setTimeInMillis(data.get(position).getMilliseconds());
-            holder.dateLayout.setVisibility(View.VISIBLE);
-            holder.dateTextView.setText(new StringBuilder().append(Constants.DAY_NAMES[calendar.get(Calendar.DAY_OF_WEEK)])
-                    .append(", ")
-                    .append(data.get(position).getDay())
-                    .append(" ")
-                    .append(Constants.DECLENSION_MONTH_NAMES[data.get(position).getMonth() - 1]));
-        }
+        setHolderDateTextView(holder, position);
+//        if (position > 0 && (data.get(position - 1).getDay() == data.get(position).getDay() &&
+//                data.get(position - 1).getMonth() == data.get(position).getMonth() &&
+//                data.get(position - 1).getYear() == data.get(position).getYear()))
+//        {
+//            holder.dateLayout.setVisibility(View.GONE);
+//        }
+//        else
+//        {
+//            calendar.setTimeInMillis(data.get(position).getMilliseconds());
+//            holder.dateLayout.setVisibility(View.VISIBLE);
+//            holder.dateTextView.setText(new StringBuilder().append(Constants.DAY_NAMES[calendar.get(Calendar.DAY_OF_WEEK)])
+//                    .append(", ")
+//                    .append(data.get(position).getDay())
+//                    .append(" ")
+//                    .append(Constants.DECLENSION_MONTH_NAMES[data.get(position).getMonth() - 1]));
+//        }
 
         holder.expensesTypeTextView.setText(data.get(position).getExpenseName());
-        holder.expensesValueTextView.setText(data.get(position).getExpenseValueString() + " руб.");
+        holder.expensesValueTextView.setText(data.get(position).getExpenseValueString() + " " +
+                context.getResources().getString(R.string.rur_string) +
+                context.getResources().getString(R.string.dot_sign_string));
         holder.expensesNoteTextView.setVisibility(View.VISIBLE);
         holder.noteSeparatorLayout.setVisibility(View.VISIBLE);;
 
@@ -83,6 +105,36 @@ public class AdapterLastEnteredValuesRecyclerView extends RecyclerView.Adapter<A
         }
     }
 
+    // Группирует список последних введённых значений по дате внесения
+    private void setHolderDateTextView(FragmentLastEnteredValuesViewHolder holder, int position) {
+        // Если текущая дата совпадает с предыдущей - скрываем поле с датой
+        if (position > 0 && (data.get(position - 1).getDay() == data.get(position).getDay() &&
+                data.get(position - 1).getMonth() == data.get(position).getMonth() &&
+                data.get(position - 1).getYear() == data.get(position).getYear()))
+        {
+            holder.dateLayout.setVisibility(View.GONE);
+        }
+        // Иначе - выводим на экран дату занесения расхода
+        else
+        {
+            calendar.setTimeInMillis(data.get(position).getMilliseconds());
+            holder.dateLayout.setVisibility(View.VISIBLE);
+
+            if (currentDay == calendar.get(Calendar.DAY_OF_MONTH) && currentMonth == calendar.get(Calendar.MONTH) && currentYear == calendar.get(Calendar.YEAR)) {
+                holder.dateTextView.setText(context.getResources().getString(R.string.flev_today_string));
+            } else if (yesterdayDay == calendar.get(Calendar.DAY_OF_MONTH) && yesterdayMonth == calendar.get(Calendar.MONTH) && yesterdayYear == calendar.get(Calendar.YEAR)) {
+                holder.dateTextView.setText(context.getResources().getString(R.string.flev_yesterday_string));
+            } else {
+                holder.dateTextView.setText(new StringBuilder().append(Constants.DAY_NAMES[calendar.get(Calendar.DAY_OF_WEEK)])
+                        .append(", ")
+                        .append(data.get(position).getDay())
+                        .append(" ")
+                        .append(Constants.DECLENSION_MONTH_NAMES[data.get(position).getMonth() - 1]));
+            }
+        }
+    }
+
+
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
@@ -95,7 +147,7 @@ public class AdapterLastEnteredValuesRecyclerView extends RecyclerView.Adapter<A
 
 
     // ===================================== View Holder ===========================================
-    public class FragmentLastEnteredValuesViewHolder_V2 extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class FragmentLastEnteredValuesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private LinearLayout noteSeparatorLayout;
         private LinearLayout dateLayout;
@@ -105,7 +157,7 @@ public class AdapterLastEnteredValuesRecyclerView extends RecyclerView.Adapter<A
         private TextView dateTextView;
 
 
-        public FragmentLastEnteredValuesViewHolder_V2(View itemView) {
+        public FragmentLastEnteredValuesViewHolder(View itemView) {
             super(itemView);
 
             expensesTypeTextView = (TextView) itemView.findViewById(R.id.fragment_last_entered_values_expenses_type_textview);

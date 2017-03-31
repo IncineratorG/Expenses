@@ -26,7 +26,9 @@ public class Constants {
     public static String[] MONTH_NAMES;
     public static String[] SHORT_MONTH_NAMES;
     public static String[] DAY_NAMES;
+    public static String[] CURRENCIES;
 
+    public static String CURRENT_CURRENCY = "RUB";
 
 
     public static final String SEPARATOR_VALUE = "$";
@@ -36,6 +38,7 @@ public class Constants {
     public static final String EDIT_DIALOG_TAG = "edit_dialog_tag";
     public static final String CHOOSE_STATISTIC_PERIOD_DIALOG_TAG = "choose_period_dialog_tag";
     public static final String EXPENSES_LIST_DIALOG_TAG = "expenses_list_dialog_tag";
+    public static final String CURRENCIES_LIST_DIALOG_TAG = "currencies_list_dialog_tag";
     public static final String PREVIOUS_ACTIVITY_INDEX = "previous_activity_index";
 
     public static final String PREVIOUS_ACTIVITY = "previous_activity";
@@ -117,7 +120,8 @@ public class Constants {
         return DECLENSION_MONTH_NAMES == null
                 || MONTH_NAMES == null
                 || SHORT_MONTH_NAMES == null
-                || DAY_NAMES == null;
+                || DAY_NAMES == null
+                || CURRENCIES == null;
     }
 
     public static void loadStrings(Context context) {
@@ -125,7 +129,8 @@ public class Constants {
         MONTH_NAMES = context.getResources().getStringArray(R.array.MONTH_NAMES);
         SHORT_MONTH_NAMES = context.getResources().getStringArray(R.array.SHORT_MONTH_NAMES);
         DAY_NAMES = context.getResources().getStringArray(R.array.DAY_NAMES);
+        CURRENCIES = context.getResources().getStringArray(R.array.CURRENCIES);
 
-        System.out.println("STRINGS_LOADED");
+//        System.out.println("STRINGS_LOADED");
     }
 }

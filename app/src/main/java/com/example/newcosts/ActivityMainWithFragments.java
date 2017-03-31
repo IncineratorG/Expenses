@@ -42,7 +42,7 @@ public class ActivityMainWithFragments extends AppCompatActivity {
         backupDataImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent backupDataActivity = new Intent(ActivityMainWithFragments.this, ActivityBackupData.class);
+                Intent backupDataActivity = new Intent(ActivityMainWithFragments.this, ActivityBackupData_V2.class);
                 startActivity(backupDataActivity);
             }
         });

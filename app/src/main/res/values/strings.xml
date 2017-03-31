@@ -16,7 +16,7 @@
 
     <!-- =================================== CURRENCY ========================================== -->
     <!-- Currency_Strings -->
-    <string name="rur_string">rur</string>
+    <string name="rur_string">rub</string>
     <string name="usd_string">usd</string>
     <string name="eur_string">eur</string>
     <!-- ======================================================================================= -->
@@ -60,7 +60,7 @@
 
     <!-- =============================== ACTIVITY_INPUT_DATA =================================== -->
     <!-- activity_input_data.xml-->
-    <string name="activity_input_data_currency_textview_string">руб.</string>
+    <string name="activity_input_data_currency_textview_string">RUB.</string>
     <string name="activity_input_data_input_note_edittext_hint_string">Note</string>
     <string name="activity_input_data_ok_string">OK</string>
     <string name="activity_input_data_del_string">Del</string>
@@ -125,6 +125,10 @@
     <!-- fragment_last_entered_values_screen.xml-->
 
     <!-- fragment_last_entered_values_screen_single_item.xml -->
+
+    <!-- AdapterLastEnteredValues.java -->
+    <string name="flev_today_string">Today</string>
+    <string name="flev_yesterday_string">Yesterday</string>
 
     <!-- FragmentLastEnteredValuesScreen.java -->
     <string name="flev_deleteItemSnackbar_string">Entry deleted</string>
@@ -357,6 +361,18 @@
     <string name="DAY_NAMES_thursday_string">Thu</string>
     <string name="DAY_NAMES_friday_string">Fri</string>
     <string name="DAY_NAMES_saturday_string">Sat</string>
+    <!-- ======================================================================================= -->
+    <!-- ==================================== DAY_NAMES ======================================== -->
+    <string-array name="CURRENCIES">
+        <item>@string/CURRENCY_RUB_string</item>
+        <item>@string/CURRENCY_USD_string</item>
+        <item>@string/CURRENCY_EUR_string</item>
+        <item>@string/CURRENCY_GBP_string</item>
+    </string-array>
+    <string name="CURRENCY_RUB_string">RUB</string>
+    <string name="CURRENCY_USD_string">USD</string>
+    <string name="CURRENCY_EUR_string">EUR</string>
+    <string name="CURRENCY_GBP_string">GBP</string>
     <!-- ======================================================================================= -->
     <!-- ======================================================================================= -->
 </resources>

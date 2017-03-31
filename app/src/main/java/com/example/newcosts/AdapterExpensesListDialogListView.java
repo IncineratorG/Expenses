@@ -14,13 +14,13 @@ import android.widget.TextView;
 
 public class AdapterExpensesListDialogListView extends ArrayAdapter<DataUnitExpenses> {
     public AdapterExpensesListDialogListView(Context context, DataUnitExpenses[] dataUnits) {
-        super(context, R.layout.expenses_names_list_single_item, dataUnits);
+        super(context, R.layout.expenses_list_dialog_single_item, dataUnits);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        View singleExpenseRow = inflater.inflate(R.layout.expenses_names_list_single_item, parent, false);
+        View singleExpenseRow = inflater.inflate(R.layout.expenses_list_dialog_single_item, parent, false);
 
         DataUnitExpenses dataUnit = getItem(position);
 

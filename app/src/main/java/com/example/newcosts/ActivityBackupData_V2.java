@@ -49,7 +49,7 @@ import java.util.List;
  * TODO: Add a class header comment
  */
 
-public class ActivityBackupData extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, AsyncTaskSaveDeviceData.DataSavedCallback,
         AsyncTaskRestoreData.DataRestoredCallback {
 
@@ -59,7 +59,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     private static final int REQUEST_CODE_RESOLUTION = 123;
     private DB_Costs cdb;
     private ImageView arrowBackImageView;
-    
+
     private Button createBackupDataButton;
 
     private String TABLE_COST_NAMES_FILE_NAME = "cost_names_data.xml";
@@ -82,6 +82,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     private LinearLayoutManager linearLayoutManager;
 
     private TextView statusTextView;
+//    private String currentDefaultString = "";
 
     private AsyncTask asyncTaskRestoreData;
     private ImageView selectGoogleAccountImageView;
@@ -116,7 +117,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
             public void onClick(View v) {
                 createBackupData_V2();
                 createBackupDataButton.setEnabled(false);
-                createBackupDataButton.setTextColor(ContextCompat.getColor(ActivityBackupData.this, R.color.lightGrey));
+                createBackupDataButton.setTextColor(ContextCompat.getColor(ActivityBackupData_V2.this, R.color.lightGrey));
                 if (backupDataRecyclerViewAdapter != null)
                     backupDataRecyclerViewAdapter.setClickListener(null);
             }
@@ -192,7 +193,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
 
         // Отключаем возможность создания резервной копии
         createBackupDataButton.setEnabled(false);
-        createBackupDataButton.setTextColor(ContextCompat.getColor(ActivityBackupData.this, R.color.lightGrey));
+        createBackupDataButton.setTextColor(ContextCompat.getColor(ActivityBackupData_V2.this, R.color.lightGrey));
 
         // Показываем диалоговое окно с возможностью выбора аккаунта Google. Если пользователь ничего
         // не выберет, то повторно вызвать данное диалоговое окно можно либо нажав на значок выбора
@@ -266,10 +267,10 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
 
                 // Восстанавливаем данные из резервной копии в отдельном потоке
                 asyncTaskRestoreData = new AsyncTaskRestoreData(googleApiClient,
-                                        ActivityBackupData.this,
-                                        tableCostNamesBackupFile,
-                                        tableCostValuesBackupFile,
-                                        statusTextView)
+                        ActivityBackupData_V2.this,
+                        tableCostNamesBackupFile,
+                        tableCostValuesBackupFile,
+                        statusTextView)
                         .execute();
             }
         });
@@ -357,12 +358,12 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                         // Создаём файлы резервной копии в отдельном потоке
                         Log.i(TAG, "ASYNC START");
                         new AsyncTaskSaveDeviceData(googleApiClient,
-                                                    DEVICE_BACKUP_FOLDER_FOLDER,
-                                                    ActivityBackupData.this,
-                                                    TABLE_COST_NAMES_FILE_NAME,
-                                                    REFERENCE_FILE_NAME,
-                                                    TABLE_COST_VALUES_FILE_NAME,
-                                                    statusTextView)
+                                DEVICE_BACKUP_FOLDER_FOLDER,
+                                ActivityBackupData_V2.this,
+                                TABLE_COST_NAMES_FILE_NAME,
+                                REFERENCE_FILE_NAME,
+                                TABLE_COST_VALUES_FILE_NAME,
+                                statusTextView)
                                 .execute();
                     }
                 });
@@ -379,11 +380,11 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
             @Override
             public void onResult(@NonNull Status status) {
                 if (!status.isSuccess()) {
-                    Toast errorDeletingBackupFolderToast = Toast.makeText(ActivityBackupData.this,
+                    Toast errorDeletingBackupFolderToast = Toast.makeText(ActivityBackupData_V2.this,
                             getResources().getString(R.string.abd_errorDeletingBackupFolderToast_string), Toast.LENGTH_LONG);
                     errorDeletingBackupFolderToast.show();
                 } else {
-                    Toast backupFolderDeletedToast = Toast.makeText(ActivityBackupData.this,
+                    Toast backupFolderDeletedToast = Toast.makeText(ActivityBackupData_V2.this,
                             getResources().getString(R.string.abd_backupFolderDeletedToast_string), Toast.LENGTH_SHORT);
                     backupFolderDeletedToast.show();
                 }
@@ -469,7 +470,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
 
                         // Отображаем полученный список резервных копий
                         backupListRecyclerView.setLayoutManager(linearLayoutManager);
-                        backupDataRecyclerViewAdapter = new AdapterActivityBackupDataRecyclerView(ActivityBackupData.this, existingDeviceBackupFolders);
+                        backupDataRecyclerViewAdapter = new AdapterActivityBackupDataRecyclerView(ActivityBackupData_V2.this, existingDeviceBackupFolders);
                         backupDataRecyclerViewAdapter.setClickListener(new AdapterActivityBackupDataRecyclerView.OnItemClickListener() {
                             @Override
                             public void onItemClick(View itemView, int position) {
@@ -501,8 +502,8 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(selectedBackupItem.getMilliseconds());
 
-        AlertDialog.Builder chosenBackupItemDialogBuilder = new AlertDialog.Builder(ActivityBackupData.this);
-        LayoutInflater inflater = LayoutInflater.from(ActivityBackupData.this);
+        AlertDialog.Builder chosenBackupItemDialogBuilder = new AlertDialog.Builder(ActivityBackupData_V2.this);
+        LayoutInflater inflater = LayoutInflater.from(ActivityBackupData_V2.this);
         View dialogView = inflater.inflate(R.layout.edit_cost_value_dialog, null);
         chosenBackupItemDialogBuilder.setView(dialogView);
 
@@ -539,7 +540,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
             public void onClick(View v) {
                 chosenBackupItemDialog.dismiss();
 
-                AlertDialog.Builder restoreFromChosenBackupItemDialogBuilder = new AlertDialog.Builder(ActivityBackupData.this);
+                AlertDialog.Builder restoreFromChosenBackupItemDialogBuilder = new AlertDialog.Builder(ActivityBackupData_V2.this);
                 restoreFromChosenBackupItemDialogBuilder.setTitle(getResources().getString(R.string.abd_restoreFromChosenBackupItemDialogBuilder_Title_string));
                 restoreFromChosenBackupItemDialogBuilder.setMessage(getResources().getString(R.string.abd_restoreFromChosenBackupItemDialogBuilder_Message_string));
                 restoreFromChosenBackupItemDialogBuilder.setPositiveButton(getResources().getString(R.string.abd_restoreFromChosenBackupItemDialogBuilder_continue_button_string), new DialogInterface.OnClickListener() {
@@ -548,7 +549,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
                         backupDataRecyclerViewAdapter.setClickListener(null);
 
                         createBackupDataButton.setEnabled(false);
-                        createBackupDataButton.setTextColor(ContextCompat.getColor(ActivityBackupData.this, R.color.lightGrey));
+                        createBackupDataButton.setTextColor(ContextCompat.getColor(ActivityBackupData_V2.this, R.color.lightGrey));
 
                         arrowBackImageView.setEnabled(false);
 
@@ -570,7 +571,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
             public void onClick(View v) {
                 chosenBackupItemDialog.dismiss();
 
-                AlertDialog.Builder deleteBackupItemDialogBuilder = new AlertDialog.Builder(ActivityBackupData.this);
+                AlertDialog.Builder deleteBackupItemDialogBuilder = new AlertDialog.Builder(ActivityBackupData_V2.this);
                 deleteBackupItemDialogBuilder.setTitle(getResources().getString(R.string.abd_deleteBackupItemDialogBuilder_Title_string));
                 deleteBackupItemDialogBuilder.setMessage(getResources().getString(R.string.abd_deleteBackupItemDialogBuilder_Message_string));
                 deleteBackupItemDialogBuilder.setPositiveButton(getResources().getString(R.string.abd_deleteBackupItemDialogBuilder_delete_button_string), new DialogInterface.OnClickListener() {
@@ -600,7 +601,7 @@ public class ActivityBackupData extends AppCompatActivity implements GoogleApiCl
     private void returnToPreviousActivity() {
         if (asyncTaskRestoreData != null)
             asyncTaskRestoreData.cancel(true);
-        Intent mainActivityWithFragmentsIntent = new Intent(ActivityBackupData.this, ActivityMainWithFragments.class);
+        Intent mainActivityWithFragmentsIntent = new Intent(ActivityBackupData_V2.this, ActivityMainWithFragments.class);
         mainActivityWithFragmentsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(mainActivityWithFragmentsIntent);
     }
