@@ -11,7 +11,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -239,7 +238,7 @@ public class ActivitySmsExpensesReader extends AppCompatActivity implements Load
 
     private void formatSmsData(Cursor c) {
         // Выбираем записи из базы за последние два дня
-        lastEnteredValuesMillisecondsList = costsDB.getLastEnteredMilliseconds(millis);
+        lastEnteredValuesMillisecondsList = costsDB.getLastEnteredValuesByMilliseconds(millis);
 
         for (int i = 0; i < c.getCount(); ++i) {
             Long smsDateInMilliseconds = c.getLong(c.getColumnIndexOrThrow(SMS_DATE));

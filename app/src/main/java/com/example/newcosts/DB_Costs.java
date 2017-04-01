@@ -58,6 +58,7 @@ public class DB_Costs extends SQLiteOpenHelper {
         }
     }
 
+
     @Override
     public void onCreate(SQLiteDatabase db) {
 
@@ -90,7 +91,6 @@ public class DB_Costs extends SQLiteOpenHelper {
                                 " ADD COLUMN " + EXPANSION_COLUMN_1 + " INTEGER";
         db.execSQL(upgradeQuery);
     }
-
 
 
 
@@ -274,12 +274,6 @@ public class DB_Costs extends SQLiteOpenHelper {
 
 
 
-
-
-
-
-
-
     // Возвращает список из ID и названий всех активных статей расходов
     public DataUnitExpenses[] getActiveCostNames_V3() {
         String query = "SELECT " +
@@ -424,7 +418,6 @@ public class DB_Costs extends SQLiteOpenHelper {
 
         try {
             c = db.rawQuery(getCostValueQuery, null);
-
             c.moveToFirst();
             while (!c.isAfterLast()) {
                 sum = sum + c.getDouble(c.getColumnIndex(COST_VALUE));
@@ -618,7 +611,61 @@ public class DB_Costs extends SQLiteOpenHelper {
         return listOfEntries;
     }
 
-    public List<Long> getLastEnteredMilliseconds(long fromMilliseconds) {
+    public List<DataUnitExpenses> getEntriesAfterDateInMilliseconds(long milliseconds, int numberOfEntries) {
+        String getLastEntriesQuery = "SELECT " +
+                ID_N + ", " +
+                DAY + ", " +
+                MONTH + ", " +
+                YEAR + ", " +
+                COST_NAME + ", " +
+                COST_VALUE + ", " +
+                DATE_IN_MILLISECONDS + ", " +
+                TEXT +
+                " FROM " + TABLE_COST_VALUES +
+                " INNER JOIN " + TABLE_COST_NAMES +
+                " ON " + TABLE_COST_VALUES + "." + ID_N_FK + " = " + TABLE_COST_NAMES + "." + ID_N +
+                " WHERE " + DATE_IN_MILLISECONDS + " > " + milliseconds +
+                " ORDER BY " + DATE_IN_MILLISECONDS + " DESC " +
+                " LIMIT " + numberOfEntries;
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = null;
+        List<DataUnitExpenses> listOfEntries = new ArrayList<>();
+
+        try {
+            c = db.rawQuery(getLastEntriesQuery, null);
+            c.moveToFirst();
+
+            while (!c.isAfterLast()) {
+                DataUnitExpenses singleUnit = new DataUnitExpenses();
+
+                singleUnit.setExpenseId_N(c.getInt(c.getColumnIndex(ID_N)));
+                singleUnit.setDay(c.getInt(c.getColumnIndex(DAY)));
+                singleUnit.setMonth(c.getInt(c.getColumnIndex(MONTH)) + 1);
+                singleUnit.setYear(c.getInt(c.getColumnIndex(YEAR)));
+                singleUnit.setExpenseName(c.getString(c.getColumnIndex(COST_NAME)));
+                double costValueDouble = c.getDouble(c.getColumnIndex(COST_VALUE));
+                singleUnit.setExpenseValueDouble(costValueDouble);
+                singleUnit.setExpenseValueString(Constants.formatDigit(costValueDouble));
+                singleUnit.setMilliseconds(c.getLong(c.getColumnIndex(DATE_IN_MILLISECONDS)));
+                singleUnit.setExpenseNoteString(c.getString(c.getColumnIndex(TEXT)));
+
+                listOfEntries.add(singleUnit);
+                c.moveToNext();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
+            if (db != null)
+                db.close();
+        }
+
+        return listOfEntries;
+    }
+
+    public List<Long> getLastEnteredValuesByMilliseconds(long fromMilliseconds) {
         String getLastEntriesQuery = "SELECT " +
                 DATE_IN_MILLISECONDS +
                 " FROM " + TABLE_COST_VALUES +

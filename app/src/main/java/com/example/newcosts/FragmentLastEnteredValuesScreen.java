@@ -23,7 +23,7 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
 
     private Context context;
     private RecyclerView recyclerView;
-    private List<DataUnitExpenses> listOfLastEntries;
+    private List<DataUnitExpenses> lastEntriesList;
     private AdapterLastEnteredValuesRecyclerView lastEnteredValuesFragmentAdapter;
     private int selectedItemPosition = -1;
     private DB_Costs cdb;
@@ -58,30 +58,52 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
 //            @Override
 //            public void valuesLoaded(int callingFragmentCode, List<DataUnitExpenses> data, double overallValue) {
 //                if (callingFragmentCode == Constants.FRAGMENT_LAST_ENTERED_VALUES_SCREEN) {
-//                    listOfLastEntries = data;
+//                    lastEntriesList = data;
 //                    init();
 //                }
 //            }
 //        }).execute();
-        listOfLastEntries = cdb.getLastEntries_V3(100);
+        lastEntriesList = cdb.getLastEntries_V3(10);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         // При нажатии на элемент списка появляется диалоговое окно, из которого можно
         // удалить или изменить выбранную запись
-        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView(listOfLastEntries, context);
+        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView(lastEntriesList, context);
         lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, final int position) {
                 selectedItemPosition = position;
 
-                DialogFragmentEditLastEnteredValues editDialogFragment = DialogFragmentEditLastEnteredValues.newInstance(context, listOfLastEntries.get(position));
+                DialogFragmentEditLastEnteredValues editDialogFragment = DialogFragmentEditLastEnteredValues.newInstance(context, lastEntriesList.get(position));
                 editDialogFragment.setTargetFragment(FragmentLastEnteredValuesScreen.this, Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE);
                 editDialogFragment.show(getFragmentManager(), Constants.EDIT_DIALOG_TAG);
             }
         });
         recyclerView.setAdapter(lastEnteredValuesFragmentAdapter);
+
+        recyclerView.addOnScrollListener(new NEW_EndlessRecyclerOnScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int current_page) {
+                System.out.println("LOAD_MORE");
+                System.out.println(current_page);
+
+                final int lastEntriesListLastElementPosition = lastEntriesList.size() - 1;
+                long lastEntriesListLastElementMilliseconds = lastEntriesList.get(lastEntriesListLastElementPosition).getMilliseconds();
+
+                List<DataUnitExpenses> additionalLastEntriesList = cdb.getEntriesAfterDateInMilliseconds(lastEntriesListLastElementMilliseconds, 10);
+                lastEntriesList.addAll(additionalLastEntriesList);
+
+                recyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        lastEnteredValuesFragmentAdapter.notifyItemInserted(lastEntriesListLastElementPosition);
+                    }
+                });
+            }
+        });
+
         Constants.lastEnteredValuesFragmentDataIsActual(true);
     }
 
@@ -92,13 +114,13 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
 
         // При нажатии на элемент списка появляется диалоговое окно, из которого можно
         // удалить или изменить выбранную запись
-        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView(listOfLastEntries, context);
+        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView(lastEntriesList, context);
         lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, final int position) {
                 selectedItemPosition = position;
 
-                DialogFragmentEditLastEnteredValues editDialogFragment = DialogFragmentEditLastEnteredValues.newInstance(context, listOfLastEntries.get(position));
+                DialogFragmentEditLastEnteredValues editDialogFragment = DialogFragmentEditLastEnteredValues.newInstance(context, lastEntriesList.get(position));
                 editDialogFragment.setTargetFragment(FragmentLastEnteredValuesScreen.this, Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE);
                 editDialogFragment.show(getFragmentManager(), Constants.EDIT_DIALOG_TAG);
             }
@@ -117,10 +139,10 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
             switch (resultCode) {
                 case Constants.DELETE_ITEM:
                     Constants.lastEnteredValuesFragmentDataIsActual(false);
-                    final DataUnitExpenses deletedItem = listOfLastEntries.get(selectedItemPosition);
+                    final DataUnitExpenses deletedItem = lastEntriesList.get(selectedItemPosition);
 
                     // Удаляем выбранный элемент
-                    listOfLastEntries.remove(selectedItemPosition);
+                    lastEntriesList.remove(selectedItemPosition);
                     lastEnteredValuesFragmentAdapter.notifyItemRemoved(selectedItemPosition);
                     lastEnteredValuesFragmentAdapter.notifyDataSetChanged();
 
@@ -136,7 +158,7 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
                             .setAction(getResources().getString(R.string.flev_deleteItemSnackbar_action_cancel_string), new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    listOfLastEntries.add(selectedItemPosition, deletedItem);
+                                    lastEntriesList.add(selectedItemPosition, deletedItem);
                                     lastEnteredValuesFragmentAdapter.notifyItemInserted(selectedItemPosition);
                                     lastEnteredValuesFragmentAdapter.notifyDataSetChanged();
                                     recyclerView.scrollToPosition(selectedItemPosition);
@@ -159,7 +181,7 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
                     break;
                 case Constants.EDIT_ITEM:
                     Constants.lastEnteredValuesFragmentDataIsActual(false);
-                    DataUnitExpenses editedItem = listOfLastEntries.get(selectedItemPosition);
+                    DataUnitExpenses editedItem = lastEntriesList.get(selectedItemPosition);
                     Intent inputDataActivityIntent = new Intent(context, ActivityInputData.class);
                     inputDataActivityIntent.putExtra(Constants.EXPENSE_DATA_UNIT_LABEL, editedItem);
                     inputDataActivityIntent.putExtra(Constants.ACTIVITY_INPUT_DATA_MODE, Constants.EDIT_MODE);
