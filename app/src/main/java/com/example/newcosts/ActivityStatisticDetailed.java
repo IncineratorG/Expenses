@@ -3,7 +3,6 @@ package com.example.newcosts;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -98,7 +97,7 @@ public class ActivityStatisticDetailed extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             Intent statisticCostTypeDetailedIntent = new Intent(ActivityStatisticDetailed.this, ActivityStatisticExpenseTypeDetailed.class);
                             statisticCostTypeDetailedIntent.putExtra(Constants.STATISTIC_DETAILED_ACTIVITY_MODE, MODE);
-                            statisticCostTypeDetailedIntent.putExtra(Constants.DATA_FOR_STATISTIC_COST_TYPE_DETAILED_ACTIVITY, expensesDataUnitList.get(position));
+                            statisticCostTypeDetailedIntent.putExtra(Constants.DATA_FOR_STATISTIC_EXPENSE_TYPE_DETAILED_ACTIVITY, expensesDataUnitList.get(position));
                             statisticCostTypeDetailedIntent.putExtra(Constants.DATA_FOR_STATISTIC_DETAILED_ACTIVITY, finalChosenMonthDataUnit);
                             statisticCostTypeDetailedIntent.putExtra(Constants.PREVIOUS_ACTIVITY, Constants.STATISTIC_DETAILED_ACTIVITY);
                             startActivity(statisticCostTypeDetailedIntent);
@@ -163,7 +162,7 @@ public class ActivityStatisticDetailed extends AppCompatActivity {
                         statisticCostTypeDetailedIntent.putExtra(Constants.STATISTIC_DETAILED_ACTIVITY_MODE, MODE);
                         statisticCostTypeDetailedIntent.putExtra(Constants.STARTING_DATE_LABEL, startingDateDataUnit);
                         statisticCostTypeDetailedIntent.putExtra(Constants.ENDING_DATE_LABEL, endingDateDataUnit);
-                        statisticCostTypeDetailedIntent.putExtra(Constants.DATA_FOR_STATISTIC_COST_TYPE_DETAILED_ACTIVITY, expensesDataUnitList.get(position));
+                        statisticCostTypeDetailedIntent.putExtra(Constants.DATA_FOR_STATISTIC_EXPENSE_TYPE_DETAILED_ACTIVITY, expensesDataUnitList.get(position));
                         statisticCostTypeDetailedIntent.putExtra(Constants.PREVIOUS_ACTIVITY, Constants.STATISTIC_DETAILED_ACTIVITY);
                         startActivity(statisticCostTypeDetailedIntent);
                     }

@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -69,7 +68,7 @@ public class ActivityStatisticExpenseTypeDetailed extends AppCompatActivity {
             return;
 
         STATISTIC_DETAILED_ACTIVITY_MODE = expenseDataBundle.getInt(Constants.STATISTIC_DETAILED_ACTIVITY_MODE);
-        DataUnitExpenses chosenExpenseTypeDataUnit = expenseDataBundle.getParcelable(Constants.DATA_FOR_STATISTIC_COST_TYPE_DETAILED_ACTIVITY);
+        DataUnitExpenses chosenExpenseTypeDataUnit = expenseDataBundle.getParcelable(Constants.DATA_FOR_STATISTIC_EXPENSE_TYPE_DETAILED_ACTIVITY);
 
         // Отображаем название выбранной категории
         expenseNameTextView.setText(chosenExpenseTypeDataUnit.getExpenseName());

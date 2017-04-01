@@ -92,7 +92,7 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
                 final int lastEntriesListLastElementPosition = lastEntriesList.size() - 1;
                 long lastEntriesListLastElementMilliseconds = lastEntriesList.get(lastEntriesListLastElementPosition).getMilliseconds();
 
-                final List<DataUnitExpenses> additionalLastEntriesList = cdb.getEntriesBeforeDateInMilliseconds(lastEntriesListLastElementMilliseconds, 7);
+                final List<DataUnitExpenses> additionalLastEntriesList = cdb.getEntriesBeforeDateInMilliseconds(lastEntriesListLastElementMilliseconds, 10);
                 lastEntriesList.addAll(additionalLastEntriesList);
 
                 recyclerView.post(new Runnable() {

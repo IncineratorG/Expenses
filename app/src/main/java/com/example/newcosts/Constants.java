@@ -74,7 +74,7 @@ public class Constants {
     public static final int STATISTIC_DETAILED_ACTIVITY_MODE_BY_MONTHS = 2111;
     public static final int STATISTIC_DETAILED_ACTIVITY_MODE_CUSTOM_DATE = 2112;
     public static final String DATA_FOR_STATISTIC_DETAILED_ACTIVITY = "for_statistic_detailed_activity";
-    public static final String DATA_FOR_STATISTIC_COST_TYPE_DETAILED_ACTIVITY = "for_cost_type_detailed_activity";
+    public static final String DATA_FOR_STATISTIC_EXPENSE_TYPE_DETAILED_ACTIVITY = "for_cost_type_detailed_activity";
 
     public static final String BACKUP_FOLDER_NAME_DELIMITER = "@#@";
 

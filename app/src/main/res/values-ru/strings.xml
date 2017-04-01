@@ -57,7 +57,7 @@
     <string name="abd_deleteButton_string">Удалить</string>
     <string name="abd_errorDeletingBackupFolderToast_string">При удалении возникла проблема</string>
     <string name="abd_restoreButton_string">Восстановить</string>
-    <string name="abd_restoreFromChosenBackupItemDialogBuilder_Message_string">Все записи рвсходов будут заменены записями из выбранной резервной копии.</string>
+    <string name="abd_restoreFromChosenBackupItemDialogBuilder_Message_string">Все записи расходов будут заменены записями из выбранной резервной копии.</string>
     <string name="abd_restoreFromChosenBackupItemDialogBuilder_Title_string">Внимние!</string>
     <string name="abd_restoreFromChosenBackupItemDialogBuilder_cancel_button_string">Отмена</string>
     <string name="abd_restoreFromChosenBackupItemDialogBuilder_continue_button_string">Продолжить</string>
