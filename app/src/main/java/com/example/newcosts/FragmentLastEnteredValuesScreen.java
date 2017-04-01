@@ -92,13 +92,14 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
                 final int lastEntriesListLastElementPosition = lastEntriesList.size() - 1;
                 long lastEntriesListLastElementMilliseconds = lastEntriesList.get(lastEntriesListLastElementPosition).getMilliseconds();
 
-                List<DataUnitExpenses> additionalLastEntriesList = cdb.getEntriesAfterDateInMilliseconds(lastEntriesListLastElementMilliseconds, 10);
+                final List<DataUnitExpenses> additionalLastEntriesList = cdb.getEntriesBeforeDateInMilliseconds(lastEntriesListLastElementMilliseconds, 7);
                 lastEntriesList.addAll(additionalLastEntriesList);
 
                 recyclerView.post(new Runnable() {
                     @Override
                     public void run() {
-                        lastEnteredValuesFragmentAdapter.notifyItemInserted(lastEntriesListLastElementPosition);
+//                        lastEnteredValuesFragmentAdapter.notifyItemInserted(lastEntriesListLastElementPosition);
+                        lastEnteredValuesFragmentAdapter.notifyItemRangeInserted(lastEntriesListLastElementPosition, additionalLastEntriesList.size());
                     }
                 });
             }

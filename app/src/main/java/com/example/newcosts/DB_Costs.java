@@ -611,7 +611,8 @@ public class DB_Costs extends SQLiteOpenHelper {
         return listOfEntries;
     }
 
-    public List<DataUnitExpenses> getEntriesAfterDateInMilliseconds(long milliseconds, int numberOfEntries) {
+    // Возвращает заданное число ('numberOfEntries') записей (сумм расходов), занесённых до 'milliseconds'
+    public List<DataUnitExpenses> getEntriesBeforeDateInMilliseconds(long milliseconds, int numberOfEntries) {
         String getLastEntriesQuery = "SELECT " +
                 ID_N + ", " +
                 DAY + ", " +
@@ -624,7 +625,7 @@ public class DB_Costs extends SQLiteOpenHelper {
                 " FROM " + TABLE_COST_VALUES +
                 " INNER JOIN " + TABLE_COST_NAMES +
                 " ON " + TABLE_COST_VALUES + "." + ID_N_FK + " = " + TABLE_COST_NAMES + "." + ID_N +
-                " WHERE " + DATE_IN_MILLISECONDS + " > " + milliseconds +
+                " WHERE " + DATE_IN_MILLISECONDS + " < " + milliseconds +
                 " ORDER BY " + DATE_IN_MILLISECONDS + " DESC " +
                 " LIMIT " + numberOfEntries;
 
