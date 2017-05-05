@@ -1,6 +1,7 @@
 package com.example.newcosts;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -54,6 +55,11 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
         AsyncTaskRestoreData.DataRestoredCallback {
 
 
+    // ==========================================================================
+    // Пробую выводить все сообщения в диалоговом окне (15.04.2017 - не доделано)
+    // ==========================================================================
+
+
     private static final String TAG = "tag";
     private GoogleApiClient googleApiClient;
     private static final int REQUEST_CODE_RESOLUTION = 123;
@@ -89,6 +95,8 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
 
     private boolean chooseAccountDialogShown = false;
     private boolean connectedToGoogleDrive = false;
+
+    private ProgressDialog progressDialog;
 
 
 
@@ -138,7 +146,6 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
             @Override
             public void onClick(View v) {
                 selectGoogleAccount();
-//                deleteAllBackupData();
             }
         });
 
@@ -152,9 +159,18 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
                     .build();
         }
 
-//        currentDefaultString = "Нет соединения с сетью";
         statusTextView = (TextView) findViewById(R.id.backup_data_status_textview);
         statusTextView.setText(getResources().getString(R.string.abd_statusTextView_noConnection_string));
+
+        // Создаём диалоговое окно, отображающее процесс соединения
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                System.out.println("CLICK!");
+            }
+        });
     }
 
     @Override
@@ -162,7 +178,6 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
         super.onResume();
 
         if (!hasNetworkConnection()) {
-//            currentDefaultString = "Нет соединения с сетью";
             statusTextView.setText(getResources().getString(R.string.abd_statusTextView_noConnection_string));
         } else
             connectToGoogleDrive();
@@ -177,7 +192,7 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
         disconnectFromGoogleDrive();
     }
 
-// ===========================================================================
+    // ===========================================================================
 
 
     // ============================ MY FUNCTIONS =================================
@@ -222,6 +237,12 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
     private void connectToGoogleDrive() {
         if (googleApiClient != null) {
             statusTextView.setText(getResources().getString(R.string.abd_statusTextView_acquiringConnection_string));
+
+            if (progressDialog != null) {
+                progressDialog.setMessage(getResources().getString(R.string.abd_statusTextView_acquiringConnection_string));
+                progressDialog.show();
+            }
+
             googleApiClient.connect();
         }
     }
@@ -403,6 +424,12 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
 
         statusTextView.setText(getResources().getString(R.string.abd_statusTextView_searchBackupData_string));
 
+        if (progressDialog != null) {
+            progressDialog.setMessage(getResources().getString(R.string.abd_statusTextView_searchBackupData_string));
+            if (!progressDialog.isShowing())
+                progressDialog.show();
+        }
+
         // Ищем папку с сохранёнными данными
         Query searchRootBackupFolder = new Query.Builder()
                 .addFilter(Filters.eq(SearchableField.TITLE, ROOT_BACKUP_FOLDER_NAME))
@@ -413,6 +440,11 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
                 if (!metadataBufferResult.getStatus().isSuccess()) {
                     Log.i(TAG, "ERROR TRYING TO FIND ROOT BACKUP FOLDER");
                     statusTextView.setText("ERROR TRYING TO FIND ROOT BACKUP FOLDER");
+
+                    if (progressDialog != null)
+                        if (progressDialog.isShowing())
+                            progressDialog.dismiss();
+
                     return;
                 }
 
@@ -422,8 +454,12 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
                 // Если папка не найдена - прекращаем обработку
                 if (metadataBuffer.getCount() <= 0) {
                     Log.i(TAG, "NO BACKUP DATA FOUND");
-//                    currentDefaultString = "Данные резервной копии не найдены";
                     statusTextView.setText(getResources().getString(R.string.abd_statusTextView_noBackupDataFound_string));
+
+                    if (progressDialog != null)
+                        if (progressDialog.isShowing())
+                            progressDialog.dismiss();
+
                     createBackupDataButton.setEnabled(true);
                     createBackupDataButton.setTextColor(getResources().getColorStateList(R.color.button_text_color));
                     return;
@@ -443,8 +479,6 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
                 // Если папка с резервной копией найдена - ищем подпапки
                 // резервной копии внутри этой папки
                 Log.i(TAG, "ROOT BACKUP FOLDER FOUND");
-//                currentDefaultString = "Папка резервной копии найдена";
-//                statusTextView.setText("Данные резервной копии найдены");
                 ROOT_BACKUP_FOLDER_FOLDER = ROOT_BACKUP_FOLDER_ID.asDriveFolder();
                 ROOT_BACKUP_FOLDER_FOLDER.listChildren(googleApiClient).setResultCallback(new ResultCallback<DriveApi.MetadataBufferResult>() {
                     @Override
@@ -452,6 +486,11 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
                         if (!metadataBufferResult.getStatus().isSuccess()) {
                             Log.i(TAG, "ERROR LISTING ROOT BACKUP FOLDER CHILDREN");
                             statusTextView.setText("Ошибка поиска файлов резервной копии");
+
+                            if (progressDialog != null)
+                                if (progressDialog.isShowing())
+                                    progressDialog.dismiss();
+
                             return;
                         }
 
@@ -487,6 +526,10 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
                         } else {
                             statusTextView.setText(getResources().getString(R.string.abd_statusTextView_noBackupDataFound_string));
                         }
+
+                        if (progressDialog != null)
+                            if (progressDialog.isShowing())
+                                progressDialog.dismiss();
                     }
                 });
 
@@ -599,6 +642,11 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
 
     // Возвращаемся к предыдущему экрану
     private void returnToPreviousActivity() {
+
+        if (progressDialog != null)
+            if (progressDialog.isShowing())
+                progressDialog.dismiss();
+
         if (asyncTaskRestoreData != null)
             asyncTaskRestoreData.cancel(true);
         Intent mainActivityWithFragmentsIntent = new Intent(ActivityBackupData_V2.this, ActivityMainWithFragments.class);
@@ -616,8 +664,13 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
     public void onConnected(@Nullable Bundle bundle) {
         chooseAccountDialogShown = false;
         statusTextView.setText(getResources().getString(R.string.abd_statusTextView_connectionAcquired_string));
-//        createBackupDataButton.setEnabled(true);
-//        createBackupDataButton.setTextColor(getResources().getColorStateList(R.color.button_text_color));
+
+        if (progressDialog != null) {
+            progressDialog.setMessage(getResources().getString(R.string.abd_statusTextView_connectionAcquired_string));
+            if (!progressDialog.isShowing())
+                progressDialog.show();
+        }
+
         Log.i(TAG, "CONNECTED");
         Log.i(TAG, "TRYING TO FIND ROOT BACKUP FOLDER");
 
@@ -665,7 +718,8 @@ public class ActivityBackupData_V2 extends AppCompatActivity implements GoogleAp
 
             case REQUEST_CODE_RESOLUTION:
 
-                System.out.println(resultCode);
+
+                System.out.println("onActivityResult()" + resultCode);
 
                 break;
 

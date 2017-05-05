@@ -71,7 +71,7 @@ public class ActivitySmsExpensesReader extends AppCompatActivity implements Load
         smsReaderRecyclerView = (RecyclerView) findViewById(R.id.activity_sms_expenses_reader_recycler_view);
         smsReaderRecyclerView.setLayoutManager(linearLayoutManager);
 
-        // Выбираем сообщения за послегие два дня
+        // Выбираем сообщения за последние два дня
         Calendar calendar = new GregorianCalendar();
         calendar.add(Calendar.DAY_OF_MONTH, -3);
         millis = calendar.getTimeInMillis();

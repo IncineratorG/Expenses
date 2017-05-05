@@ -366,7 +366,8 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
         if (MODE == Constants.EDIT_MODE) {
             cdb = DB_Costs.getInstance(this);
             cdb.removeCostValue(editItemMilliseconds);
-            cdb.addCostInMilliseconds(selectedDataUnit.getExpenseId_N(), inputValueString, selectedDataUnit.getMilliseconds(), inputNoteString);
+            Constants.EDITED_ITEM_MILLISECONDS = cdb.addCostInMilliseconds(selectedDataUnit.getExpenseId_N(), inputValueString,
+                                                                            selectedDataUnit.getMilliseconds(), inputNoteString);
             returnToPreviousActivity();
         }
 

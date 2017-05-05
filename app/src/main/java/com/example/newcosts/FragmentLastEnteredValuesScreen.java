@@ -23,10 +23,11 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
 
     private Context context;
     private RecyclerView recyclerView;
-    private List<DataUnitExpenses> lastEntriesList;
+    private List<DataUnitExpenses> listOfLastEntries;
     private AdapterLastEnteredValuesRecyclerView lastEnteredValuesFragmentAdapter;
     private int selectedItemPosition = -1;
     private DB_Costs cdb;
+
     private Snackbar deleteItemSnackbar;
 
 
@@ -52,83 +53,67 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
         if (Constants.stringsAreNull())
             Constants.loadStrings(context);
 
-        // Получаем последние введённые значения
         cdb = DB_Costs.getInstance(context);
-//        new AsyncTaskLoadMainActivityFragmentsData(cdb, Constants.FRAGMENT_LAST_ENTERED_VALUES_SCREEN, new CallbackValuesLoaded() {
-//            @Override
-//            public void valuesLoaded(int callingFragmentCode, List<DataUnitExpenses> data, double overallValue) {
-//                if (callingFragmentCode == Constants.FRAGMENT_LAST_ENTERED_VALUES_SCREEN) {
-//                    lastEntriesList = data;
-//                    init();
-//                }
-//            }
-//        }).execute();
-        lastEntriesList = cdb.getLastEntries_V3(10);
+
+        // Получаем последние введённые значения
+        final int numberOfEntries = 50;
+
+        // Если не нужно переходить к редактируемому элементу - загружаем определённое количество
+        // последних введённых значений.
+        // Иначе загружаем все значения, которые старше (внесены после) редактируемого элемента.
+        if (Constants.EDITED_ITEM_MILLISECONDS == -1) {
+            listOfLastEntries = cdb.getLastEntries_V3(numberOfEntries);
+        }
+        else {
+            listOfLastEntries = cdb.getEntriesAfterDateInMilliseconds(Constants.EDITED_ITEM_MILLISECONDS);
+        }
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         // При нажатии на элемент списка появляется диалоговое окно, из которого можно
         // удалить или изменить выбранную запись
-        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView(lastEntriesList, context);
+        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView(listOfLastEntries, context, Constants.EDITED_ITEM_MILLISECONDS);
         lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, final int position) {
                 selectedItemPosition = position;
 
-                DialogFragmentEditLastEnteredValues editDialogFragment = DialogFragmentEditLastEnteredValues.newInstance(context, lastEntriesList.get(position));
+                DialogFragmentEditLastEnteredValues editDialogFragment = DialogFragmentEditLastEnteredValues.newInstance(context, listOfLastEntries.get(position));
                 editDialogFragment.setTargetFragment(FragmentLastEnteredValuesScreen.this, Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE);
                 editDialogFragment.show(getFragmentManager(), Constants.EDIT_DIALOG_TAG);
             }
         });
         recyclerView.setAdapter(lastEnteredValuesFragmentAdapter);
 
-        recyclerView.addOnScrollListener(new NEW_EndlessRecyclerOnScrollListener(linearLayoutManager) {
+        recyclerView.addOnScrollListener(new OnScrollListenerLastEnteredValuesRecyclerView(linearLayoutManager) {
             @Override
             public void onLoadMore(int current_page) {
-                System.out.println("LOAD_MORE");
-                System.out.println(current_page);
+                final int listOfLastEntriesLastElementPosition = listOfLastEntries.size() - 1;
+                long listOfLastEntriesLastElementMilliseconds = listOfLastEntries.get(listOfLastEntriesLastElementPosition).getMilliseconds();
 
-                final int lastEntriesListLastElementPosition = lastEntriesList.size() - 1;
-                long lastEntriesListLastElementMilliseconds = lastEntriesList.get(lastEntriesListLastElementPosition).getMilliseconds();
-
-                final List<DataUnitExpenses> additionalLastEntriesList = cdb.getEntriesBeforeDateInMilliseconds(lastEntriesListLastElementMilliseconds, 10);
-                lastEntriesList.addAll(additionalLastEntriesList);
+                // Загружаем дополнительно 'numberOfEntries' старых записей и добавляем
+                // их к списку последних введённых значений
+                final List<DataUnitExpenses> additionalLastEntriesList = cdb.getEntriesBeforeDateInMilliseconds(listOfLastEntriesLastElementMilliseconds, numberOfEntries);
+                listOfLastEntries.addAll(additionalLastEntriesList);
 
                 recyclerView.post(new Runnable() {
                     @Override
                     public void run() {
-//                        lastEnteredValuesFragmentAdapter.notifyItemInserted(lastEntriesListLastElementPosition);
-                        lastEnteredValuesFragmentAdapter.notifyItemRangeInserted(lastEntriesListLastElementPosition, additionalLastEntriesList.size());
+                        lastEnteredValuesFragmentAdapter.notifyItemRangeInserted(listOfLastEntriesLastElementPosition, additionalLastEntriesList.size());
                     }
                 });
             }
         });
 
+        if (Constants.EDITED_ITEM_MILLISECONDS != -1) {
+            recyclerView.scrollToPosition(findItemPositionByMilliseconds(Constants.EDITED_ITEM_MILLISECONDS));
+            Constants.EDITED_ITEM_MILLISECONDS = -1;
+        }
+
         Constants.lastEnteredValuesFragmentDataIsActual(true);
     }
 
-
-    private void init() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        recyclerView.setLayoutManager(linearLayoutManager);
-
-        // При нажатии на элемент списка появляется диалоговое окно, из которого можно
-        // удалить или изменить выбранную запись
-        lastEnteredValuesFragmentAdapter = new AdapterLastEnteredValuesRecyclerView(lastEntriesList, context);
-        lastEnteredValuesFragmentAdapter.setClickListener(new AdapterLastEnteredValuesRecyclerView.OnItemClickListener() {
-            @Override
-            public void onItemClick(View itemView, final int position) {
-                selectedItemPosition = position;
-
-                DialogFragmentEditLastEnteredValues editDialogFragment = DialogFragmentEditLastEnteredValues.newInstance(context, lastEntriesList.get(position));
-                editDialogFragment.setTargetFragment(FragmentLastEnteredValuesScreen.this, Constants.EDIT_EXPENSE_RECORD_DIALOG_REQUEST_CODE);
-                editDialogFragment.show(getFragmentManager(), Constants.EDIT_DIALOG_TAG);
-            }
-        });
-        recyclerView.setAdapter(lastEnteredValuesFragmentAdapter);
-        Constants.lastEnteredValuesFragmentDataIsActual(true);
-    }
 
     // Обработка результата нажатия кнопок в диалоговом окне, отображающемся
     // при нажатии на элемент списка последних введённых значений
@@ -140,10 +125,10 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
             switch (resultCode) {
                 case Constants.DELETE_ITEM:
                     Constants.lastEnteredValuesFragmentDataIsActual(false);
-                    final DataUnitExpenses deletedItem = lastEntriesList.get(selectedItemPosition);
+                    final DataUnitExpenses deletedItem = listOfLastEntries.get(selectedItemPosition);
 
                     // Удаляем выбранный элемент
-                    lastEntriesList.remove(selectedItemPosition);
+                    listOfLastEntries.remove(selectedItemPosition);
                     lastEnteredValuesFragmentAdapter.notifyItemRemoved(selectedItemPosition);
                     lastEnteredValuesFragmentAdapter.notifyDataSetChanged();
 
@@ -159,7 +144,7 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
                             .setAction(getResources().getString(R.string.flev_deleteItemSnackbar_action_cancel_string), new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    lastEntriesList.add(selectedItemPosition, deletedItem);
+                                    listOfLastEntries.add(selectedItemPosition, deletedItem);
                                     lastEnteredValuesFragmentAdapter.notifyItemInserted(selectedItemPosition);
                                     lastEnteredValuesFragmentAdapter.notifyDataSetChanged();
                                     recyclerView.scrollToPosition(selectedItemPosition);
@@ -182,7 +167,8 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
                     break;
                 case Constants.EDIT_ITEM:
                     Constants.lastEnteredValuesFragmentDataIsActual(false);
-                    DataUnitExpenses editedItem = lastEntriesList.get(selectedItemPosition);
+                    Constants.EDITED_ITEM_MILLISECONDS = listOfLastEntries.get(selectedItemPosition).getMilliseconds();
+                    DataUnitExpenses editedItem = listOfLastEntries.get(selectedItemPosition);
                     Intent inputDataActivityIntent = new Intent(context, ActivityInputData.class);
                     inputDataActivityIntent.putExtra(Constants.EXPENSE_DATA_UNIT_LABEL, editedItem);
                     inputDataActivityIntent.putExtra(Constants.ACTIVITY_INPUT_DATA_MODE, Constants.EDIT_MODE);
@@ -200,5 +186,15 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
 
         if (deleteItemSnackbar != null)
             deleteItemSnackbar.dismiss();
+    }
+
+    private int findItemPositionByMilliseconds(long milliseconds) {
+        for (int i = 0; i < listOfLastEntries.size(); ++i) {
+            if (listOfLastEntries.get(i).getMilliseconds() == milliseconds) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 }

@@ -104,6 +104,8 @@ public class Constants {
             mainActivityFragmentsDataIsActual = false;
     }
 
+    public static long EDITED_ITEM_MILLISECONDS = -1;
+
 
     public static String formatDigit(double d) {
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.UK);
