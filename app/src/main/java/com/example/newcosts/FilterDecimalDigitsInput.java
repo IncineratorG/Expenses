@@ -18,7 +18,7 @@ public class FilterDecimalDigitsInput implements InputFilter {
 
     @Override
     public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-        if (dest.length() > 16)
+        if (dest.length() > 14)
             return "";
 
         Matcher matcher = mPattern.matcher(dest);
