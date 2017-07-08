@@ -114,7 +114,15 @@ public class Constants {
         format.applyPattern("#.##");
         format.setRoundingMode(RoundingMode.CEILING);
 
-        return format.format(d);
+        String formattedDigitString = format.format(d);
+        if (formattedDigitString.contains(".")) {
+            String digitsAfterDotString = formattedDigitString.substring(formattedDigitString.indexOf(".") + 1);
+
+            if (digitsAfterDotString.length() == 1)
+                formattedDigitString = formattedDigitString + "0";
+        }
+
+        return formattedDigitString;
     }
 
 

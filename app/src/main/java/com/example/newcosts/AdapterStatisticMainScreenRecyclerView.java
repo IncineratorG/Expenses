@@ -55,35 +55,87 @@ public class AdapterStatisticMainScreenRecyclerView extends RecyclerView.Adapter
         }
         else
         {
-            holder.dateLayout.setVisibility(View.VISIBLE);
-            holder.yearTextView.setText(data.get(position).getYear() + context.getResources().getString(R.string.asmsrv_yearTextView_string));
-
-            // Получаем величину расходов за год
-            double overallExpenseValueForYear = data.get(position).getExpenseValueDouble();
-            int i = position + 1;
-            int count = 1;
-            while (i < data.size() && data.get(i).getYear() == data.get(i - 1).getYear())
-            {
-                overallExpenseValueForYear = overallExpenseValueForYear + data.get(i).getExpenseValueDouble();
-                ++i;
-                ++count;
-            }
-
-            // Получаем величину расходов в месяц
-            double expenseValuePerMonth = overallExpenseValueForYear / count;
-
-            holder.perMonthValueTextView.setText(Constants.formatDigit(expenseValuePerMonth) + " " +
-                    context.getResources().getString(R.string.rur_string) +
-                    context.getResources().getString(R.string.dot_sign_string) + "/" +
-                    context.getResources().getString(R.string.asmsrv_perMonthValueTextView_string) +
-                    context.getResources().getString(R.string.dot_sign_string));
-            holder.yearValueTextView.setText(Constants.formatDigit(overallExpenseValueForYear) + " " +
-                    context.getResources().getString(R.string.rur_string) +
-                    context.getResources().getString(R.string.dot_sign_string));
+            calculateTotalExpenseValuesForYear(holder, position);
+//            holder.dateLayout.setVisibility(View.VISIBLE);
+//            holder.yearTextView.setText(data.get(position).getYear() + context.getResources().getString(R.string.asmsrv_yearTextView_string));
+//
+//            // Получаем величину расходов за год
+//            double overallExpenseValueForYear = data.get(position).getExpenseValueDouble();
+//            int i = position + 1;
+//            int count = 1;
+//            while (i < data.size() && data.get(i).getYear() == data.get(i - 1).getYear())
+//            {
+//                overallExpenseValueForYear = overallExpenseValueForYear + data.get(i).getExpenseValueDouble();
+//                ++i;
+//                ++count;
+//            }
+//
+//            // Получаем величину расходов в месяц
+//            double expenseValuePerMonth = overallExpenseValueForYear / count;
+//
+//            holder.perMonthValueTextView.setText(Constants.formatDigit(expenseValuePerMonth) + " " +
+//                    context.getResources().getString(R.string.rur_string) +
+//                    context.getResources().getString(R.string.dot_sign_string) + "/" +
+//                    context.getResources().getString(R.string.asmsrv_perMonthValueTextView_string) +
+//                    context.getResources().getString(R.string.dot_sign_string));
+//            holder.yearValueTextView.setText(Constants.formatDigit(overallExpenseValueForYear) + " " +
+//                    context.getResources().getString(R.string.rur_string) +
+//                    context.getResources().getString(R.string.dot_sign_string));
         }
 
         holder.expensesMonthTextView.setText(Constants.MONTH_NAMES[data.get(position).getMonth()]);
         holder.expensesValueTextView.setText(data.get(position).getExpenseValueString() + " " +
+                context.getResources().getString(R.string.rur_string) +
+                context.getResources().getString(R.string.dot_sign_string));
+    }
+
+    // Получаем величину расходов за один год
+    private void calculateTotalExpenseValuesForYear(FragmentStatisticMainScreenViewHolder holder, int position) {
+        holder.dateLayout.setVisibility(View.VISIBLE);
+        holder.yearTextView.setText(data.get(position).getYear() + context.getResources().getString(R.string.asmsrv_yearTextView_string));
+
+        double overallExpenseValueForYear = data.get(position).getExpenseValueDouble();
+        int i = position + 1;
+        int count = 1;
+
+        // Получаем сумму расходов за текущий месяц
+        double expensesForCurrentMonth = 0.0;
+        boolean hasExpensesForCurrentMonth = false;
+        if (data.get(position).getYear() == (int) calendar.get(Calendar.YEAR) &&
+                data.get(position).getMonth() == (int) calendar.get(Calendar.MONTH))
+        {
+            expensesForCurrentMonth = data.get(position).getExpenseValueDouble();
+            hasExpensesForCurrentMonth = true;
+        }
+
+        // Получаем сумму расходов за все месяцы в году
+        while (i < data.size() && data.get(i).getYear() == data.get(i - 1).getYear())
+        {
+            overallExpenseValueForYear = overallExpenseValueForYear + data.get(i).getExpenseValueDouble();
+            ++i;
+            count = count + 1;
+        }
+
+        // Вычитаем сумму расходов за текущий месяц из общей суммы расходов за текущий год
+        if (hasExpensesForCurrentMonth)
+            count = count - 1;
+
+        // Получаем величину расходов в месяц
+        double expenseValuePerMonth = 0.0;
+        if (count == 0)
+            expenseValuePerMonth = expensesForCurrentMonth;
+        else
+            expenseValuePerMonth = (overallExpenseValueForYear - expensesForCurrentMonth) / count +
+                    expensesForCurrentMonth / calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+
+
+        holder.perMonthValueTextView.setText(Constants.formatDigit(expenseValuePerMonth) + " " +
+                context.getResources().getString(R.string.rur_string) +
+                context.getResources().getString(R.string.dot_sign_string) + "/" +
+                context.getResources().getString(R.string.asmsrv_perMonthValueTextView_string) +
+                context.getResources().getString(R.string.dot_sign_string));
+        holder.yearValueTextView.setText(Constants.formatDigit(overallExpenseValueForYear) + " " +
                 context.getResources().getString(R.string.rur_string) +
                 context.getResources().getString(R.string.dot_sign_string));
     }

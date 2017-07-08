@@ -58,6 +58,18 @@
     <!-- ======================================================================================= -->
 
 
+    <!-- =========================== ACTIVITY_SMS_EXPENSES_READER ============================== -->
+    <!-- sms_reader_dialog.xml-->
+    <string name="sms_reader_dialog_category_string">Category</string>
+    <string name="sms_reader_dialog_value_string">Value</string>
+    <string name="sms_reader_dialog_hint_text_string">Note</string>
+    <string name="sms_reader_dialog_save_button_string">Save</string>
+    <string name="sms_reader_dialog_cancel_button_string">Cancel</string>
+
+    <!-- sms_reader_dialog_spinner_single_item.java -->
+    <!-- ======================================================================================= -->
+
+
     <!-- =============================== ACTIVITY_INPUT_DATA =================================== -->
     <!-- activity_input_data.xml-->
     <string name="activity_input_data_currency_textview_string">RUB.</string>

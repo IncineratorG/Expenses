@@ -42,10 +42,11 @@
             android:layout_gravity="end"
             android:background="@drawable/activity_input_data_buttons_style"
             android:clickable="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_width="36dp"
-            android:layout_height="36dp" />
+            android:layout_height="36dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
         <ImageView
             app:srcCompat="@drawable/ic_backup_white_24dp"

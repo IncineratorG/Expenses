@@ -166,4 +166,9 @@
     <string name="usd_string">usd</string>
     <string name="flev_today_string">Сегодня</string>
     <string name="flev_yesterday_string">Вчера</string>
+    <string name="sms_reader_dialog_cancel_button_string">Отмена</string>
+    <string name="sms_reader_dialog_category_string">Категория</string>
+    <string name="sms_reader_dialog_hint_text_string">Заметка</string>
+    <string name="sms_reader_dialog_save_button_string">Сохранить</string>
+    <string name="sms_reader_dialog_value_string">Сумма</string>
 </resources>

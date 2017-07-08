@@ -45,10 +45,10 @@
         android:paddingStart="5dp">
 
         <TextView
-            android:text="Категория"
+            android:id="@+id/sms_reader_dialog_expense_type_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/sms_reader_dialog_expense_type_textview"
+            android:text="@string/sms_reader_dialog_category_string"
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textSize="24sp"
             android:textStyle="normal|bold" />
@@ -82,10 +82,10 @@
         android:paddingStart="5dp">
 
         <TextView
-            android:text="Сумма, руб."
+            android:id="@+id/sms_reader_dialog_expense_value_label_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/sms_reader_dialog_expense_value_label_textview"
+            android:text="@string/sms_reader_dialog_value_string"
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textSize="24sp"
             android:textStyle="normal|bold" />
@@ -126,20 +126,20 @@
         android:padding="5dp">
 
         <EditText
+            android:id="@+id/sms_reader_dialog_expense_note_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:ems="10"
-            android:id="@+id/sms_reader_dialog_expense_note_edittext"
-            android:hint="Заметка"
             android:background="@null"
+            android:ems="10"
             android:gravity="center_vertical|center"
-            android:paddingTop="10dp"
+            android:hint="@string/sms_reader_dialog_hint_text_string"
+            android:inputType="textPersonName"
             android:paddingBottom="5dp"
             android:paddingEnd="5dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            android:paddingStart="5dp" />
+            android:paddingStart="5dp"
+            android:paddingTop="10dp" />
 
     </LinearLayout>
 
@@ -161,12 +161,12 @@
         android:layout_below="@+id/sms_reader_dialog_expense_note_divider">
 
         <Button
-            android:text="@string/edit_costs_save"
+            android:id="@+id/sms_reader_dialog_ok_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/sms_reader_dialog_ok_button"
             android:layout_weight="1"
             android:background="@drawable/keyboard_buttons_custom"
+            android:text="@string/sms_reader_dialog_save_button_string"
             android:textColor="@drawable/button_text_color_black" />
 
         <LinearLayout
@@ -176,12 +176,12 @@
             android:background="@color/orange"></LinearLayout>
 
         <Button
-            android:text="@string/cancel_btn"
+            android:id="@+id/sms_reader_dialog_cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/sms_reader_dialog_cancel_button"
             android:layout_weight="1"
             android:background="@drawable/keyboard_buttons_custom"
+            android:text="@string/sms_reader_dialog_cancel_button_string"
             android:textColor="@drawable/button_text_color_black" />
     </LinearLayout>
 

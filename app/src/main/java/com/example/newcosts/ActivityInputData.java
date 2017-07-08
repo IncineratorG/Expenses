@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -43,6 +42,9 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
     private Button choseDateButton;
     private String savedValue = "";
     private long editItemMilliseconds = -1;
+
+    private String notFormattedInputString = "";
+    private String formattedInputString = "";
 
 
     @Override
@@ -294,6 +296,22 @@ public class ActivityInputData extends AppCompatActivity implements DialogDatePi
                 break;
         }
     }
+
+
+    // ===================================================
+    public void onKeyboardClick_V2(View view) {
+
+    }
+
+    // Обрабатывает пользовательский ввод
+    private void processInput(View view) {
+
+    }
+
+    private void formatInputString() {
+
+    }
+    // ===================================================
 
 
     // Складывает текущее введённое значение с предыдущим

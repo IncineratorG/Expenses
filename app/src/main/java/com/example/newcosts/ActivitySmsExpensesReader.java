@@ -1,13 +1,19 @@
 package com.example.newcosts;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +26,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.jar.Manifest;
 
 /**
  * TODO: Add a class header comment
@@ -45,6 +52,10 @@ public class ActivitySmsExpensesReader extends AppCompatActivity implements Load
     private Long millis;
     private DataUnitSms chosenSms;
     private int chosenSmsPosition = -1;
+
+    private final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 123;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,11 +87,72 @@ public class ActivitySmsExpensesReader extends AppCompatActivity implements Load
         calendar.add(Calendar.DAY_OF_MONTH, -3);
         millis = calendar.getTimeInMillis();
 
-        getSupportLoaderManager().initLoader(LOADER_ID, null, this);
-
         costsDB = DB_Costs.getInstance(this);
         smsNotesDB = DB_SmsNotes.getInstance(this);
+
+        getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+
+
+
+        // =========================================
+//        int permissionCheck = ContextCompat.checkSelfPermission(ActivitySmsExpensesReader.this, android.Manifest.permission.READ_SMS);
+////        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+////            ActivityCompat.requestPermissions(ActivitySmsExpensesReader.this,
+////                                                new String[]{android.Manifest.permission.READ_SMS},
+////                                                MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+////        } else {
+////            getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+////        }
+//
+//        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+//            if (!ActivityCompat.shouldShowRequestPermissionRationale(ActivitySmsExpensesReader.this, android.Manifest.permission.READ_SMS)) {
+//                showMessageOKCancel("You need to allow access to SMS",
+//                        new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                ActivityCompat.requestPermissions(ActivitySmsExpensesReader.this, new String[] {android.Manifest.permission.READ_SMS},
+//                                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+//                            }
+//                        });
+//                return;
+//            }
+//
+//            ActivityCompat.requestPermissions(ActivitySmsExpensesReader.this, new String[] {android.Manifest.permission.READ_SMS},
+//                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+//        } else {
+//            getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+//        }
+        // ===============================================
     }
+
+    // =================================================
+    // =================================================
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    System.out.println("PERMISSION_GRANTED");
+                    getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+                } else {
+                    System.out.println("PERMISSION_DENIED");
+                }
+            }
+        }
+    }
+
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(ActivitySmsExpensesReader.this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+    // =================================================
+    // =================================================
+
+
 
 
     @Override
