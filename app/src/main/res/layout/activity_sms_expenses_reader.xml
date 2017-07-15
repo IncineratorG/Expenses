@@ -20,26 +20,26 @@
             android:background="@drawable/activity_input_data_buttons_style" />
 
         <TextView
-            android:text="Чтение расходов из SMS"
+            android:id="@+id/activity_sms_expenses_reader_toolbar_textview"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textSize="20sp"
-            android:id="@+id/activity_sms_expenses_reader_toolbar_textview"
-            android:paddingLeft="10dp"
-            android:paddingStart="10dp"
-            android:paddingRight="10dp"
-            android:paddingEnd="10dp"
-            android:maxLines="1"
+            android:layout_alignBottom="@+id/activity_sms_expenses_reader_arrow_back"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center"
+            android:layout_toEndOf="@+id/activity_sms_expenses_reader_arrow_back"
+            android:layout_toRightOf="@+id/activity_sms_expenses_reader_arrow_back"
             android:ellipsize="end"
             android:gravity="center"
+            android:maxLines="1"
+            android:paddingEnd="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingStart="10dp"
+            android:text="@string/sms_expenses_reader_title_string"
+            android:textAppearance="@style/TextAppearance.AppCompat"
             android:textColor="@android:color/white"
-            android:layout_gravity="center"
-            android:layout_alignBottom="@+id/activity_sms_expenses_reader_arrow_back"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_toRightOf="@+id/activity_sms_expenses_reader_arrow_back"
-            android:layout_toEndOf="@+id/activity_sms_expenses_reader_arrow_back" />
+            android:textSize="20sp" />
 
     </RelativeLayout>
 

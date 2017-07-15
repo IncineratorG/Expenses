@@ -67,6 +67,8 @@
     <string name="sms_reader_dialog_cancel_button_string">Cancel</string>
 
     <!-- sms_reader_dialog_spinner_single_item.java -->
+    <!-- activity_sms_expenses_reader.xml -->
+    <string name="sms_expenses_reader_title_string">Reading of expenses from SMS</string>
     <!-- ======================================================================================= -->
 
 
@@ -365,7 +367,7 @@
         <item>@string/DAY_NAMES_friday_string</item>
         <item>@string/DAY_NAMES_saturday_string</item>
     </string-array>
-    <string name="DAY_NAMES_empty_string"></string>
+    <string name="DAY_NAMES_empty_string">" "</string>
     <string name="DAY_NAMES_sunday_string">Sun</string>
     <string name="DAY_NAMS_monday_string">Mon</string>
     <string name="DAY_NAMES_tuesday_string">Tue</string>

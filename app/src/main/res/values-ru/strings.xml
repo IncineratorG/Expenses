@@ -171,4 +171,10 @@
     <string name="sms_reader_dialog_hint_text_string">Заметка</string>
     <string name="sms_reader_dialog_save_button_string">Сохранить</string>
     <string name="sms_reader_dialog_value_string">Сумма</string>
+    <string name="sms_expenses_reader_title_string">Чтение расходов из СМС</string>
+    <string name="CURRENCY_EUR_string">EUR</string>
+    <string name="CURRENCY_GBP_string">GBP</string>
+    <string name="CURRENCY_RUB_string">RUB</string>
+    <string name="CURRENCY_USD_string">USD</string>
+    <string name="DAY_NAMES_empty_string">" "</string>
 </resources>

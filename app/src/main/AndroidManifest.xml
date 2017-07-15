@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--<manifest xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--package="com.example.newcosts">-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.newcosts">
+    package="com.costs.newcosts">
 
     <uses-permission android:name="android.permission.READ_SMS"/>
     <uses-permission android:name="android.permission.INTERNET" />
@@ -24,31 +26,31 @@
 
 
         <activity
-            android:name=".ActivityBackupData_V2"
+            android:name="com.costs.newcosts.ActivityBackupData_V2"
             android:screenOrientation="portrait"
             android:theme="@style/CustomAppStyle"/>
         <activity
-            android:name=".ActivityBackupData"
+            android:name="com.costs.newcosts.ActivityBackupData"
             android:screenOrientation="portrait"
             android:theme="@style/CustomAppStyle"/>
         <activity
-            android:name=".ActivitySmsExpensesReader"
+            android:name="com.costs.newcosts.ActivitySmsExpensesReader"
             android:screenOrientation="portrait"
             android:theme="@style/CustomAppStyle"/>
         <activity
-            android:name=".ActivityStatisticDetailed"
+            android:name="com.costs.newcosts.ActivityStatisticDetailed"
             android:screenOrientation="portrait"
             android:theme="@style/CustomAppStyle"/>
         <activity
-            android:name=".ActivityStatisticExpenseTypeDetailed"
+            android:name="com.costs.newcosts.ActivityStatisticExpenseTypeDetailed"
             android:screenOrientation="portrait"
             android:theme="@style/CustomAppStyle"/>
         <activity
-            android:name=".ActivityInputData"
+            android:name="com.costs.newcosts.ActivityInputData"
             android:screenOrientation="portrait"
             android:theme="@style/CustomAppStyle"/>
         <activity
-            android:name=".ActivityMainWithFragments"
+            android:name="com.costs.newcosts.ActivityMainWithFragments"
             android:screenOrientation="portrait"
             android:theme="@style/CustomAppStyle">
             <intent-filter>
