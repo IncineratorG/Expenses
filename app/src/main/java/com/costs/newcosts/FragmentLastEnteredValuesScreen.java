@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -27,8 +28,10 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
     private AdapterLastEnteredValuesRecyclerView lastEnteredValuesFragmentAdapter;
     private int selectedItemPosition = -1;
     private DB_Costs cdb;
+    private TextView noRecordsTextView;
 
     private Snackbar deleteItemSnackbar;
+
 
 
     @Override
@@ -41,6 +44,10 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View lastEnteredValuesView = inflater.inflate(R.layout.fragment_last_entered_values_screen, container, false);
         recyclerView = (RecyclerView) lastEnteredValuesView.findViewById(R.id.fragment_last_entered_values_recycler_view);
+        recyclerView.setVisibility(View.GONE);
+
+        noRecordsTextView = (TextView) lastEnteredValuesView.findViewById(R.id.fragment_last_entered_values_no_data_textview);
+        noRecordsTextView.setVisibility(View.VISIBLE);
 
         return lastEnteredValuesView;
     }
@@ -66,6 +73,13 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
         }
         else {
             listOfLastEntries = cdb.getEntriesAfterDateInMilliseconds(Constants.EDITED_ITEM_MILLISECONDS);
+        }
+
+        // Если в базе присутсвуют записи - скрываем надпись про отсутсвие записей
+        // и показываем список подследних введённых значений.
+        if (listOfLastEntries.size() > 0) {
+            noRecordsTextView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
         }
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
@@ -134,6 +148,12 @@ public class FragmentLastEnteredValuesScreen extends Fragment {
 
                     cdb.removeCostValue(deletedItem.getMilliseconds());
 
+                    // Если не осталось ни одной записи -
+                    // показываем по центру экрана надпись об отсутствии записей.
+                    if (listOfLastEntries.size() == 0) {
+                        recyclerView.setVisibility(View.GONE);
+                        noRecordsTextView.setVisibility(View.VISIBLE);
+                    }
 
                     // Отображаем сообщение об удалении выбранного элемента
                     // с возможностью его восстановления при нажатии кнопки "Отмена"

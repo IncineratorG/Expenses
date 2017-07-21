@@ -51,14 +51,14 @@
     <string name="abd_dataRestoredSuccessful_string">Данные восстановлены</string>
     <string name="abd_dataSavedSuccessful_string">Сохранение завершено</string>
     <string name="abd_deleteBackupItemDialogBuilder_Message_string">Удалить выбранную резервную копию?</string>
-    <string name="abd_deleteBackupItemDialogBuilder_Title_string">Внимние!</string>
+    <string name="abd_deleteBackupItemDialogBuilder_Title_string">Внимание!</string>
     <string name="abd_deleteBackupItemDialogBuilder_cancel_button_string">Отмена</string>
     <string name="abd_deleteBackupItemDialogBuilder_delete_button_string">Удалить</string>
     <string name="abd_deleteButton_string">Удалить</string>
     <string name="abd_errorDeletingBackupFolderToast_string">При удалении возникла проблема</string>
     <string name="abd_restoreButton_string">Восстановить</string>
     <string name="abd_restoreFromChosenBackupItemDialogBuilder_Message_string">Все записи расходов будут заменены записями из выбранной резервной копии.</string>
-    <string name="abd_restoreFromChosenBackupItemDialogBuilder_Title_string">Внимние!</string>
+    <string name="abd_restoreFromChosenBackupItemDialogBuilder_Title_string">Внимание!</string>
     <string name="abd_restoreFromChosenBackupItemDialogBuilder_cancel_button_string">Отмена</string>
     <string name="abd_restoreFromChosenBackupItemDialogBuilder_continue_button_string">Продолжить</string>
     <string name="abd_statusTextView_acquiringConnection_string">Устанавливаю соединение с сетью...</string>
@@ -177,4 +177,6 @@
     <string name="CURRENCY_RUB_string">RUB</string>
     <string name="CURRENCY_USD_string">USD</string>
     <string name="DAY_NAMES_empty_string">" "</string>
+    <string name="flev_no_data_string">Нет записей</string>
+    <string name="statistic_main_screen_no_data_string">Нет записей</string>
 </resources>

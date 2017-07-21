@@ -17,6 +17,16 @@
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/button_divider">
 
+        <TextView
+            android:id="@+id/statistic_main_screen_no_data_textview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/statistic_main_screen_no_data_string"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textColor="@color/deeperGrey"
+            android:textSize="36sp" />
+
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"

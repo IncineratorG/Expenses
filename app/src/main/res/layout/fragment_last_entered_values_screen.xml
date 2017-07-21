@@ -15,9 +15,55 @@
         android:layout_height="match_parent"
         android:padding="0dp">
 
+        <TextView
+            android:id="@+id/fragment_last_entered_values_no_data_textview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/flev_no_data_string"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textColor="@color/deeperGrey"
+            android:textSize="36sp" />
+
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/fragment_last_entered_values_recycler_view" />
     </LinearLayout>
+
 </RelativeLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:orientation="vertical"-->
+    <!--android:paddingEnd="5dp"-->
+    <!--android:paddingLeft="5dp"-->
+    <!--android:paddingRight="5dp"-->
+    <!--android:paddingStart="5dp"-->
+    <!--android:paddingTop="5dp">-->
+
+    <!--<LinearLayout-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:padding="0dp">-->
+
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/fragment_last_entered_values_recycler_view" />-->
+    <!--</LinearLayout>-->
+<!--</RelativeLayout>-->

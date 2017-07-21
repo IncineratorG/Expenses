@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class FragmentStatisticMainScreen extends Fragment {
     private Button chooseStatisticPeriodButton;
     private DB_Costs cdb;
     private List<DataUnitExpenses> sumByMonthList;
+    private TextView noRecordsTextView;
 
 
     @Override
@@ -39,7 +41,12 @@ public class FragmentStatisticMainScreen extends Fragment {
                 onChoseStatisticPeriodButtonClick(v);
             }
         });
+
         recyclerView = (RecyclerView) statisticMainScreenView.findViewById(R.id.statistic_main_screen_recycler_view);
+        recyclerView.setVisibility(View.GONE);
+
+        noRecordsTextView = (TextView) statisticMainScreenView.findViewById(R.id.statistic_main_screen_no_data_textview);
+        noRecordsTextView.setVisibility(View.VISIBLE);
 
         return statisticMainScreenView;
     }
@@ -52,17 +59,14 @@ public class FragmentStatisticMainScreen extends Fragment {
             Constants.loadStrings(context);
 
         cdb = DB_Costs.getInstance(context);
-//        new AsyncTaskLoadMainActivityFragmentsData(cdb, Constants.FRAGMENT_STATISTIC_MAIN_SCREEN, new CallbackValuesLoaded() {
-//            @Override
-//            public void valuesLoaded(int callingFragmentCode, List<DataUnitExpenses> data, double overallValue) {
-//                if (callingFragmentCode == Constants.FRAGMENT_STATISTIC_MAIN_SCREEN) {
-//                    sumByMonthList = data;
-//                    init();
-//                }
-//            }
-//        }).execute();
+
         // Получаем суммарные значения за месяц и год
         final List<DataUnitExpenses> sumByMonthList = cdb.getSumByMonthsList();
+
+        if (sumByMonthList.size() > 0) {
+            noRecordsTextView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);

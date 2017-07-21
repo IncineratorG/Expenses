@@ -137,6 +137,7 @@
 
     <!-- =========================== LAST_ENTERED_VALUES_SCREEN ================================ -->
     <!-- fragment_last_entered_values_screen.xml-->
+    <string name="flev_no_data_string">No records</string>
 
     <!-- fragment_last_entered_values_screen_single_item.xml -->
 
@@ -154,6 +155,7 @@
     <!-- ============================= STATISTIC_MAIN_SCREEN =================================== -->
     <!-- fragment_statistic_main_screen.xml-->
     <string name="statistic_main_screen_chose_period_button_string">Set period</string>
+    <string name="statistic_main_screen_no_data_string">No records</string>
 
     <!-- fragment_statistic_main_screen_single_item.xml -->
 
